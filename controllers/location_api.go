@@ -6,11 +6,11 @@ import (
 	"github.com/beego/beego/v2/server/web"
 )
 
-type APIController struct {
+type LocationAPIController struct {
 	web.Controller
 }
 
-func (c *APIController) GetLocation() {
+func (c *LocationAPIController) GetLocation() {
 	keyword := c.GetString("keyword")
 
 	location, err := services.GetLocation(keyword)
@@ -21,12 +21,4 @@ func (c *APIController) GetLocation() {
 
 	c.Data["json"] = location
 	c.ServeJSON()
-}
-
-func (c *APIController) GetProperties() {
-
-}
-
-func (c *APIController) GetPropertyDetails() {
-
 }

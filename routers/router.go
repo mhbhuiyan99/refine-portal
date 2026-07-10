@@ -8,7 +8,7 @@ import (
 func init() {
     web.Router("/refine", &controllers.RefineController{})
 
-	web.Router("/api/location", &controllers.APIController{}, "get:GetLocation")
-	web.Router("/api/properties", &controllers.APIController{}, "get:GetProperties")
-	web.Router("/api/property-details", &controllers.APIController{}, "get:GetPropertyDetails")
+	web.Router("/api/location", &controllers.LocationAPIController{})
+	web.Router("/api/properties", &controllers.PropertyAPIController{}, "get:GetList")
+	web.Router("/api/property-details", &controllers.PropertyAPIController{}, "get:GetDetails")
 }
