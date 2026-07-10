@@ -1,21 +1,27 @@
 package models
 
-type Property struct {
-    ID          int
-    Name        string
-    Price       float64
-    Thumbnail   string
-
-    Rating      float64
-    Images       []string
-    Amenities    []string
-    Description  string
+type PropertyListRequest struct {
+	Category  string
+	Locations string
+	Order     int
+	Limit     int
+	Items     int
+	Device    string
+	Page      int
 }
 
 type PropertyListResponse struct {
-    Properties []Property
+	Success bool            `json:"Success"`
+	GeoInfo PropertyGeoInfo `json:"GeoInfo"`
+	Result  PropertyResult  `json:"Result"`
 }
 
-type PropertyDetailsResponse struct {
-    Properties []Property
+type PropertyGeoInfo struct {
+	CountryCode  string `json:"CountryCode"`
+	LocationSlug string `json:"LocationSlug"`
+}
+
+type PropertyResult struct {
+	Count   int      `json:"Count"`
+	ItemIDs []string `json:"ItemIDs"`
 }

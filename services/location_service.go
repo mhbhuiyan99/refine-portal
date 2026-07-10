@@ -26,14 +26,14 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	if strings.TrimSpace(baseURL) == "" {
 		return nil, fmt.Errorf("configuraion 'base_url' is empty")
 	}
-	
+
 	// Build URL
 	parsedURL, err := url.Parse(baseURL) // Validates and converts the raw string into a structured *url.URL object.
 	if err != nil {
-		return nil, fmt.Errorf("parse base url: %w", err)
+		return nil, fmt.Errorf("parse base_url failed: %w", err)
 	}
 
-	parsedURL.Path = locationAPIPath // append the endpoint path 
+	parsedURL.Path = locationAPIPath // append the endpoint path
 
 	query := parsedURL.Query() // Extract existing query parameters into a url.Values map
 	query.Set("keyword", keyword)
@@ -41,33 +41,39 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	parsedURL.RawQuery = query.Encode() // Marshals the map back into a raw string
 
 	// Client HTTP request
-	req, err := http.NewRequest(http.MethodGet, parsedURL.String(), nil)
+	request, err := http.NewRequest(
+		http.MethodGet,
+		parsedURL.String(),
+		nil,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	req.Header.Set("Accept", "application/json")
+	request.Header.Set("Accept", "application/json")
 
-	// Send request 
+	// Send request
 	client := &http.Client{
-		Timeout: 10*time.Second,
+		Timeout: 10 * time.Second,
 	}
 
-	res, err := client.Do(req)
+	response, err := client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("send request: %w", err)
 	}
-	defer res.Body.Close()
+	defer response.Body.Close()
 
 	// Check response status
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	// Decode response 
+	// Decode response
 	var location models.LocationResponse
 
-	if err := json.NewDecoder(res.Body).Decode(&location); err != nil {
+	if err := json.NewDecoder(
+		response.Body,
+	).Decode(&location); err != nil {
 		return nil, fmt.Errorf("decode response: %w", err)
 	}
 

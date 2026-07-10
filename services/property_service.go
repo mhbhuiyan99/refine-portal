@@ -1,6 +1,89 @@
 package services
 
-import "refine-portal/models"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
+	"refine-portal/models"
+	"time"
 
+	"github.com/beego/beego/v2/server/web"
+)
 
-func GetProperties(category, countryCode string, order, page int) (*models.PropertyListResponse, error)
+const (
+	propertyListAPIPath = "/api/properties/category/v1"
+)
+
+func GetProperties(
+	req models.PropertyListRequest,
+) (*models.PropertyListResponse, error) {
+	// Get base url from config
+	baseURL, err := web.AppConfig.String("base_url")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
+	}
+	if baseURL == "" {
+		return nil, fmt.Errorf("configuration 'base_url' is empty")
+	}
+
+	// Build URL
+	parsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("parse base_url failed: %w", err)
+	}
+
+	parsedURL.Path = propertyListAPIPath
+
+	query := parsedURL.Query()
+
+	query.Set("category", req.Category)
+	query.Set("locations", req.Locations)
+	query.Set("order", fmt.Sprintf("%d", req.Order))
+	query.Set("limit", fmt.Sprintf("%d", req.Limit))
+	query.Set("items", fmt.Sprintf("%d", req.Items))
+	query.Set("device", req.Device)
+	query.Set("page", fmt.Sprintf("%d", req.Page))
+
+	parsedURL.RawQuery = query.Encode()
+
+	// Create Request
+	request, err := http.NewRequest(
+		http.MethodGet,
+		parsedURL.String(),
+		nil,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("create request failed: %w", err)
+	}
+
+	request.Header.Set("Accept", "application/json")
+
+	// Send Request
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer response.Body.Close()
+
+	// Validate Response
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
+	// Decode Response
+	var propertyListResponse models.PropertyListResponse
+
+	if err := json.NewDecoder(
+		response.Body,
+	).Decode(&propertyListResponse); err != nil {
+		return nil, fmt.Errorf("decode response failed: %w", err)
+	}
+
+	return &propertyListResponse, nil
+}
