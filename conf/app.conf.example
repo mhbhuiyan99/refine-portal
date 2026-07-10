@@ -1,3 +1,7 @@
 appname = refine-portal
 httpport = 8080
 runmode = dev
+autorender = true
+copyrequestbody = true
+
+base_url = add your url
