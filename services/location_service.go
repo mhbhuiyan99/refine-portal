@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -20,6 +21,10 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	// Get the base url
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
+		logs.Error(
+			"[LocationService] Failed to read configuration | key=base_url | err=%v",
+			err,
+		)
 		return nil, fmt.Errorf("failed to read 'base_url' from configuration: %w", err)
 	}
 
@@ -40,6 +45,12 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	query.Set("isLocationEntity", "true")
 	parsedURL.RawQuery = query.Encode() // Marshals the map back into a raw string
 
+	logs.Debug(
+		"[LocationService] Calling Location API | keyword=%s | url=%s",
+		keyword,
+		parsedURL.String(),
+	)
+	
 	// Client HTTP request
 	request, err := http.NewRequest(
 		http.MethodGet,
@@ -59,12 +70,22 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 
 	response, err := client.Do(request)
 	if err != nil {
+		logs.Error(
+			"[LocationService] HTTP request failed | url=%s | err=%v",
+			parsedURL.String(),
+			err,
+    	)
 		return nil, fmt.Errorf("send request: %w", err)
 	}
 	defer response.Body.Close()
 
 	// Check response status
 	if response.StatusCode != http.StatusOK {
+		logs.Warn(
+			"[LocationService] Unexpected response | status=%d | url=%s",
+			response.StatusCode,
+			parsedURL.String(),
+    	)
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
@@ -74,8 +95,17 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	if err := json.NewDecoder(
 		response.Body,
 	).Decode(&location); err != nil {
+		logs.Error(
+			"[LocationService] Decode response failed | err=%v",
+			err,
+		)
 		return nil, fmt.Errorf("decode response: %w", err)
 	}
+
+	logs.Debug(
+		"[LocationService] Location API success | locationID=%s",
+		location.GeoInfo.LocationID,
+	)
 
 	return &location, nil
 }

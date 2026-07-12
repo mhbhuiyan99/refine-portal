@@ -8,6 +8,7 @@ import (
 	"refine-portal/models"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -21,6 +22,10 @@ func GetProperties(
 	// Get base url from config
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
+		logs.Error(
+			"[PropertyService] Failed to read configuration | key=base_url | err=%v",
+			err,
+		)
 		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
 	}
 	if baseURL == "" {
@@ -67,12 +72,22 @@ func GetProperties(
 
 	response, err := client.Do(request)
 	if err != nil {
+		logs.Error(
+			"[PropertyService] HTTP request failed | url=%s | err=%v",
+			parsedURL.String(),
+			err,
+    	)
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer response.Body.Close()
 
 	// Validate Response
 	if response.StatusCode != http.StatusOK {
+		logs.Warn(
+			"[PropertyService] Unexpected response | status=%d | url=%s",
+			response.StatusCode,
+			parsedURL.String(),
+    	)
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
@@ -82,8 +97,16 @@ func GetProperties(
 	if err := json.NewDecoder(
 		response.Body,
 	).Decode(&propertyListResponse); err != nil {
+		logs.Error(
+			"[PropertyService] Decode response failed | err=%v",
+			err,
+		)
 		return nil, fmt.Errorf("decode response failed: %w", err)
 	}
 
+	logs.Debug(
+		"[PropertyService] Property List API success | propertyCount=%d",
+		len(propertyListResponse.Result.ItemIDs),
+	)
 	return &propertyListResponse, nil
 }

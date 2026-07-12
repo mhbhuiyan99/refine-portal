@@ -4,7 +4,7 @@ import (
 	"refine-portal/models"
 	"refine-portal/services"
 	"strings"
-
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -18,11 +18,13 @@ func (c *PropertyAPIController) GetList() {
 	location := strings.TrimSpace(c.GetString("location"))
 
 	if category == "" {
+		logs.Warn("[PropertyAPIController] Missing required query parameter: category")
 		c.CustomAbort(400, "category is required")
 		return
 	}
 
 	if location == "" {
+		logs.Warn("[PropertyAPIController] Missing required query parameter: location")
 		c.CustomAbort(400, "location is required")
 		return
 	}
@@ -59,6 +61,12 @@ func (c *PropertyAPIController) GetList() {
 
 	properties, err := services.GetProperties(request)
 	if err != nil {
+		logs.Error(
+			"[PropertyAPIController] GetProperties failed | category=%s | location=%s | err=%v",
+			category,
+			location,
+			err,
+		)
 		c.CustomAbort(500, "Failed to fetch properties")
 		return
 	}
