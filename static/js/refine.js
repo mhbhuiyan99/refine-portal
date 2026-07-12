@@ -10,16 +10,16 @@ async function init() {
     try {
         const location = await getLocation(search)
 
-        const category = location.GeoInfo.LocationSlug;
-        const locations = location.GeoInfo.CountryCode;
-
         const properties = await getProperties (
-            category,
-            locations,
+            location.GeoInfo.LocationSlug,
+            location.GeoInfo.CountryCode,
             order
         );
 
-        console.log(properties);
+        const propertyIDs = properties.Result.ItemIDs;
+        const propertyDetails = await getPropertyDetails(propertyIDs);
+
+        console.log(propertyDetails);
     } catch (error) {
         console.log(error);
     }

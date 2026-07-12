@@ -1,6 +1,3 @@
-// communicates with Beego APIs
-
-
 async function getLocation(keyword) {
     const response = await fetch(
         `api/location?keyword=${encodeURIComponent(keyword)}`
@@ -43,6 +40,18 @@ async function getProperties(category, locations, order) {
     return await response.json();
 }
 
-async function getPropertyDetails() {
+async function getPropertyDetails(propertyIDs) {
+    const query = new URLSearchParams({
+        propertyIdList: propertyIDs.join(",")
+    });
 
+    const response = await fetch(
+        `/api/property-details?${query.toString()}`
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch property details")
+    }
+
+    return await response.json();
 }
