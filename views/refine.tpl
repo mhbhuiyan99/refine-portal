@@ -2,18 +2,21 @@
 <html>
 
 <head>
-    <title>Refine</title>
+    <title>Refine Page</title>
 </head>
 
 <body>
 
-    <h1>Refine Portal</h1>
+    <h1>Sample Refine Page</h1>
 
-    <div id="property-list">
+    <div id="loading">
+        Loading...
     </div>
-    
-    <script src="/static/js/refine.js">
-    </script>
+
+    <div id="property-list"></div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/refine.js"></script>
 
 </body>
 
