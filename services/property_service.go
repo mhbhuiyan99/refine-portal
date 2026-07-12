@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"refine-portal/models"
 	"strings"
-	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -67,24 +66,13 @@ func GetProperties(
 	)
 
 	// Create Request
-	request, err := http.NewRequest(
-		http.MethodGet,
-		parsedURL.String(),
-		nil,
-	)
-
+	request, err := NewGETRequest(parsedURL.String())
 	if err != nil {
-		return nil, fmt.Errorf("create request failed: %w", err)
+		return nil, err
 	}
-
-	request.Header.Set("Accept", "application/json")
 
 	// Send Request
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
-	response, err := client.Do(request)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		logs.Error(
 			"[PropertyService] HTTP request failed | url=%s | err=%v",

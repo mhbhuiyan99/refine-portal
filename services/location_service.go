@@ -3,11 +3,11 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"refine-portal/models"
 	"strings"
-	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -52,23 +52,13 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 	)
 	
 	// Client HTTP request
-	request, err := http.NewRequest(
-		http.MethodGet,
-		parsedURL.String(),
-		nil,
-	)
+	request, err := NewGETRequest(parsedURL.String())
 	if err != nil {
-		return nil, fmt.Errorf("create request: %w", err)
+		return nil, err
 	}
-
-	request.Header.Set("Accept", "application/json")
 
 	// Send request
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
-	response, err := client.Do(request)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		logs.Error(
 			"[LocationService] HTTP request failed | url=%s | err=%v",
@@ -81,12 +71,18 @@ func GetLocation(keyword string) (*models.LocationResponse, error) {
 
 	// Check response status
 	if response.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(response.Body)
+
 		logs.Warn(
-			"[LocationService] Unexpected response | status=%d | url=%s",
+			"[LocationService] Unexpected response | status=%d | body=%s",
 			response.StatusCode,
-			parsedURL.String(),
-    	)
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			string(body),
+		)
+
+		return nil, fmt.Errorf(
+			"unexpected status code: %d",
+			response.StatusCode,
+		)
 	}
 
 	// Decode response

@@ -15,7 +15,7 @@ async function init() {
 
         const properties = await getProperties (
             category,
-            location,
+            locations,
             order
         );
 

@@ -23,8 +23,8 @@ const DEFAULT_PROPERTY_OPTIONS = {
 async function getProperties(category, locations, order) {
 
     const query = new URLSearchParams({
-        category,
-        locations,
+        category: category,
+        location: locations,
         order,
         page: DEFAULT_PROPERTY_OPTIONS.page,
         limit: DEFAULT_PROPERTY_OPTIONS.limit,
