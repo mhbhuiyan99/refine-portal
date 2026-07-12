@@ -12,7 +12,7 @@ var httpClient = &http.Client{
 	Timeout: 10 * time.Second,
 }
 
-func SetDefaultHeaders(request *http.Request) error {
+func setDefaultHeaders(request *http.Request) error {
 	username, err := web.AppConfig.String("username")
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func NewGETRequest(url string) (*http.Request, error) {
 		return nil, fmt.Errorf("create request failed: %w", err)
 	}
 
-	if err := SetDefaultHeaders(request); err != nil {
+	if err := setDefaultHeaders(request); err != nil {
 		return nil, fmt.Errorf("set default headers: %w", err)
 	}
 
