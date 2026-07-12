@@ -14,12 +14,59 @@ import (
 
 const (
 	propertyDetailsAPIPath = "/api/property/bookmark/v1"
+	batchSize              = 50
 )
 
 func GetPropertyDetails(
 	req models.PropertyDetailsRequest,
 ) (*models.PropertyDetailsResponse, error) {
-	// Get base url from config
+
+	chunks := chunkStrings(
+		req.PropertyIDList,
+		batchSize,
+	)
+
+	logs.Debug(
+		"[PropertyDetailsService] Total IDs=%d | Total Chunks=%d",
+		len(req.PropertyIDList),
+		len(chunks),
+	)
+
+	merged := &models.PropertyDetailsResponse{
+		Success: true,
+	}
+
+	for index, ids := range chunks {
+
+		logs.Debug(
+			"[PropertyDetailsService] Processing batch %d/%d",
+			index+1,
+			len(chunks),
+		)
+
+		batch, err := fetchPropertyDetailsBatch(ids)
+		if err != nil {
+			return nil, err
+		}
+
+		merged.Items = append(
+			merged.Items,
+			batch.Items...,
+		)
+	}
+
+	logs.Info(
+		"[PropertyDetailsService] Total Properties=%d",
+		len(merged.Items),
+	)
+
+	return merged, nil
+}
+
+func fetchPropertyDetailsBatch(
+	propertyIDs []string,
+) (*models.PropertyDetailsResponse, error) {
+
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
 		logs.Error(
@@ -28,14 +75,7 @@ func GetPropertyDetails(
 		)
 		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
 	}
-	if strings.TrimSpace(baseURL) == "" {
-		logs.Error(
-			"[PropertyDetailsService] Configuration 'base_url' is empty",
-		)
-		return nil, fmt.Errorf("configuration 'base_url' is empty")
-	}
 
-	// Build URL
 	parsedURL, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse base_url failed: %w", err)
@@ -47,51 +87,55 @@ func GetPropertyDetails(
 
 	query.Set(
 		"propertyIdList",
-		strings.Join(req.PropertyIDList, ","),
+		strings.Join(propertyIDs, ","),
 	)
 
 	parsedURL.RawQuery = query.Encode()
 
 	logs.Debug(
 		"[PropertyDetailsService] Calling Property Details API | propertyIdCount=%d | url=%s",
-		len(req.PropertyIDList),
+		len(propertyIDs),
 		parsedURL.String(),
 	)
 
-	// Create Request
-	request, err := NewGETRequest(parsedURL.String())
+	request, err := NewGETRequest(
+		parsedURL.String(),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	// Send Request
 	response, err := httpClient.Do(request)
 	if err != nil {
 		logs.Error(
 			"[PropertyDetailsService] HTTP request failed | url=%s | err=%v",
 			parsedURL.String(),
 			err,
-    	)
+		)
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer response.Body.Close()
 
-	// Validate Response
 	if response.StatusCode != http.StatusOK {
+
 		logs.Warn(
 			"[PropertyDetailsService] Unexpected response | status=%d | url=%s",
 			response.StatusCode,
 			parsedURL.String(),
-    	)
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		)
+
+		return nil, fmt.Errorf(
+			"unexpected status code: %d",
+			response.StatusCode,
+		)
+
 	}
 
-	// Decode Response
-	var propertyDetailsResponse models.PropertyDetailsResponse
+	var result models.PropertyDetailsResponse
 
 	if err := json.NewDecoder(
 		response.Body,
-	).Decode(&propertyDetailsResponse); err != nil {
+	).Decode(&result); err != nil {
 		logs.Error(
 			"[PropertyDetailsService] Decode response failed | err=%v",
 			err,
@@ -99,9 +143,5 @@ func GetPropertyDetails(
 		return nil, fmt.Errorf("decode response failed: %w", err)
 	}
 
-	/*logs.Debug(
-		"[PropertyDetailsService] Property Details API success | returned=%d",
-		len(propertyDetailsResponse.Properties),
-	)*/
-	return &propertyDetailsResponse, nil
+	return &result, nil
 }
