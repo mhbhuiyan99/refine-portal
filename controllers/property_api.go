@@ -76,5 +76,30 @@ func (c *PropertyAPIController) GetList() {
 }
 
 func (c *PropertyAPIController) GetDetails() {
+	ids := strings.TrimSpace(
+		c.GetString("propertyIdList"),
+	)
 
+	if ids == "" {
+		c.CustomAbort(400, "propertyIdList is required")
+		return
+	}
+
+	request := models.PropertyDetailsRequest{
+		PropertyIDList: strings.Split(ids, ","),
+	}
+
+	details, err := services.GetPropertyDetails(request)
+	if err != nil {
+		logs.Error(
+			"[PropertyAPIController] GetPropertyDetails failed | propertyIdList=%s | err=%v",
+			ids,
+			err,
+		)
+		c.CustomAbort(500, "Internal Server Error")
+		return
+	}
+
+	c.Data["json"] = details
+	c.ServeJSON()
 }

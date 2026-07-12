@@ -14,17 +14,17 @@ import (
 )
 
 const (
-	propertyListAPIPath = "/api/properties/category/v1"
+	propertyDetailsAPIPath = "/api/property/bookmark/v1"
 )
 
-func GetProperties(
-	req models.PropertyListRequest,
-) (*models.PropertyListResponse, error) {
+func GetPropertyDetails(
+	req models.PropertyDetailsRequest,
+) (*models.PropertyDetailsResponse, error) {
 	// Get base url from config
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
 		logs.Error(
-			"[PropertyService] Failed to read configuration | key=base_url | err=%v",
+			"[PropertyDetailsService] Failed to read configuration | key=base_url | err=%v",
 			err,
 		)
 		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
@@ -42,27 +42,20 @@ func GetProperties(
 		return nil, fmt.Errorf("parse base_url failed: %w", err)
 	}
 
-	parsedURL.Path = propertyListAPIPath
+	parsedURL.Path = propertyDetailsAPIPath
 
 	query := parsedURL.Query()
 
-	query.Set("category", req.Category)
-	query.Set("locations", req.Locations)
-	query.Set("order", fmt.Sprintf("%d", req.Order))
-	query.Set("limit", fmt.Sprintf("%d", req.Limit))
-	query.Set("items", fmt.Sprintf("%d", req.Items))
-	query.Set("device", req.Device)
-	query.Set("page", fmt.Sprintf("%d", req.Page))
+	query.Set(
+		"propertyIdList",
+		strings.Join(req.PropertyIDList, ","),
+	)
 
 	parsedURL.RawQuery = query.Encode()
 
 	logs.Debug(
-		"[PropertyService] Calling Property List API | category=%s | locations=%s | page=%d | limit=%d | order=%d | url=%s",
-		req.Category,
-		req.Locations,
-		req.Page,
-		req.Limit,
-		req.Order,
+		"[PropertyDetailsService] Calling Property Details API | propertyIdCount=%d | url=%s",
+		len(req.PropertyIDList),
 		parsedURL.String(),
 	)
 
@@ -87,7 +80,7 @@ func GetProperties(
 	response, err := client.Do(request)
 	if err != nil {
 		logs.Error(
-			"[PropertyService] HTTP request failed | url=%s | err=%v",
+			"[PropertyDetailsService] HTTP request failed | url=%s | err=%v",
 			parsedURL.String(),
 			err,
     	)
@@ -98,7 +91,7 @@ func GetProperties(
 	// Validate Response
 	if response.StatusCode != http.StatusOK {
 		logs.Warn(
-			"[PropertyService] Unexpected response | status=%d | url=%s",
+			"[PropertyDetailsService] Unexpected response | status=%d | url=%s",
 			response.StatusCode,
 			parsedURL.String(),
     	)
@@ -106,21 +99,21 @@ func GetProperties(
 	}
 
 	// Decode Response
-	var propertyListResponse models.PropertyListResponse
+	var propertyDetailsResponse models.PropertyDetailsResponse
 
 	if err := json.NewDecoder(
 		response.Body,
-	).Decode(&propertyListResponse); err != nil {
+	).Decode(&propertyDetailsResponse); err != nil {
 		logs.Error(
-			"[PropertyService] Decode response failed | err=%v",
+			"[PropertyDetailsService] Decode response failed | err=%v",
 			err,
 		)
 		return nil, fmt.Errorf("decode response failed: %w", err)
 	}
 
-	logs.Debug(
-		"[PropertyService] Property List API success | propertyCount=%d",
-		len(propertyListResponse.Result.ItemIDs),
-	)
-	return &propertyListResponse, nil
+	/*logs.Debug(
+		"[PropertyDetailsService] Property Details API success | returned=%d",
+		len(propertyDetailsResponse.Properties),
+	)*/
+	return &propertyDetailsResponse, nil
 }
