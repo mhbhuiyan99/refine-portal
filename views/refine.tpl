@@ -1,10 +1,8 @@
 {{template "layout/header.tpl" .}}
 <link rel="stylesheet" href="/static/css/refine.css">
 
-
+    
 <div class="refine-page">
-
-    <nav id="navbar"></nav>
 
     <main class="container">
 

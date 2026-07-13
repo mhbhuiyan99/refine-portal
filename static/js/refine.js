@@ -10,6 +10,7 @@ async function init() {
   try {
     const location = await getLocation(search);
     console.log("Location:", location);
+    window.locationData = location;
 
     renderHeader(location);
     renderBreadcrumb(location);
@@ -28,7 +29,8 @@ async function init() {
     const propertyDetails = await getPropertyDetails(propertyIDs);
     console.log("Details:", propertyDetails);
 
-    renderTiles(propertyDetails);
+    const countryCode = location.GeoInfo.CountryCode;
+    renderTiles(propertyDetails, countryCode);
   } catch (error) {
     console.log(error);
   }

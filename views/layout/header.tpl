@@ -2,19 +2,36 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}}</title>
 
-    <link
-        rel="stylesheet"
-        href="/static/css/refine.css">
-
+    <link rel="stylesheet" href="/static/css/refine.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
+
+<header class="navbar">
+    <div class="navbar-container">
+
+        <nav class="navbar-left">
+            <a href="#">FIND A RENTAL</a>
+            <a href="#">DESTINATIONS</a>
+            <a href="#">ABOUT</a>
+        </nav>
+
+        <a href="/" class="navbar-logo">
+            <img src="/static/images/logo.png" alt="OwnerDirect">
+        </a>
+
+        <button class="navbar-menu" type="button">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+    </div>
+</header>

@@ -1,4 +1,4 @@
-function renderTiles(response) {
+function renderTiles(response, countryCode) {
 
     const container =
         document.getElementById("property-container");
@@ -10,26 +10,47 @@ function renderTiles(response) {
     }
 
     const html = response.Items
-        .map(renderTile)
+        .map(item => renderTile(item, countryCode))
         .join("");
 
     container.innerHTML = html;
 }
 
 
-function renderTile(item) {
+function renderTile(item, countryCode) {
 
-    console.log(item);
     const p = item.Property;
-    console.log(p);
+
+    const image =
+        p.FeatureImage
+            ? `/static/images/placeholder.jpg`
+            : "/static/images/placeholder.jpg";
+
+    const price =
+        formatCurrency(
+            convertPrice(
+                p.Price,
+                window.locationData.GeoInfo.CountryCode
+            ),
+            window.locationData.GeoInfo.CountryCode
+        );
+
+    const guests =
+        p.Counts.Occupancy > 0
+            ? `<span>${p.Counts.Occupancy} Guests</span>`
+            : "";
 
     return `
         <div class="property-card">
 
-            <img
-                class="property-image"
-                src="${p.FeatureImage}"
-                alt="${p.PropertyName}">
+            <div class="image-wrapper">
+
+                <img
+                    class="property-image"
+                    src="${image}"
+                    alt="${p.PropertyName}">
+
+            </div>
 
             <div class="property-body">
 
@@ -37,20 +58,52 @@ function renderTile(item) {
                     ${p.PropertyType}
                 </div>
 
-                <h3>
+                <h3 class="property-title">
                     ${p.PropertyName}
                 </h3>
 
-                <p>
-                    ${p.City}
-                </p>
+                <div class="property-rating">
 
-                <div class="rating">
                     ⭐ ${p.ReviewScore}
+
                 </div>
 
-                <div class="price">
-                    ৳${p.Price}/night
+                <div class="property-attribute">
+
+                    ${p.PropertyAttribute}
+
+                </div>
+
+                <div class="property-meta">
+
+                    <span>${p.Counts.Bedroom} Bedrooms</span>
+
+                    •
+
+                    <span>${p.Counts.Bathroom} Bathrooms</span>
+
+                    ${guests ? "•" : ""}
+
+                    ${guests}
+
+                </div>
+
+                <div class="property-footer">
+
+                    <div class="price">
+
+                         ${formatCurrency(p.Price, countryCode)}
+
+                        <span>/night</span>
+
+                    </div>
+
+                    <button class="deal-btn">
+
+                        View Deal
+
+                    </button>
+
                 </div>
 
             </div>
