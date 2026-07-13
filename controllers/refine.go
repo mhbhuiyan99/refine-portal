@@ -7,5 +7,12 @@ type RefineController struct {
 }
 
 func (c *RefineController) Get() {
+	search := c.GetString("search", "dhaka, Bangladesh")
+	order := c.GetString("order", "1")
+
+	c.Data["Search"] = search
+	c.Data["Order"] = order
+	c.Data["Title"] = "Refine"
+
 	c.TplName = "refine.tpl"
 }

@@ -1,0 +1,514 @@
+/* ------------------------------
+   Global
+------------------------------ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f7f8fa;
+    color: #222;
+}
+
+/* ------------------------------
+   Container
+------------------------------ */
+
+.container {
+    width: 95%;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+/* ------------------------------
+   Breadcrumb
+------------------------------ */
+
+#breadcrumb {
+    margin-top: 30px;
+    margin-bottom: 18px;
+
+    font-size: 18px;
+    color: #5d6470;
+}
+
+/* ------------------------------
+   Page Title
+------------------------------ */
+
+.page-header h1 {
+
+    font-size: 60px;
+
+    font-weight: 700;
+
+    color: #182b49;
+
+    margin-bottom: 40px;
+}
+
+/* ===================================
+   NAVBAR
+=================================== */
+
+.od-navbar{
+
+    height:72px;
+
+    background:#1f2937;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 28px;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+}
+
+/* ---------------- Left ---------------- */
+
+.nav-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:36px;
+
+    width:33%;
+}
+
+.nav-left a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    font-size:15px;
+
+    letter-spacing:.4px;
+}
+
+.nav-left a:hover{
+
+    opacity:.8;
+}
+
+/* ---------------- Center ---------------- */
+
+.nav-center{
+
+    width:34%;
+
+    display:flex;
+
+    justify-content:center;
+}
+
+.logo img{
+
+    height:48px;
+}
+
+/* ---------------- Right ---------------- */
+
+.nav-right{
+
+    width:33%;
+
+    display:flex;
+
+    justify-content:flex-end;
+}
+
+.menu-btn{
+
+    width:52px;
+
+    height:40px;
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-evenly;
+
+    align-items:flex-end;
+}
+
+.menu-btn span{
+
+    display:block;
+
+    width:40px;
+
+    height:3px;
+
+    background:white;
+
+    border-radius:3px;
+}
+
+.menu-btn span:nth-child(2){
+
+    width:32px;
+}
+
+.menu-btn span:nth-child(3){
+
+    width:24px;
+}
+
+/* ------------ Responsive ------------ */
+
+@media(max-width:900px){
+
+    .nav-left{
+
+        display:none;
+    }
+
+    .nav-center{
+
+        width:auto;
+    }
+
+    .nav-right{
+
+        width:auto;
+    }
+
+    .od-navbar{
+
+        justify-content:space-between;
+    }
+}
+
+/* ------------------------------
+   Toolbar
+------------------------------ */
+
+.toolbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 35px;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+}
+
+/* ------------------------------
+   Filters
+------------------------------ */
+
+#filters {
+
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+
+    background: white;
+
+    border: 1px solid #d6dce5;
+
+    border-radius: 30px;
+
+    padding: 12px 26px;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.filter-btn:hover {
+
+    border-color: #0a7cff;
+}
+
+/* ------------------------------
+   Sort
+------------------------------ */
+
+#sort-container {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+#sort-container label {
+
+    font-weight: bold;
+
+    font-size: 18px;
+}
+
+#sort-order {
+
+    width: 220px;
+
+    padding: 12px 20px;
+
+    border-radius: 30px;
+
+    border: 2px solid #1d2d44;
+
+    background: white;
+
+    font-size: 17px;
+}
+
+/* ------------------------------
+   Property Grid
+------------------------------ */
+
+.property-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 24px;
+
+    margin-bottom: 50px;
+}
+
+/* ------------------------------
+   Property Card
+------------------------------ */
+
+.property-card {
+
+    background: white;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.08);
+
+    transition: .25s;
+}
+
+.property-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 26px rgba(0,0,0,.15);
+}
+
+/* ------------------------------
+   Image
+------------------------------ */
+
+.property-image {
+
+    width: 100%;
+
+    height: 250px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+/* ------------------------------
+   Body
+------------------------------ */
+
+.property-body {
+
+    padding: 22px;
+}
+
+.property-type {
+
+    color: #6d7684;
+
+    font-size: 15px;
+
+    margin-bottom: 10px;
+}
+
+.property-name {
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    line-height: 1.3;
+
+    margin-bottom: 14px;
+}
+
+.property-location {
+
+    color: #2f7ecb;
+
+    margin-bottom: 16px;
+}
+
+.property-rating {
+
+    margin-bottom: 16px;
+
+    font-weight: bold;
+}
+
+.property-info {
+
+    margin-bottom: 18px;
+
+    color: #666;
+
+    line-height: 1.8;
+}
+
+/* ------------------------------
+   Amenities
+------------------------------ */
+
+.amenities {
+
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 22px;
+}
+
+.amenity {
+
+    background: #f3f6fb;
+
+    border: 1px solid #d8dfe8;
+
+    border-radius: 20px;
+
+    padding: 6px 14px;
+
+    font-size: 14px;
+}
+
+/* ------------------------------
+   Footer
+------------------------------ */
+
+.property-footer {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.price {
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+    color: #111;
+}
+
+.price small {
+
+    font-size: 18px;
+
+    color: gray;
+}
+
+.view-btn {
+
+    background: #22b9c8;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 14px 26px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    font-size: 16px;
+}
+
+.view-btn:hover {
+
+    background: #1596a3;
+}
+
+/* ------------------------------
+   Responsive
+------------------------------ */
+
+@media (max-width: 992px) {
+
+    .page-header h1 {
+        font-size: 40px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #sort-container {
+        width: 100%;
+    }
+
+    #sort-order {
+        width: 100%;
+    }
+
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

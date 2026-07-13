@@ -10,6 +10,7 @@ async function getLocation(keyword) {
     return await response.json();
 }
 
+
 const DEFAULT_PROPERTY_OPTIONS = {
     page: 1,
     limit: 192,

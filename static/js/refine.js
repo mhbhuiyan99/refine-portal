@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 
-const search = params.get("search") || "";
-const order = params.get("order") || "1";
+const search = window.refineConfig.search;
+const order = window.refineConfig.order;
 
 console.log("Search: ", search);
 console.log("Order: ", order);
@@ -10,6 +10,9 @@ async function init() {
   try {
     const location = await getLocation(search);
     console.log("Location:", location);
+
+    renderHeader(location);
+    renderBreadcrumb(location);
 
     const properties = await getProperties(
       location.GeoInfo.LocationSlug,

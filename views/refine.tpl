@@ -1,25 +1,41 @@
-<!DOCTYPE html>
-<html>
+{{template "layout/header.tpl" .}}
+<link rel="stylesheet" href="/static/css/refine.css">
 
-<head>
-    <title>Refine Page</title>
-</head>
 
-<body>
+<div class="refine-page">
 
-    <h1>Sample Refine Page</h1>
+    <nav id="navbar"></nav>
 
-    <div id="loading">
-        <div id="property-list">
-            Loading...
+    <main class="container">
+
+        <div id="breadcrumb"></div>
+
+        <div class="page-header">
+            <h1 id="page-title">Loading...</h1>
         </div>
-    </div>
 
-    {{/* maintain the order */}}
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/renderer.js"></script>
-    <script src="/static/js/refine.js"></script>    {{/*refine.js will call both*/}}
+        <div class="toolbar">
 
-</body>
+            <div id="filters"></div>
 
-</html>
+            <div id="sort-container"></div>
+
+        </div>
+
+        <section
+            id="property-container"
+            class="property-grid">
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+    window.refineConfig = {
+        search: "{{.Search}}",
+        order: "{{.Order}}"
+    };
+</script>
+
+{{template "layout/footer.tpl" .}}
