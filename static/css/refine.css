@@ -150,26 +150,26 @@ body{
     flex-wrap: wrap;
 }
 
-.filter-btn {
+.filter-btn{
 
-    background: white;
+    padding:10px 18px;
 
-    border: 1px solid #d6dce5;
+    border:1px solid #d9d9d9;
 
-    border-radius: 30px;
+    border-radius:24px;
 
-    padding: 12px 26px;
+    background:#fff;
 
-    font-size: 16px;
+    cursor:pointer;
 
-    cursor: pointer;
+    font-size:14px;
 
-    transition: .2s;
+    transition:.2s;
 }
 
-.filter-btn:hover {
+.filter-btn:hover{
 
-    border-color: #0a7cff;
+    border-color:#1aa7b7;
 }
 
 /* ------------------------------
