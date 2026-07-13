@@ -7,6 +7,8 @@ console.log("Search: ", search);
 console.log("Order: ", order);
 
 async function init() {
+  renderSort();
+  
   try {
     const location = await getLocation(search);
     console.log("Location:", location);
