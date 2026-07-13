@@ -4,7 +4,11 @@
 
 <script src="/static/js/components/breadcrumb.js"></script>
 <script src="/static/js/components/header.js"></script>
-<script src="/static/js/components/filter.js"></script>
+
+<script src="/static/js/filter.js"></script>
+<script src="/static/js/filter_modal.js"></script>
+<script src="/static/js/date_modal.js"></script>
+
 <script src="/static/js/components/sort.js"></script>
 <script src="/static/js/components/property_card.js"></script>
 
