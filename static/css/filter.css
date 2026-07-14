@@ -7,7 +7,7 @@
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: rgba(16, 48, 115, 0.7);
+    background: rgba(93, 95, 107, 0.45);
     display: none;
     align-items: center;
     justify-content: center;
@@ -155,7 +155,7 @@
     position: fixed;
     inset: 0;
     z-index: 1100;
-    background: rgba(16, 48, 115, 0.7);
+    background: rgba(93, 95, 107, 0.45);
     align-items: center;
     justify-content: center;
 }
@@ -230,16 +230,6 @@
 }
 
 
-.price-slider {
-    position: relative;
-    width: 65%;
-    max-width: 360px;
-    margin: 20px auto 25px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-}
-
 .price-slider-track {
     position: absolute;
     bottom: 0;
@@ -262,46 +252,63 @@
 
 .price-slider input[type="range"] {
     position: absolute;
+
     left: 0;
     top: 0;
-    width: 100% !important;      /* Forces input track to take up full parent container width */
-    max-width: 100% !important;  /* Overrides any global input limits */
-    height: 24px;                /* Matches parent container height so the slider is easy to drag */
+
+    width: 100%;
+    height: 28px;
+
     margin: 0;
-    padding: 0 !important;
-    -webkit-appearance: none;
-    appearance: none;
+
     background: transparent;
+
     pointer-events: none;
-    z-index: 2;
-}
 
-.price-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
     -webkit-appearance: none;
-    pointer-events: all;
-    width: 11.11px;
-    height: 11.11px;
-    background-color: var(--secondary-color);
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    z-index: 3;
-    outline: 1px solid var(--secondary-color);
-    outline-offset: 4.4px;
 }
 
-.price-slider input[type="range"]::-moz-range-thumb {
-    -moz-appearance: none;
-    pointer-events: all;
-    width: 11.11px;
-    height: 11.11px;
-    background-color: var(--secondary-color);
+.price-slider input::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 18px;
+    height: 18px;
+
+    border: 3px solid #23b4b8;
     border-radius: 50%;
+
+    background: #fff;
+
     cursor: pointer;
-    position: relative;
-    z-index: 3;
-    outline: 1px solid var(--secondary-color);
-    outline-offset: 4.4px;
+    pointer-events: auto;
+}
+
+.price-slider input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+
+    border: 3px solid #23b4b8;
+    border-radius: 50%;
+
+    background: #fff;
+
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.price-slider input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+
+    border: 3px solid #23b4b8;
+    border-radius: 50%;
+
+    background: #fff;
+
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .price-slider input[type="range"]::-webkit-slider-runnable-track,
@@ -378,6 +385,32 @@
     color: #22c55e; /* Eco green */
 }
 
+
+.flatpickr-calendar {
+    width: 660px !important;
+    max-width: 660px !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+
+.flatpickr-rContainer{
+    width:auto !important;
+}
+
+.flatpickr-days{
+    width:auto !important;
+}
+.flatpickr-input{
+    display:none !important;
+}
+.date-dialog{
+    overflow:hidden;
+}
+
+.flatpickr-calendar.inline{
+    width:100% !important;
+}
 /* --- Amenities: 3-column grid + custom checkboxes --- */
 .amenities-grid {
     display: grid;

@@ -6,13 +6,13 @@
 <script src="/static/js/components/header.js"></script>
 
 <script src="/static/js/filter.js"></script>
+<script src="/static/js/filter_state.js"></script>
+
 <script src="/static/js/filter_modal.js"></script>
 <script src="/static/js/date_modal.js"></script>
 <script src="/static/js/filter_apply.js"></script>
 
 <script src="/static/js/components/sort.js"></script>
-<script src="/static/js/components/property_card.js"></script>
-
 <script src="/static/js/utils/currency.js"></script>
 
 <script src="/static/js/renderer.js"></script>

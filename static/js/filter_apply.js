@@ -16,32 +16,25 @@ function applyFilters() {
 
 function filterByPrice(properties) {
 
-    const min =
-        Number(document.getElementById("min-price-value").value);
-
-    const max =
-        Number(document.getElementById("max-price-value").value);
-
     return properties.filter(item => {
 
-        const price =
-            convertPrice(
-                item.Property.Price,
-                window.currencyCode
-            );
+        const price = convertPrice(
+            item.Property.Price,
+            window.currencyCode
+        );
 
-        return price >= min && price <= max;
+        return (
+            price >= window.filterState.minPrice &&
+            price <= window.filterState.maxPrice
+        );
+
     });
+
 }
 
 function filterByGuests(properties) {
 
-    const guests =
-        Number(
-            document.getElementById("guest-count").textContent
-        );
-
-    if (guests === 0) {
+    if (window.filterState.guests === 0) {
         return properties;
     }
 
@@ -49,10 +42,12 @@ function filterByGuests(properties) {
 
         return (
             item.Property.Counts &&
-            item.Property.Counts.Occupancy >= guests
+            item.Property.Counts.Occupancy >=
+            window.filterState.guests
         );
 
     });
+
 }
 
 function filterByPet(properties) {
@@ -68,4 +63,52 @@ function filterByEco(properties) {
 function filterByAmenities(properties) {
 
     return properties;
+}
+
+function updateFilterButtons() {
+
+    if (window.filterState.guests > 0) {
+
+        document.getElementById("guest-filter-btn")
+            .textContent =
+            `Guests (${window.filterState.guests})`;
+
+    }
+
+    if (
+        window.filterState.minPrice > 0 ||
+        window.filterState.maxPrice <
+        window.priceRange.max
+    ) {
+
+        document.getElementById("price-filter-btn")
+            .textContent =
+            `${formatCurrency(window.filterState.minPrice, window.currencyCode)}
+-
+${formatCurrency(window.filterState.maxPrice, window.currencyCode)}`;
+
+    }
+
+}
+
+function clearFilters() {
+
+    window.filterState = {
+        checkIn: "",
+        checkOut: "",
+        guests: 0,
+        minPrice: window.priceRange.min,
+        maxPrice: window.priceRange.max,
+        amenities: [],
+        petFriendly: false,
+        ecoFriendly: false
+    };
+
+    renderTiles(
+        window.allProperties,
+        window.currencyCode
+    );
+
+    closeFilterModal();
+
 }

@@ -33,19 +33,14 @@ function openDateModal() {
 
         };
 
-        datePicker = flatpickr("#date-range", {
-
-            inline: true,
+        datePicker = flatpickr("#date-picker", {
             mode: "range",
-            dateFormat: "Y-m-d",
-
+            inline: true,
             showMonths: 2,
             monthSelectorType: "static",
-
-            prevArrow: "‹",
-            nextArrow: "›"
+            dateFormat: "Y-m-d",
+            static: true
         });
-
     }
 
     modal.style.display = "flex";

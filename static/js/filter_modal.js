@@ -47,18 +47,26 @@ function bindModalEvents() {
     const plus = document.getElementById("guest-plus");
     const count = document.getElementById("guest-count");
 
-    let guest = 0;
+    count.textContent = window.filterState.guests;
 
     minus.onclick = () => {
-        if (guest > 0) {
-            guest--;
-            count.textContent = guest;
+
+        if (window.filterState.guests > 0) {
+
+            window.filterState.guests--;
+
+            count.textContent = window.filterState.guests;
+
         }
+
     };
 
     plus.onclick = () => {
-        guest++;
-        count.textContent = guest;
+
+        window.filterState.guests++;
+
+        count.textContent = window.filterState.guests;
+
     };
 
     document
@@ -84,18 +92,11 @@ function bindModalEvents() {
     maxSlider.min = MIN_PRICE;
     maxSlider.max = MAX_PRICE;
 
-    minSlider.value = Number(minInput.value);
-    maxSlider.value = Number(maxInput.value);
+    minSlider.value = window.filterState.minPrice;
+    maxSlider.value = window.filterState.maxPrice;
 
-    document.getElementById("filter-clear").onclick = () => {
-        guest = 0;
-        count.textContent = "0";
-        document.querySelectorAll("#filter-modal input[type=checkbox]").forEach(cb => cb.checked = false);
-
-        minSlider.value = MIN_PRICE;
-        maxSlider.value = MAX_PRICE;
-        updatePriceUI();
-    };
+    minInput.value = window.filterState.minPrice;
+    maxInput.value = window.filterState.maxPrice;
 
     document
         .getElementById("filter-search")
@@ -105,6 +106,15 @@ function bindModalEvents() {
 
             closeFilterModal();
         });
+    
+    document
+        .getElementById("filter-clear")
+        .addEventListener("click", () => {
+
+            clearFilters();
+
+        });
+
 
     function updatePriceUI() {
         const min = Number(minSlider.value);
@@ -120,6 +130,12 @@ function bindModalEvents() {
 
         minInput.value = min;
         maxInput.value = max;
+
+        window.filterState.minPrice =
+            Number(minInput.value);
+
+        window.filterState.maxPrice =
+            Number(maxInput.value);
     }
 
     minSlider.oninput = () => {
@@ -209,7 +225,7 @@ function getFilterModalHTML() {
 <h3>Guests</h3>
 <div class="guest-box">
 <button id="guest-minus">−</button>
-<span id="guest-count">0</span>
+<span id="guest-count">${window.filterState?.guests ?? 0}</span>
 <button id="guest-plus">+</button>
 </div>
 </div>
