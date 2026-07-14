@@ -1,19 +1,36 @@
-function renderTiles(response, countryCode) {
+function renderTiles(data, countryCode) {
 
+    console.log("renderTiles data:", data);
+console.log("Is Array:", Array.isArray(data));
     const container =
         document.getElementById("property-container");
 
-    if (!response.Success || !response.Items) {
-        container.innerHTML =
-            "<p>No properties found.</p>";
+    let items = [];
+
+    if (Array.isArray(data)) {
+
+        items = data;
+
+    } else if (data.Success && data.Items) {
+
+        items = data.Items;
+
+    } else {
+
+        container.innerHTML = "<p>No properties found.</p>";
         return;
     }
 
-    const html = response.Items
-        .map(item => renderTile(item, countryCode))
-        .join("");
+    if (items.length === 0) {
 
-    container.innerHTML = html;
+        container.innerHTML = "<p>No properties found.</p>";
+        return;
+    }
+
+    container.innerHTML =
+        items
+            .map(item => renderTile(item, countryCode))
+            .join("");
 }
 
 

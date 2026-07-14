@@ -52,8 +52,9 @@ async function init() {
 
     window.priceRange = computePriceRange(propertyDetails, countryCode);
     window.currencyCode = countryCode;
+    window.allProperties = propertyDetails.Items;
 
-    renderTiles(propertyDetails, countryCode);
+    renderTiles(window.allProperties, countryCode);
   } catch (error) {
     console.log(error);
   }

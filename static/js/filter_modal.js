@@ -99,7 +99,12 @@ function bindModalEvents() {
 
     document
         .getElementById("filter-search")
-        .onclick = closeFilterModal;
+        .addEventListener("click", () => {
+
+            applyFilters();
+
+            closeFilterModal();
+        });
 
     function updatePriceUI() {
         const min = Number(minSlider.value);
