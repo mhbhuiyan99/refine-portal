@@ -33,7 +33,7 @@ function openDateModal() {
 
         };
 
-        datePicker = flatpickr("#date-picker", {
+        datePicker = flatpickr("#date-range", {
             mode: "range",
             inline: true,
             showMonths: 2,
@@ -57,17 +57,10 @@ function closeDateModal() {
 function applyDates() {
     const dates = datePicker.selectedDates;
 
-    if (dates.length === 2) {
-        const start = datePicker.formatDate(dates[0], "M d");
-        const end = datePicker.formatDate(dates[1], "M d");
-        const label = `${start} - ${end}`;
+    window.filterState.startDate = dates[0];
+    window.filterState.endDate = dates[1];
 
-        const dateFilterBtn = document.getElementById("date-filter-btn");
-        if (dateFilterBtn) dateFilterBtn.textContent = label;
-
-        const modalDateBtn = document.getElementById("modal-date-btn");
-        if (modalDateBtn) modalDateBtn.textContent = `📅 ${label}`;
-    }
+    updateFilterButtons();
 
     closeDateModal();
 }

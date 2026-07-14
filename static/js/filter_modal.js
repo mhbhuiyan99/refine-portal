@@ -184,6 +184,20 @@ function bindModalEvents() {
         updatePriceUI();
     });
 
+    document.querySelectorAll(".filter-top input")[0].checked =
+    window.filterState.petFriendly;
+
+    document.querySelectorAll(".filter-top input")[1].checked =
+    window.filterState.ecoFriendly;
+
+    document.querySelectorAll(".filter-top input")[0].onchange = e => {
+    window.filterState.petFriendly = e.target.checked;
+    };
+
+    document.querySelectorAll(".filter-top input")[1].onchange = e => {
+        window.filterState.ecoFriendly = e.target.checked;
+    };
+
     updatePriceUI(); // draw initial fill on modal open
 }
 

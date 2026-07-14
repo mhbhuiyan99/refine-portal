@@ -1,7 +1,5 @@
 function renderTiles(data, countryCode) {
 
-    console.log("renderTiles data:", data);
-console.log("Is Array:", Array.isArray(data));
     const container =
         document.getElementById("property-container");
 

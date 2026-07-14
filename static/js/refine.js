@@ -54,7 +54,23 @@ async function init() {
     window.currencyCode = countryCode;
     window.allProperties = propertyDetails.Items;
 
+    window.filterState = {
+      startDate: null,
+      endDate: null,
+
+      guests: 0,
+
+      minPrice: window.priceRange.min,
+      maxPrice: window.priceRange.max,
+
+      amenities: [],
+
+      petFriendly: false,
+      ecoFriendly: false
+  };
+
     renderTiles(window.allProperties, countryCode);
+    updateFilterButtons();
   } catch (error) {
     console.log(error);
   }

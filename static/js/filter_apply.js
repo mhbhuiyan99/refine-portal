@@ -12,6 +12,8 @@ function applyFilters() {
         properties,
         window.currencyCode
     );
+
+    updateFilterButtons();
 }
 
 function filterByPrice(properties) {
@@ -65,49 +67,32 @@ function filterByAmenities(properties) {
     return properties;
 }
 
-function updateFilterButtons() {
-
-    if (window.filterState.guests > 0) {
-
-        document.getElementById("guest-filter-btn")
-            .textContent =
-            `Guests (${window.filterState.guests})`;
-
-    }
-
-    if (
-        window.filterState.minPrice > 0 ||
-        window.filterState.maxPrice <
-        window.priceRange.max
-    ) {
-
-        document.getElementById("price-filter-btn")
-            .textContent =
-            `${formatCurrency(window.filterState.minPrice, window.currencyCode)}
--
-${formatCurrency(window.filterState.maxPrice, window.currencyCode)}`;
-
-    }
-
-}
 
 function clearFilters() {
 
     window.filterState = {
-        checkIn: "",
-        checkOut: "",
+
+        startDate: null,
+        endDate: null,
+
         guests: 0,
+
         minPrice: window.priceRange.min,
         maxPrice: window.priceRange.max,
+
         amenities: [],
+
         petFriendly: false,
         ecoFriendly: false
+
     };
 
     renderTiles(
         window.allProperties,
         window.currencyCode
     );
+
+    updateFilterButtons();
 
     closeFilterModal();
 
