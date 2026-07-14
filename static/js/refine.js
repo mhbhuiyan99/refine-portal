@@ -32,7 +32,27 @@ async function init() {
     const propertyDetails = await getPropertyDetails(propertyIDs);
     console.log("Details:", propertyDetails);
 
+    function computePriceRange(propertyDetails, countryCode) {
+      const prices = propertyDetails.Items
+          .map(item => item.Property.Price)
+          .filter(p => typeof p === "number" && p > 0)
+          .map(p => convertPrice(p, countryCode));
+
+      if (prices.length === 0) {
+          return { min: 0, max: 50000 };
+      }
+
+      return {
+          min: Math.floor(Math.min(...prices)),
+          max: Math.ceil(Math.max(...prices)),
+      };
+  }
+
     const countryCode = location.GeoInfo.CountryCode;
+
+    window.priceRange = computePriceRange(propertyDetails, countryCode);
+    window.currencyCode = countryCode;
+
     renderTiles(propertyDetails, countryCode);
   } catch (error) {
     console.log(error);

@@ -60,26 +60,18 @@ function closeDateModal() {
 }
 
 function applyDates() {
-
     const dates = datePicker.selectedDates;
 
     if (dates.length === 2) {
+        const start = datePicker.formatDate(dates[0], "M d");
+        const end = datePicker.formatDate(dates[1], "M d");
+        const label = `${start} - ${end}`;
 
-        const start = datePicker.formatDate(
-            dates[0],
-            "M d"
-        );
+        const dateFilterBtn = document.getElementById("date-filter-btn");
+        if (dateFilterBtn) dateFilterBtn.textContent = label;
 
-        const end = datePicker.formatDate(
-            dates[1],
-            "M d"
-        );
-
-        document
-            .getElementById("date-filter-btn")
-            .textContent =
-            `${start} - ${end}`;
-
+        const modalDateBtn = document.getElementById("modal-date-btn");
+        if (modalDateBtn) modalDateBtn.textContent = `📅 ${label}`;
     }
 
     closeDateModal();

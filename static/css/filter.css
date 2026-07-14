@@ -203,6 +203,19 @@ input[type=range]{
     cursor:pointer;
 }
 
+.amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 16px;
+}
+
+.amenities-grid label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
 /* ===== Footer ===== */
 
 .filter-footer{

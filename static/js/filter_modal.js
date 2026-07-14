@@ -77,168 +77,198 @@ function bindModalEvents() {
     document
         .getElementById("modal-date-btn")
         .onclick = () => {
-            alert("Calendar popup will be added next.");
+            openDateModal();
         };
 
-    document
-        .getElementById("filter-clear")
-        .onclick = () => {
+    document.getElementById("filter-clear").onclick = () => {
+        guest = 0;
+        count.textContent = "0";
+        document.querySelectorAll("#filter-modal input[type=checkbox]").forEach(cb => cb.checked = false);
 
-            guest = 0;
-            count.textContent = "0";
-
-            document
-                .querySelectorAll("#filter-modal input[type=checkbox]")
-                .forEach(cb => cb.checked = false);
-        };
+        minSlider.value = MIN_PRICE;
+        maxSlider.value = MAX_PRICE;
+        updatePriceUI();
+    };
 
     document
         .getElementById("filter-search")
         .onclick = closeFilterModal;
 
+    const MIN_PRICE = 0;
+    const MAX_PRICE = 50000;
+    const MIN_GAP = 500; // smallest allowed distance between the two handles
+
     const minSlider = document.getElementById("min-price");
     const maxSlider = document.getElementById("max-price");
-
     const minInput = document.getElementById("min-price-value");
     const maxInput = document.getElementById("max-price-value");
+    const fill = document.getElementById("price-slider-fill");
 
-    minSlider.oninput = () => {
-        minInput.value = minSlider.value;
-    };
+    function updatePriceUI() {
+        const min = Number(minSlider.value);
+        const max = Number(maxSlider.value);
 
-    maxSlider.oninput = () => {
-        maxInput.value = maxSlider.value;
-    };
+        const minPercent = ((min - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
+        const maxPercent = ((max - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
+
+        fill.style.left = `${minPercent}%`;
+        fill.style.right = `${100 - maxPercent}%`;
+
+        minInput.value = min;
+        maxInput.value = max;
+    }
+
+        minSlider.oninput = () => {
+            if (Number(minSlider.value) > Number(maxSlider.value) - MIN_GAP) {
+                minSlider.value = Number(maxSlider.value) - MIN_GAP;
+            }
+            updatePriceUI();
+        };
+
+        maxSlider.oninput = () => {
+            if (Number(maxSlider.value) < Number(minSlider.value) + MIN_GAP) {
+                maxSlider.value = Number(minSlider.value) + MIN_GAP;
+            }
+            updatePriceUI();
+        };
+
+        minInput.oninput = () => {
+            let value = Math.min(Number(minInput.value), Number(maxSlider.value) - MIN_GAP);
+            value = Math.max(value, MIN_PRICE);
+            minSlider.value = value;
+            updatePriceUI();
+        };
+
+        maxInput.oninput = () => {
+            let value = Math.max(Number(maxInput.value), Number(minSlider.value) + MIN_GAP);
+            value = Math.min(value, MAX_PRICE);
+            maxSlider.value = value;
+            updatePriceUI();
+        };
+
+        updatePriceUI(); // draw initial fill on modal open
 }
 
 function getFilterModalHTML() {
 
     return `
-<div id="filter-modal" class="filter-modal">
+    <div id="filter-modal" class="filter-modal">
 
-<div class="filter-dialog">
+        <div class="filter-dialog">
 
-<div class="filter-header">
-<h2>Filters</h2>
-<button id="filter-close">✕</button>
-</div>
+            <div class="filter-header">
+            <h2>Filters</h2>
+            <button id="filter-close">✕</button>
+            </div>
 
-<div class="filter-body">
+            <div class="filter-body">
 
-<div class="filter-top">
+            <div class="filter-top">
 
-<label>
-<input type="checkbox">
-Pet-friendly only
-</label>
+            <label>
+            <input type="checkbox">
+            Pet-friendly only
+            </label>
 
-<label>
-<input type="checkbox">
-Eco-friendly only
-</label>
+            <label>
+            <input type="checkbox">
+            Eco-friendly only
+            </label>
 
-</div>
+        </div>
 
-<div
-class="filter-section"
-id="date-section">
+        <div
+            class="filter-section"
+            id="date-section">
 
-<h3>Select a date</h3>
+            <h3>Select a date</h3>
 
-<button id="modal-date-btn">
-📅 Select Date
-</button>
+            <button id="modal-date-btn">
+            📅 Select Date
+            </button>
 
-</div>
+        </div>
 
-<div
-class="filter-section"
-id="guest-section">
+        <div
+            class="filter-section"
+            id="guest-section">
 
-<h3>Guests</h3>
+            <h3>Guests</h3>
 
-<div class="guest-box">
+            <div class="guest-box">
 
-<button id="guest-minus">−</button>
+            <button id="guest-minus">−</button>
 
-<span id="guest-count">0</span>
+            <span id="guest-count">0</span>
 
-<button id="guest-plus">+</button>
+            <button id="guest-plus">+</button>
 
-</div>
+        </div>
 
-</div>
+        </div>
 
-<div
-    id="price-section"
-    class="filter-section">
+        <div
+            id="price-section"
+            class="filter-section">
 
-    <h3>Price range</h3>
+            <h3>Price range</h3>
 
-    <div class="price-slider">
+            <div class="price-slider">
+                <div class="price-slider-track"></div>
+                <div class="price-slider-fill" id="price-slider-fill"></div>
+                <input id="min-price" type="range" min="0" max="50000" value="0">
+                <input id="max-price" type="range" min="0" max="50000" value="50000">
+            </div>
 
-        <input
-            id="min-price"
-            type="range"
-            min="0"
-            max="50000"
-            value="0">
+            <div class="price-inputs">
 
-        <input
-            id="max-price"
-            type="range"
-            min="0"
-            max="50000"
-            value="50000">
+                <input
+                    id="min-price-value"
+                    type="number"
+                    value="0">
+
+                <span>—</span>
+
+                <input
+                    id="max-price-value"
+                    type="number"
+                    value="50000">
+
+            </div>
+
+        </div>
+
+        <div class="filter-section">
+        <h3>Amenities</h3>
+            <div class="amenities-grid">
+                <label><input type="checkbox"> Air Conditioner</label>
+                <label><input type="checkbox"> Balcony/terrace</label>
+                <label><input type="checkbox"> Bedding/linens</label>
+                <label><input type="checkbox"> Breakfast</label>
+                <label><input type="checkbox"> Child Friendly</label>
+                <label><input type="checkbox"> Hot Tub</label>
+                <label><input type="checkbox"> Internet/Wifi</label>
+                <label><input type="checkbox"> Kitchen</label>
+                <label><input type="checkbox"> Laundry</label>
+            </div>
+        </div>
+
+        </div>
+
+        <div class="filter-footer">
+
+        <button id="filter-clear">
+        Clear
+        </button>
+
+        <button id="filter-search">
+        Search
+        </button>
+
+        </div>
+
+        </div>
 
     </div>
-
-    <div class="price-inputs">
-
-        <input
-            id="min-price-value"
-            type="number"
-            value="0">
-
-        <span>—</span>
-
-        <input
-            id="max-price-value"
-            type="number"
-            value="50000">
-
-    </div>
-
-</div>
-
-<div class="filter-section">
-
-<h3>Amenities</h3>
-
-<label><input type="checkbox"> Air Conditioner</label>
-<label><input type="checkbox"> Balcony</label>
-<label><input type="checkbox"> Kitchen</label>
-<label><input type="checkbox"> Parking</label>
-<label><input type="checkbox"> WiFi</label>
-
-</div>
-
-</div>
-
-<div class="filter-footer">
-
-<button id="filter-clear">
-Clear
-</button>
-
-<button id="filter-search">
-Search
-</button>
-
-</div>
-
-</div>
-
-</div>
-`;
+    `;
 }
