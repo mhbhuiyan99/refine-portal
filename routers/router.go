@@ -11,4 +11,6 @@ func init() {
 	web.Router("/api/location", &controllers.LocationAPIController{})
 	web.Router("/api/properties", &controllers.PropertyAPIController{}, "get:GetList")
 	web.Router("/api/property-details", &controllers.PropertyAPIController{}, "get:GetDetails")
+
+	web.Router("/all/:country/:state", &controllers.CategoryController{})
 }
