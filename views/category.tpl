@@ -2,9 +2,9 @@
 
 <div class="container">
 
-    <h1>{{.Category.GeoInfo.Name}}</h1>
-
-    <hr>
+    <section id="hero">
+        <h1>{{.Category.GeoInfo.Name}}</h1>
+    </section>
 
     <h2>Breadcrumbs</h2>
 
