@@ -56,5 +56,9 @@ func (c *CategoryController) Get() {
 
 	c.Data["Title"] = categories.GeoInfo.Name
 	c.Data["Category"] = categories
+
+	imageBaseURL, _ := web.AppConfig.String("image_base_url")
+	c.Data["ImageBaseURL"] = imageBaseURL
+	
 	c.TplName = "category.tpl"
 }

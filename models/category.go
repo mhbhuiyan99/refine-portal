@@ -36,6 +36,7 @@ type GeoInfo struct {
     Country     string       `json:"Country"`
     LocationID  string       `json:"LocationID"`
     Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
+	PropertyCount int          `json:"PropertyCount"`
 }
 
 type Partner struct {

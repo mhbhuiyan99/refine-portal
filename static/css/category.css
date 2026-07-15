@@ -1,0 +1,99 @@
+#category-hero{
+    margin:32px 0 20px;
+}
+
+#category-hero h1{
+    margin:0;
+    font-size:36px;
+    font-weight:700;
+    color:#222;
+}
+
+#category-hero .property-count{
+    margin-top:8px;
+    font-size:16px;
+    color:#666;
+}
+
+#category-sections{
+    margin-top:40px;
+}
+
+.category-section{
+    margin-bottom:56px;
+}
+
+.section-header{
+    margin-bottom:20px;
+}
+
+.section-header h2{
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+}
+
+.section-header p{
+    margin-top:6px;
+    color:#666;
+    font-size:16px;
+}
+
+.property-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:24px;
+}
+
+.property-card{
+    border:1px solid #e5e5e5;
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+}
+
+.property-image img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    display:block;
+}
+
+.property-content{
+    padding:18px;
+}
+
+.property-type{
+    color:#777;
+    font-size:14px;
+}
+
+.property-title{
+    margin:10px 0;
+    font-size:20px;
+    font-weight:600;
+    line-height:1.4;
+}
+
+.property-price{
+    margin:16px 0;
+    font-size:26px;
+    font-weight:700;
+}
+
+.property-price span{
+    font-size:15px;
+    color:#666;
+}
+
+.deal-btn{
+    display:block;
+    width:100%;
+    padding:12px;
+    text-align:center;
+    background:#18b8c7;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:600;
+}

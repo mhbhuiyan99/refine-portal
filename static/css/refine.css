@@ -41,6 +41,19 @@ body {
     color: #5d6470;
 }
 
+#breadcrumb a {
+    color: #5d6470;
+    text-decoration: none;
+}
+
+#breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+#breadcrumb span {
+    margin: 0 8px;
+}
+
 /* ------------------------------
    Page Title
 ------------------------------ */
@@ -321,6 +334,30 @@ body{
     grid-template-columns:repeat(4,1fr);
     gap:20px;
     align-items:stretch;
+}
+
+.property-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+@media (max-width:1200px){
+    .property-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+}
+
+@media (max-width:900px){
+    .property-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media (max-width:600px){
+    .property-grid{
+        grid-template-columns:1fr;
+    }
 }
 
 /* ------------------------------

@@ -4,7 +4,7 @@ function renderPropertyCard(item, countryCode) {
 
     const image =
         p.FeatureImage
-            ? `/static/images/placeholder.jpg`
+            ? window.imageBaseURL + p.FeatureImage
             : "/static/images/placeholder.jpg";
 
     const price =

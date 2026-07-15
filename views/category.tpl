@@ -2,67 +2,69 @@
 
 <div class="container">
 
-    <section id="hero">
-        <h1>{{.Category.GeoInfo.Name}}</h1>
+    <section id="category-hero">
+
+        <h1>
+            {{.Category.GeoInfo.Name}} Vacation Rentals
+        </h1>
+
+        <p class="property-count">
+            {{.Category.GeoInfo.PropertyCount}} vacation rentals
+        </p>
+
     </section>
 
-    <h2>Breadcrumbs</h2>
+    <section class="breadcrumb">
 
-    <ul>
+        <a href="/">Home</a>
 
         {{range .Category.GeoInfo.Breadcrumbs}}
 
-            <li>{{.Name}}</li>
+            <span class="separator">›</span>
+
+            <a href="/all/{{.Slug}}">
+                {{.Name}}
+            </a>
 
         {{end}}
 
-    </ul>
+    </section>
 
     <hr>
 
-    <h2>Sections</h2>
+        <section id="category-sections">
 
-    <hr>
+        {{range .Category.Result.Sections}}
 
-    {{range .Category.Result.Sections}}
+        <section class="category-section">
 
-    <div class="category-section">
-        <h3>{{.Title}}</h3>
-        <p> {{.SubTitle}} </p>
-        <p>
-            Properties:
-            {{len .Items}}
-        </p>
+            <div class="section-header">
 
-        <ul>
-            {{range .Items}}
+                <h2>{{.Title}}</h2>
 
-            <li>
-                <strong>{{.Property.PropertyName}}</strong>
-                <br>
+                <p>{{.SubTitle}}</p>
 
-                Price: 
-                {{.Property.Price}}
-                <br>
+            </div>
 
-                Type:
-                {{.Property.PropertyType}}
-                <br>
+            <div class="property-grid">
 
-                URL:
-                <a href="{{.Partner.URL}}" target="_blank">
-                    View Partner
-                </a>
-                <br><br>
-            </li>
+                {{range .Items}}
 
-            {{end}}
-        </ul>
+                    {{template "components/property_card.tpl" .}}
 
-        <hr>
-    </div>
+                {{end}}
 
-    {{end}}
+            </div>
+
+        </section>
+
+        {{end}}
+
+    </section>
 </div>
+
+<script>
+    window.imageBaseURL = "{{.ImageBaseURL}}";
+</script>
 
 {{template "layouts/footer.tpl" .}}
