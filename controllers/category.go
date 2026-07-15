@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"refine-portal/services"
+	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -29,6 +30,28 @@ func (c *CategoryController) Get() {
 		)
 		c.CustomAbort(500, "Internal Server Error")
 		return
+	}
+
+	/* Updating {{.Location}}
+	In API: 
+	"Title": "Luxury Places to Stay in {{.Location}}",
+    "SubTitle": "Luxury Places to Stay in or Near {{.Location}}",
+	*/
+
+	location := categories.GeoInfo.ShortName
+
+	for i := range categories.Result.Sections {
+		categories.Result.Sections[i].Title = strings.ReplaceAll(
+			categories.Result.Sections[i].Title,
+			"{{.Location}}",
+			location,
+		)
+
+		categories.Result.Sections[i].SubTitle = strings.ReplaceAll(
+			categories.Result.Sections[i].SubTitle,
+			"{{.Location}}",
+			location,
+		)
 	}
 
 	c.Data["Title"] = categories.GeoInfo.Name

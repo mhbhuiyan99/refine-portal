@@ -1,4 +1,4 @@
-{{template "layout/header.tpl" .}}
+{{template "layouts/header.tpl" .}}
 <link rel="stylesheet" href="/static/css/refine.css">
 
     
@@ -36,4 +36,4 @@
     };
 </script>
 
-{{template "layout/footer.tpl" .}}
+{{template "layouts/footer.tpl" .}}

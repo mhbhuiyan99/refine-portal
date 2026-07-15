@@ -30,8 +30,12 @@ type Item struct {
 }
 
 type GeoInfo struct {
-	Name        string       `json:"Name"`
-	Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
+    Name        string       `json:"Name"`
+    ShortName   string       `json:"ShortName"`
+    State       string       `json:"State"`
+    Country     string       `json:"Country"`
+    LocationID  string       `json:"LocationID"`
+    Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
 }
 
 type Partner struct {

@@ -33,7 +33,6 @@ func GetCategory(slug string) (*models.CategoryResponse, error) {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	fmt.Println(string(body[:3000]))
 	if err != nil {
 		return nil, err
 	}

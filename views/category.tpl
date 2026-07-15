@@ -22,10 +22,47 @@
 
     <h2>Sections</h2>
 
-    <p>Total Sections:
-        {{len .Category.Result.Sections}}
-    </p>
+    <hr>
 
+    {{range .Category.Result.Sections}}
+
+    <div class="category-section">
+        <h3>{{.Title}}</h3>
+        <p> {{.SubTitle}} </p>
+        <p>
+            Properties:
+            {{len .Items}}
+        </p>
+
+        <ul>
+            {{range .Items}}
+
+            <li>
+                <strong>{{.Property.PropertyName}}</strong>
+                <br>
+
+                Price: 
+                {{.Property.Price}}
+                <br>
+
+                Type:
+                {{.Property.PropertyType}}
+                <br>
+
+                URL:
+                <a href="{{.Partner.URL}}" target="_blank">
+                    View Partner
+                </a>
+                <br><br>
+            </li>
+
+            {{end}}
+        </ul>
+
+        <hr>
+    </div>
+
+    {{end}}
 </div>
 
 {{template "layouts/footer.tpl" .}}
