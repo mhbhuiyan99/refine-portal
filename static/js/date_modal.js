@@ -1,6 +1,6 @@
 let datePicker = null;
 
-function openDateModal() {
+function openDateModal(mode = "refine", input = null) {
 
     let modal = document.getElementById("date-modal");
 
@@ -23,7 +23,9 @@ function openDateModal() {
 
         document
             .getElementById("date-continue")
-            .onclick = applyDates;
+            .onclick = function () {
+                applyDates(mode, input);
+            };
 
         modal.onclick = function (e) {
 
@@ -44,6 +46,7 @@ function openDateModal() {
     }
 
     modal.style.display = "flex";
+
 }
 
 function closeDateModal() {
@@ -54,13 +57,28 @@ function closeDateModal() {
 
 }
 
-function applyDates() {
+function applyDates(mode = "refine", input = null) {
+
     const dates = datePicker.selectedDates;
 
-    window.filterState.startDate = dates[0];
-    window.filterState.endDate = dates[1];
+    if (dates.length !== 2) {
+        return;
+    }
 
-    updateFilterButtons();
+    if (mode === "category") {
+
+        const start = flatpickr.formatDate(dates[0], "M j");
+        const end = flatpickr.formatDate(dates[1], "M j");
+
+        input.value = `${start} - ${end}`;
+
+    } else {
+
+        window.filterState.startDate = dates[0];
+        window.filterState.endDate = dates[1];
+
+        updateFilterButtons();
+    }
 
     closeDateModal();
 }

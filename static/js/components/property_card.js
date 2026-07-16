@@ -4,7 +4,7 @@ function renderPropertyCard(item, countryCode) {
 
     const image = p.FeatureImage || "/static/images/placeholder.jpg";
 
-    console.log("Image_src: ", image);
+    //console.log("Image_src: ", image);
     const price =
         formatCurrency(
             convertPrice(

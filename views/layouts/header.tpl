@@ -8,6 +8,8 @@
 
     <link rel="stylesheet" href="/static/css/refine.css">
     <link rel="stylesheet" href="/static/css/filter.css">
+    <script src="/static/js/guest_model.js"></script>
+    <link rel="stylesheet" href="/static/css/category.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

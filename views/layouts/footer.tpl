@@ -11,6 +11,7 @@
 <script src="/static/js/filter_modal.js"></script>
 <script src="/static/js/date_modal.js"></script>
 <script src="/static/js/filter_apply.js"></script>
+<script src="/static/js/category.js"></script>
 
 <script src="/static/js/components/sort.js"></script>
 <script src="/static/js/utils/currency.js"></script>
