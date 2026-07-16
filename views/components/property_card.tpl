@@ -4,9 +4,8 @@
 
         <img
             class="property-image"
-            src="/static/images/placeholder.jpg"
+            src="{{if .Property.FeatureImage}}{{.Property.FeatureImage}}{{else}}/static/images/placeholder.jpg{{end}}"
             alt="{{.Property.PropertyName}}">
-
     </div>
 
     <div class="property-body">

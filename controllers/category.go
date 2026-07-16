@@ -54,11 +54,20 @@ func (c *CategoryController) Get() {
 		)
 	}
 
+	imageBaseURL, _ := web.AppConfig.String("image_base_url")
+
+	for i := range categories.Result.Sections {
+		for j := range categories.Result.Sections[i].Items {
+			if categories.Result.Sections[i].Items[j].Property.FeatureImage != "" {
+				categories.Result.Sections[i].Items[j].Property.FeatureImage =
+					imageBaseURL + categories.Result.Sections[i].Items[j].Property.FeatureImage
+			}
+		}
+	}
+
+
 	c.Data["Title"] = categories.GeoInfo.Name
 	c.Data["Category"] = categories
 
-	imageBaseURL, _ := web.AppConfig.String("image_base_url")
-	c.Data["ImageBaseURL"] = imageBaseURL
-	
 	c.TplName = "category.tpl"
 }

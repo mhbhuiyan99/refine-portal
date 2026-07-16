@@ -63,8 +63,6 @@
     </section>
 </div>
 
-<script>
-    window.imageBaseURL = "{{.ImageBaseURL}}";
-</script>
+
 
 {{template "layouts/footer.tpl" .}}
