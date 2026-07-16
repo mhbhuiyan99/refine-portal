@@ -35,3 +35,70 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+const destinationInput =
+    document.getElementById("destination-input");
+
+let timer = null;
+
+destinationInput.addEventListener("input", function () {
+
+    clearTimeout(timer);
+
+    timer = setTimeout(async () => {
+
+        if (this.value.length < 2) {
+
+            hideSuggestions();
+
+            return;
+        }
+
+        const result =
+            await getLocation(this.value);
+
+        renderSuggestions(result.Items);
+
+    },300);
+
+});
+
+function renderSuggestions(items){
+
+    const box =
+        document.getElementById("destination-suggestions");
+
+    box.innerHTML="";
+
+    items.forEach(item=>{
+
+        const div=document.createElement("div");
+
+        div.className="destination-item";
+
+        div.innerText=item.Display;
+
+        div.onclick=()=>{
+
+            destinationInput.value=item.Display;
+
+            box.style.display="none";
+
+            window.selectedLocation=item;
+
+        };
+
+        box.appendChild(div);
+
+    });
+
+    box.style.display="block";
+}
+
+function hideSuggestions(){
+
+    document.getElementById(
+        "destination-suggestions"
+    ).style.display="none";
+}

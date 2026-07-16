@@ -391,3 +391,62 @@
 
     color:#fff;
 }
+
+
+
+
+
+
+
+#destination-field{
+
+    position:relative;
+}
+
+#destination-input{
+
+    border:none;
+
+    outline:none;
+
+    width:100%;
+
+    font-size:17px;
+
+    background:transparent;
+
+    margin-left:12px;
+}
+
+#destination-suggestions{
+
+    position:absolute;
+
+    width:420px;
+
+    background:#fff;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    margin-top:8px;
+
+    display:none;
+
+    z-index:9999;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.destination-item{
+
+    padding:16px 20px;
+
+    cursor:pointer;
+}
+
+.destination-item:hover{
+
+    background:#f7f7f7;
+}

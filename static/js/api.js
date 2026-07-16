@@ -1,6 +1,6 @@
 async function getLocation(keyword) {
     const response = await fetch(
-        `api/location?keyword=${encodeURIComponent(keyword)}`
+        `/api/location?keyword=${encodeURIComponent(keyword)}`
     );
 
     if (!response.ok) {

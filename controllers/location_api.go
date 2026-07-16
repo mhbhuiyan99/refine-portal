@@ -21,6 +21,7 @@ func (c *LocationAPIController) Get() {
 	}
 
 	location, err := services.GetLocation(keyword)
+	logs.Info("Location Response: %+v", location)
 	if err != nil {
 		logs.Error(
 			"[LocationAPIController] GetLocation failed | keyword=%s | err=%v",

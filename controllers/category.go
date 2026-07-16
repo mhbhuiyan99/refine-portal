@@ -65,8 +65,6 @@ func (c *CategoryController) Get() {
 		}
 	}
 
-	fmt.Printf("%+v\n", categories)
-
 	c.Data["Title"] = categories.GeoInfo.Name
 	c.Data["Category"] = categories
 

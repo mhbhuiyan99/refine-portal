@@ -22,11 +22,12 @@
 
                     <img src="/static/images/location.png" alt="">
 
-                    <span id="destination-text">
-                        {{.Category.GeoInfo.Name}}
-                    </span>
-
-                    <span class="divider"></span>
+                    <input
+                        id="destination-input"
+                        type="text"
+                        value=" {{.Category.GeoInfo.Name}}"
+                        autocomplete="off"
+                        placeholder="Destination">
 
                 </div>
 
