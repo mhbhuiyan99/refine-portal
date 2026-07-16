@@ -52,12 +52,8 @@
 
                 </div>
 
-                <button
-                    type="button"
-                    class="browse-btn">
-
+                <button id="browse-rentals-btn">
                     Browse Rentals
-
                 </button>
             </div>
 

@@ -136,7 +136,7 @@
     background:#ddd;
 }
 
-.browse-btn{
+#browse-rentals-btn{
 
     width:230px;
 
@@ -155,7 +155,7 @@
     cursor:pointer;
 }
 
-.browse-btn:hover{
+#browse-rentals-btn:hover{
 
     background:#18a9b3;
 }

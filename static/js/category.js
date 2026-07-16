@@ -2,22 +2,14 @@ console.log("category.js loaded");
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    console.log("DOM Ready");
-
     const dateInput = document.getElementById("category-date");
-
-    console.log(dateInput);
 
     if (!dateInput) {
         return;
     }
 
     dateInput.addEventListener("click", function () {
-
-        console.log("clicked");
-
         openDateModal("category", this);
-
     });
 
 });
@@ -101,4 +93,30 @@ function hideSuggestions(){
     document.getElementById(
         "destination-suggestions"
     ).style.display="none";
+}
+
+document
+    .getElementById("browse-rentals-btn")
+    .addEventListener("click", searchCategory);
+
+async function searchCategory() {
+
+    const keyword = document
+        .getElementById("destination-input")
+        .value
+        .trim();
+
+    if (!keyword) {
+        alert("Please enter a destination.");
+        return;
+    }
+
+    const result = await getLocation(keyword);
+
+    if (!result.Success) {
+        alert("Location not found.");
+        return;
+    }
+
+    console.log(result);
 }
