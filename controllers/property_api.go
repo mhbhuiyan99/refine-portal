@@ -100,6 +100,17 @@ func (c *PropertyAPIController) GetDetails() {
 		return
 	}
 
+	imageBaseURL, _ := web.AppConfig.String("image_base_url")
+
+	for i := range details.Items {
+		image := details.Items[i].Property.FeatureImage
+
+		if image != "" {
+			details.Items[i].Property.FeatureImage =
+				imageBaseURL + image
+		}
+	}
+
 	c.Data["json"] = details
 	c.ServeJSON()
 }
