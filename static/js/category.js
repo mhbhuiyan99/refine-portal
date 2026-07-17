@@ -1,5 +1,3 @@
-console.log("category.js loaded");
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const dateInput = document.getElementById("category-date");
@@ -118,5 +116,6 @@ async function searchCategory() {
         return;
     }
 
-    console.log(result);
+    window.location.href =
+        "/all/" + result.GeoInfo.LocationSlug;
 }

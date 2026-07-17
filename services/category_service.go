@@ -3,54 +3,92 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"net/url"
 	"refine-portal/models"
+	"strings"
 
-	beego "github.com/beego/beego/v2/server/web"
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/server/web"
 )
 
-func GetCategory(slug string) (*models.CategoryResponse, error) {
+const (
+	categoryAPIPath = "/api/v1/category/details"
+)
 
-	baseURL, _ := beego.AppConfig.String("base_url")
+func GetCategory(
+	slug string,
+	countryCode string,
+) (*models.CategoryResponse, error) {
 
-	url := fmt.Sprintf(
-		"%s/api/v1/category/details/%s?aggsAvgPrice=1&aggsAvgRating=1&aggsAvgRoomSize=1&aggsCategory=1&device=desktop&items=1&locations=US&sections=1",
-		baseURL,
+	// Read base URL
+	baseURL, err := web.AppConfig.String("base_url")
+	if err != nil {
+		return nil, fmt.Errorf("failed to read base_url: %w", err)
+	}
+
+	if strings.TrimSpace(baseURL) == "" {
+		return nil, fmt.Errorf("base_url is empty")
+	}
+
+	// Parse URL
+	parsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("parse base_url failed: %w", err)
+	}
+
+	// Build path
+	parsedURL.Path = categoryAPIPath + "/" + slug
+
+	// Build query
+	query := parsedURL.Query()
+
+	query.Set("aggsAvgPrice", "1")
+	query.Set("aggsAvgRating", "1")
+	query.Set("aggsAvgRoomSize", "1")
+	query.Set("aggsCategory", "1")
+	query.Set("device", "desktop")
+	query.Set("items", "1")
+	query.Set("locations", countryCode)
+	query.Set("sections", "1")
+
+	parsedURL.RawQuery = query.Encode()
+
+	logs.Debug(
+		"[CategoryService] Calling Category API | slug=%s | country=%s | url=%s",
 		slug,
+		countryCode,
+		parsedURL.String(),
 	)
 
-	request, err := NewGETRequest(url)
+	// Create request
+	request, err := NewGETRequest(parsedURL.String())
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := httpClient.Do(request)
+	// Execute request
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 
-	defer resp.Body.Close()
+	// Decode response
+	var category models.CategoryResponse
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(
-			"category api returned %d: %s",
-			resp.StatusCode,
-			string(body),
+	if err := json.NewDecoder(response.Body).Decode(&category); err != nil {
+		logs.Error(
+			"[CategoryService] Decode failed | url=%s | err=%v",
+			parsedURL.String(),
+			err,
 		)
-	}
-
-	var result models.CategoryResponse
-
-	err = json.Unmarshal(body, &result)
-	if err != nil {
 		return nil, err
 	}
 
-	return &result, nil
+	logs.Debug(
+		"[CategoryService] Category API success | location=%s",
+		category.GeoInfo.Name,
+	)
+
+	return &category, nil
 }
