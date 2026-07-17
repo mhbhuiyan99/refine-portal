@@ -1,11 +1,11 @@
-window.filterState = {
-    checkIn: null,
-    checkOut: null,
+window.filterState = window.filterState || {
+    startDate: null,
+    endDate: null,
+
+    guests: 0,
 
     minPrice: 0,
     maxPrice: Infinity,
-
-    guests: 0,
 
     petFriendly: false,
     ecoFriendly: false,

@@ -80,14 +80,16 @@ function updateFilterButtons() {
 
     // Price
     const priceBtn = document.getElementById("price-filter-btn");
+    const symbol = getCurrencySymbol(window.currencyCode);
 
     if (
         state.minPrice !== window.priceRange.min ||
         state.maxPrice !== window.priceRange.max
     ) {
-
         priceBtn.innerHTML = `
-            BD ৳${state.minPrice} - BD ৳${state.maxPrice}
+            ${symbol}${state.minPrice.toLocaleString()}
+            -
+            ${symbol}${state.maxPrice.toLocaleString()}
             <span class="filter-clear" data-filter="price">×</span>
         `;
 

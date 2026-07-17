@@ -50,26 +50,33 @@ async function init() {
 
     const countryCode = location.GeoInfo.CountryCode;
 
+    const params = new URLSearchParams(window.location.search);
+
+    const startDate = params.get("dateStart");
+    const endDate   = params.get("dateEnd");
+    const pax       = params.get("pax");
+
     window.priceRange = computePriceRange(propertyDetails, countryCode);
     window.currencyCode = countryCode;
     window.allProperties = propertyDetails.Items;
 
     window.filterState = {
-      startDate: null,
-      endDate: null,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
 
-      guests: 0,
+        guests: pax ? Number(pax) : 0,
 
-      minPrice: window.priceRange.min,
-      maxPrice: window.priceRange.max,
+        minPrice: window.priceRange.min,
+        maxPrice: window.priceRange.max,
 
-      amenities: [],
+        amenities: [],
 
-      petFriendly: false,
-      ecoFriendly: false
-  };
+        petFriendly: false,
+        ecoFriendly: false
+    };
 
     renderTiles(window.allProperties, countryCode);
+    console.log(window.filterState);
     updateFilterButtons();
   } catch (error) {
     console.log(error);

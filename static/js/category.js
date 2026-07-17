@@ -110,26 +110,25 @@ async function searchCategory() {
     let url = "/refine?search=" + encodeURIComponent(result.GeoInfo.Display)
 
     if (
-        window.filterState && 
         window.filterState.startDate &&
         window.filterState.endDate
     ) {
         url += 
-            "&dataStart=" +
-            flatpicker.formatDate(
+            "&dateStart=" +
+            flatpickr.formatDate(
                 window.filterState.startDate,
                 "Y-m-d"
             );
         
         url += 
-            "&dateEnd" + 
-            flatpicker.formatDate(
+            "&dateEnd=" + 
+            flatpickr.formatDate(
                 window.filterState.endDate,
                 "Y-m-d"
             );
     }
 
-    url += "&pax=" + (window.selectedGuests || 2);
+    url += "&pax=" + (window.filterState.guests || 2);
     url += "&order=1";
 
     window.location.href = url;

@@ -66,18 +66,22 @@ function applyDates(mode = "refine", input = null) {
     }
 
     if (mode === "category") {
+        window.selectedStartDate = dates[0];
+        window.selectedEndDate = dates[1];
+
+        window.filterState.startDate = dates[0];
+        window.filterState.endDate = dates[1];
 
         const start = flatpickr.formatDate(dates[0], "M j");
         const end = flatpickr.formatDate(dates[1], "M j");
 
         input.value = `${start} - ${end}`;
-
     } else {
-
         window.filterState.startDate = dates[0];
         window.filterState.endDate = dates[1];
 
         updateFilterButtons();
+        applyFilters();
     }
 
     closeDateModal();
