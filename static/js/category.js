@@ -51,8 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function renderSuggestions(items){
 
-    const box =
-        document.getElementById("destination-suggestions");
+    const box = document.getElementById("destination-suggestions");
+    const destinationInput = document.getElementById("destination-input");
 
     box.innerHTML="";
 
@@ -66,7 +66,7 @@ function renderSuggestions(items){
 
         div.onclick=()=>{
 
-            destinationInput.value=item.Display;
+            destinationInput.value = item.Display;
 
             box.style.display="none";
 
@@ -107,6 +107,30 @@ async function searchCategory() {
         return;
     }
 
-    window.location.href =
-        "/all/" + result.GeoInfo.LocationSlug;
+    let url = "/refine?search=" + encodeURIComponent(result.GeoInfo.Display)
+
+    if (
+        window.filterState && 
+        window.filterState.startDate &&
+        window.filterState.endDate
+    ) {
+        url += 
+            "&dataStart=" +
+            flatpicker.formatDate(
+                window.filterState.startDate,
+                "Y-m-d"
+            );
+        
+        url += 
+            "&dateEnd" + 
+            flatpicker.formatDate(
+                window.filterState.endDate,
+                "Y-m-d"
+            );
+    }
+
+    url += "&pax=" + (window.selectedGuests || 2);
+    url += "&order=1";
+
+    window.location.href = url;
 }

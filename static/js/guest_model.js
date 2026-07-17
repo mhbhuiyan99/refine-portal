@@ -89,6 +89,8 @@ function updateGuestUI() {
     } else {
         guestText.textContent = `${guestCount} Guests`;
     }
+
+    window.selectedGuests = guestCount;
 }
 
 function getGuestPopupHTML() {
