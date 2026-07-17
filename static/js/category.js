@@ -1,58 +1,53 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const dateInput = document.getElementById("category-date");
+    const guestField = document.getElementById("guest-field");
+    const destinationInput = document.getElementById("destination-input");
+    const browseButton = document.getElementById("browse-rentals-btn");
 
-    if (!dateInput) {
+    // Not category page
+    if (!destinationInput) {
         return;
     }
 
-    dateInput.addEventListener("click", function () {
-        openDateModal("category", this);
+    if (dateInput) {
+        dateInput.addEventListener("click", function () {
+            openDateModal("category", this);
+        });
+    }
+
+    if (guestField) {
+        guestField.addEventListener("click", function (e) {
+            e.stopPropagation();
+            toggleGuestPopup();
+        });
+    }
+
+    let timer = null;
+
+    destinationInput.addEventListener("input", function () {
+
+        clearTimeout(timer);
+
+        timer = setTimeout(async () => {
+
+            if (this.value.length < 2) {
+                hideSuggestions();
+                return;
+            }
+
+            const result = await getLocation(this.value);
+
+            renderSuggestions(result.Items);
+
+        }, 300);
+
     });
 
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const guestField = document.getElementById("guest-field");
-
-    guestField.addEventListener("click", function (e) {
-
-        e.stopPropagation();
-
-        toggleGuestPopup();
-
-    });
+    browseButton.addEventListener("click", searchCategory);
 
 });
 
-
-const destinationInput =
-    document.getElementById("destination-input");
-
-let timer = null;
-
-destinationInput.addEventListener("input", function () {
-
-    clearTimeout(timer);
-
-    timer = setTimeout(async () => {
-
-        if (this.value.length < 2) {
-
-            hideSuggestions();
-
-            return;
-        }
-
-        const result =
-            await getLocation(this.value);
-
-        renderSuggestions(result.Items);
-
-    },300);
-
-});
 
 function renderSuggestions(items){
 
@@ -92,10 +87,6 @@ function hideSuggestions(){
         "destination-suggestions"
     ).style.display="none";
 }
-
-document
-    .getElementById("browse-rentals-btn")
-    .addEventListener("click", searchCategory);
 
 async function searchCategory() {
 
