@@ -44,6 +44,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    document.addEventListener("click", function (e) {
+
+        if (!e.target.closest("#destination-field")) {
+            hideSuggestions();
+        }
+
+    });
+
     browseButton.addEventListener("click", searchCategory);
 
 });
@@ -66,12 +74,18 @@ function renderSuggestions(items){
 
         div.onclick=()=>{
 
-            destinationInput.value = item.Display;
-
-            box.style.display="none";
-
             window.selectedLocation=item;
 
+            destinationInput.value = item.Display;
+
+            destinationInput.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    searchCategory();
+                }
+            });
+
+            box.style.display="none";
         };
 
         box.appendChild(div);
