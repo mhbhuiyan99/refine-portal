@@ -24,6 +24,9 @@ type Property struct {
 	ReviewScore       float64 `json:"ReviewScore"`
 	PropertyAttribute string  `json:"PropertyAttribute"`
 
+	Amenities    	  map[string]string `json:"Amenities"`
+	TopListedAmenities []Amenity `json:"TopListedAmenities"`
+
 	Counts Counts `json:"Counts"`
 }
 
@@ -31,4 +34,9 @@ type Counts struct {
 	Bedroom   int `json:"Bedroom"`
 	Bathroom  int `json:"Bathroom"`
 	Occupancy int `json:"Occupancy"`
+}
+
+type Amenity struct {
+	ID   string `json:"ID"`
+	Name string `json:"Name"`
 }

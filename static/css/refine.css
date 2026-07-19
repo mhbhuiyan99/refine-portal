@@ -225,140 +225,7 @@ body{
     border-color:#1f5fbf;
 }
 
-/* ------------------------------
-   Property Card
------------------------------- */
 
-.property-card{
-    background:#fff;
-    border-radius:16px;
-    overflow:hidden;
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-    display:flex;
-    flex-direction:column;
-    height:100%;
-}
-
-.image-wrapper{
-    height:220px;
-    background:#eee;
-}
-
-.property-image{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.property-body{
-    display:flex;
-    flex-direction:column;
-    flex:1;
-    padding:16px;
-}
-
-.property-type{
-    color:#666;
-    font-size:14px;
-    margin-bottom:8px;
-}
-
-.property-title{
-    font-size:16px;
-    margin-bottom:12px;
-    line-height:1.2;
-}
-
-.property-rating{
-    font-weight:600;
-    margin-bottom:10px;
-}
-
-.property-attribute{
-    display:inline-block;
-    align-self: flex-start;
-    background:#eef8f2;
-    color:#157347;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:13px;
-    margin-bottom:14px;
-}
-
-.property-meta{
-    color:#666;
-    font-size:14px;
-    margin-bottom:20px;
-}
-
-.property-footer{
-    margin-top:auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-}
-
-.price{
-    font-size:16px;
-    font-weight:700;
-}
-
-.price span{
-    font-size:14px;
-    color:#666;
-}
-
-.deal-btn{
-    background:#34b5b4;
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    padding:12px 20px;
-    cursor:pointer;
-}
-
-.property-card:hover {
-
-    transform: translateY(-4px);
-
-    box-shadow:
-        0 12px 26px rgba(0,0,0,.15);
-}
-
-/* ------------------------------
-   Property Grid
------------------------------- */
-
-.property-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-    align-items:stretch;
-}
-
-.property-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-}
-
-@media (max-width:1200px){
-    .property-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
-}
-
-@media (max-width:900px){
-    .property-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-}
-
-@media (max-width:600px){
-    .property-grid{
-        grid-template-columns:1fr;
-    }
-}
 
 /* ------------------------------
    Amenities
@@ -388,58 +255,34 @@ body{
     font-size: 14px;
 }
 
+.property-amenities{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:6px;
+}
+
+.amenity-tag{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    border:1px solid #ddd;
+    border-radius:18px;
+    padding:5px 10px;
+
+    font-size:13px;
+}
+
+.amenity-icon{
+    width:16px;
+    height:16px;
+}
+
 /* ------------------------------
    Footer
 ------------------------------ */
 
-.property-footer {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-}
-
-.price {
-
-    font-size: 24px;
-
-    font-weight: bold;
-
-    color: #111;
-}
-
-.price small {
-
-    font-size: 18px;
-
-    color: gray;
-}
-
-.view-btn {
-
-    background: #22b9c8;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 8px;
-
-    padding: 14px 26px;
-
-    cursor: pointer;
-
-    font-weight: bold;
-
-    font-size: 16px;
-}
-
-.view-btn:hover {
-
-    background: #1596a3;
-}
 
 
 /* Filter Modal Styles */

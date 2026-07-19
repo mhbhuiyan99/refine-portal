@@ -198,7 +198,68 @@ function bindModalEvents() {
         window.filterState.ecoFriendly = e.target.checked;
     };
 
+    document
+    .querySelectorAll(".amenity-checkbox")
+    .forEach(box => {
+
+        box.onchange = function () {
+
+            if (this.checked) {
+
+                if (!window.filterState.amenities.includes(this.value)) {
+
+                    window.filterState.amenities.push(this.value);
+
+                }
+
+            } else {
+
+                window.filterState.amenities =
+                    window.filterState.amenities.filter(
+                        item => item !== this.value
+                    );
+
+            }
+
+        };
+
+    });
+
     updatePriceUI(); // draw initial fill on modal open
+}
+
+function getAmenitiesHTML() {
+
+    const allAmenities = new Set();
+
+    window.allProperties.forEach(property => {
+
+        if (!property.Property.Amenities) {
+            return;
+        }
+
+        Object.values(property.Property.Amenities)
+            .forEach(name => allAmenities.add(name));
+
+    });
+
+    const amenities = [...allAmenities].sort();
+
+    return amenities.map(name => `
+
+        <label>
+            ${name}
+            <input
+                type="checkbox"
+                class="amenity-checkbox"
+                value="${name}"
+                ${window.filterState.amenities.includes(name) ? "checked" : ""}
+            >
+            <span class="checkmark"></span>
+        </label>
+
+    `).join("");
+
 }
 
 function getFilterModalHTML() {
@@ -271,15 +332,7 @@ function getFilterModalHTML() {
 <div class="filter-section">
 <h3>Amenities</h3>
 <div class="amenities-grid">
-<label>Air Conditioner<input type="checkbox"><span class="checkmark"></span></label>
-<label>Balcony/terrace<input type="checkbox"><span class="checkmark"></span></label>
-<label>Bedding/linens<input type="checkbox"><span class="checkmark"></span></label>
-<label>Breakfast<input type="checkbox"><span class="checkmark"></span></label>
-<label>Child Friendly<input type="checkbox"><span class="checkmark"></span></label>
-<label>Hot Tub<input type="checkbox"><span class="checkmark"></span></label>
-<label>Internet/Wifi<input type="checkbox"><span class="checkmark"></span></label>
-<label>Kitchen<input type="checkbox"><span class="checkmark"></span></label>
-<label>Laundry<input type="checkbox"><span class="checkmark"></span></label>
+    ${getAmenitiesHTML()}
 </div>
 </div>
 
@@ -292,3 +345,4 @@ function getFilterModalHTML() {
 </div>
 `;
 }
+

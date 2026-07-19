@@ -54,17 +54,61 @@ function filterByGuests(properties) {
 
 function filterByPet(properties) {
 
-    return properties;
+    if (!window.filterState.petFriendly) {
+        return properties;
+    }
+
+    return properties.filter(item =>
+
+        item.Property.PropertyAttribute &&
+        item.Property.PropertyAttribute
+            .toLowerCase()
+            .includes("pet")
+
+    );
+
 }
 
 function filterByEco(properties) {
 
-    return properties;
+    if (!window.filterState.ecoFriendly) {
+        return properties;
+    }
+
+    return properties.filter(item =>
+
+        item.Property.PropertyAttribute &&
+        item.Property.PropertyAttribute
+            .toLowerCase()
+            .includes("eco")
+
+    );
+
 }
 
 function filterByAmenities(properties) {
 
-    return properties;
+    if (window.filterState.amenities.length === 0) {
+        return properties;
+    }
+
+    return properties.filter(item => {
+
+        if (!item.Property.Amenities) {
+            return false;
+        }
+
+        const amenities =
+            Object.values(item.Property.Amenities);
+
+        // returns only properties containing all selected(AND)
+        // if want OR behavior need to replace every() with some()
+        return window.filterState.amenities.every(selected =>
+            amenities.includes(selected)
+        );
+
+    });
+
 }
 
 

@@ -4,7 +4,7 @@ function renderPropertyCard(item, countryCode) {
 
     const image = p.FeatureImage || "/static/images/placeholder.jpg";
 
-    //console.log("Image_src: ", image);
+    // console.log("Image_src: ", image);
     const price =
         formatCurrency(
             convertPrice(
@@ -18,6 +18,21 @@ function renderPropertyCard(item, countryCode) {
         p.Counts.Occupancy > 0
             ? `<span>${p.Counts.Occupancy} Guests</span>`
             : "";
+
+    const amenities =
+        (p.TopListedAmenities || [])
+            .slice(0, 2)
+            .map(item => `
+                <span class="amenity-tag">
+                    <img
+                        src="${getAmenityIcon(item.Name)}"
+                        class="amenity-icon"
+                        alt="${item.Name}"
+                    >
+                    ${item.Name}
+                </span>
+            `)
+            .join("");
 
     return `
         <div class="property-card">
@@ -64,6 +79,12 @@ function renderPropertyCard(item, countryCode) {
                     ${guests ? "•" : ""}
 
                     ${guests}
+
+                </div>
+
+                <div class="property-amenities">
+
+                    ${amenities}
 
                 </div>
 

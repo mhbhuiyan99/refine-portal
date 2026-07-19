@@ -1,10 +1,137 @@
 .property-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:20px;
+    gap:24px;
 }
 
-@media (max-width:1200px){
+.property-body{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    padding:16px;
+}
+
+.property-content{
+    padding:24px;
+}
+
+.property-type{
+    color:#777;
+    font-size:14px;
+}
+
+.property-price{
+    margin:16px 0;
+    font-size:26px;
+    font-weight:700;
+}
+
+.property-price span{
+    font-size:18px;
+    color:#666;
+}
+
+.deal-btn{
+    width:140px;
+    height:46px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#18b8c7;
+    color:#fff;
+
+    border:none;
+    border-radius:8px;
+
+    text-decoration:none;
+    font-size: 16px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.deal-btn:hover{
+    background:#159faa;
+}
+
+.property-card{
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    display:flex;
+    flex-direction:column;
+    height:100%;
+}
+
+
+.property-image{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+
+.property-title{
+    font-size:16px;
+    margin-bottom:12px;
+    line-height:1.2;
+}
+
+.property-rating{
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.property-attribute{
+    display:inline-block;
+    align-self: flex-start;
+    background:#eef8f2;
+    color:#157347;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:13px;
+    margin-bottom:14px;
+}
+
+.property-meta{
+    color:#666;
+    font-size:14px;
+    margin-bottom:12px;
+}
+
+.property-footer{
+    margin-top:auto;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+}
+
+.price{
+    font-size:18px;
+    font-weight:700;
+}
+
+.price span{
+    font-size:15px;
+    color:#666;
+}
+
+
+.property-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 26px rgba(0,0,0,.15);
+}
+
+@media (max-width:1400px){
     .property-grid{
         grid-template-columns:repeat(3,1fr);
     }
