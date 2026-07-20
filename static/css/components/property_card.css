@@ -131,6 +131,50 @@
         0 12px 26px rgba(0,0,0,.15);
 }
 
+.property-type-tabs{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    margin:40px 0;
+}
+
+.property-type-tab{
+
+    border:1px solid #ddd;
+
+    border-radius:999px;
+
+    background:#fff;
+
+    padding:10px 24px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.2s;
+}
+
+.property-type-tab:hover{
+
+    border-color:#19b8c8;
+}
+
+.property-type-tab.active{
+
+    background:#182b49;
+
+    color:#fff;
+
+    border-color:#182b49;
+}
+
 @media (max-width:1400px){
     .property-grid{
         grid-template-columns:repeat(3,1fr);

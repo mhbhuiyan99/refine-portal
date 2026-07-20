@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     browseButton.addEventListener("click", searchCategory);
-
+    buildPropertyTypeTabs();
 });
 
 
@@ -95,11 +95,14 @@ function renderSuggestions(items){
     box.style.display="block";
 }
 
-function hideSuggestions(){
+function hideSuggestions() {
 
-    document.getElementById(
-        "destination-suggestions"
-    ).style.display="none";
+    const box =
+        document.getElementById("destination-suggestions");
+
+    if (!box) return;
+
+    box.style.display = "none";
 }
 
 async function searchCategory() {
@@ -146,4 +149,106 @@ async function searchCategory() {
     url += "&order=1";
 
     window.location.href = url;
+}
+
+function buildPropertyTypeTabs() {
+
+    const cards =
+        document.querySelectorAll(".property-card");
+
+    const tabContainer =
+        document.getElementById("property-type-tabs");
+
+    if (!tabContainer || cards.length === 0) {
+        return;
+    }
+
+    const types = [
+        ...new Set(
+            [...cards].map(card =>
+                card.dataset.propertyType
+            )
+        )
+    ];
+
+    const allButton = document.createElement("button");
+    allButton.className = "property-type-tab active";
+    allButton.textContent = "All";
+
+    allButton.onclick = () => {
+
+        document
+            .querySelectorAll(".category-section")
+            .forEach(section => {
+
+                section.style.display = "";
+
+                section
+                    .querySelectorAll(".property-card")
+                    .forEach(card => {
+
+                        card.style.display = "";
+
+                    });
+
+            });
+
+        document
+            .querySelectorAll(".property-type-tab")
+            .forEach(btn =>
+                btn.classList.remove("active"));
+
+        allButton.classList.add("active");
+    };
+
+    tabContainer.appendChild(allButton);
+
+    types.forEach(type => {
+
+        const btn =
+            document.createElement("button");
+
+        btn.className =
+            "property-type-tab";
+
+        btn.textContent = type;
+
+        btn.onclick = () => {
+
+            document
+                .querySelectorAll(".category-section")
+                .forEach(section => {
+
+                    let visible = 0;
+
+                    section
+                        .querySelectorAll(".property-card")
+                        .forEach(card => {
+
+                            if (card.dataset.propertyType === type) {
+                                card.style.display = "";
+                                visible++;
+                            } else {
+                                card.style.display = "none";
+                            }
+
+                        });
+
+                    // hide empty section
+                    section.style.display = visible ? "" : "none";
+
+                });
+
+            document
+                .querySelectorAll(".property-type-tab")
+                .forEach(button =>
+                    button.classList.remove("active"));
+
+            btn.classList.add("active");
+        };
+
+        tabContainer.appendChild(btn);
+
+    });
+
 }

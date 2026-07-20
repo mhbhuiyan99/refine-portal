@@ -90,12 +90,14 @@
             {{.Category.GeoInfo.ShortName}}?
             Discover a curated collection of vacation rentals offering comfort,
             convenience, and authentic local experiences.
+            Whether you want a beachfront condo, a cozy family home, or a pet-friendly stay close to downtown, 
+            Owner Direct makes it easy to compare verified options for your next trip.
         </p>
 
     </section>
 
     <hr>
-
+    <div id="property-type-tabs" class="property-type-tabs"></div>
     <section id="category-sections">
 
     {{range .Category.Result.Sections}}

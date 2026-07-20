@@ -35,7 +35,9 @@ function renderPropertyCard(item, countryCode) {
             .join("");
 
     return `
-        <div class="property-card">
+        <div
+            class="property-card"
+            data-property-type="${p.PropertyType}">
 
             <div class="image-wrapper">
 

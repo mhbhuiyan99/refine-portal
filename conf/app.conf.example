@@ -5,7 +5,7 @@ autorender = true
 copyrequestbody = true
 
 base_url = add_your_url
-
+image_base_url = add_your_url
 
 username = your_username
 password = your_password

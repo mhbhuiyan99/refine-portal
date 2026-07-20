@@ -1,4 +1,6 @@
-<div class="property-card">
+<div
+    class="property-card"
+    data-property-type="{{.Property.PropertyType}}">
 
     <div class="image-wrapper">
 
