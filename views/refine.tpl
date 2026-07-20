@@ -1,6 +1,4 @@
 {{template "layouts/header.tpl" .}}
-<link rel="stylesheet" href="/static/css/refine.css">
-
     
 <div class="refine-page">
 
