@@ -1,7 +1,7 @@
 package models
 
 type CategoryResponse struct {
-	GeoInfo GeoInfo `json:"GeoInfo"`
+	GeoInfo GeoInfo        `json:"GeoInfo"`
 	Result  CategoryResult `json:"Result"`
 }
 
@@ -27,16 +27,26 @@ type Item struct {
 	GeoInfo  GeoInfo  `json:"GeoInfo"`
 	Partner  Partner  `json:"Partner"`
 	Property Property `json:"Property"`
+	Feed     int      `json:"Feed"`
 }
 
 type GeoInfo struct {
-    Name        string       `json:"Name"`
-    ShortName   string       `json:"ShortName"`
-    State       string       `json:"State"`
-    Country     string       `json:"Country"`
-    LocationID  string       `json:"LocationID"`
-    Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
-	PropertyCount int          `json:"PropertyCount"`
+    Name          string       `json:"Name"`
+    ShortName     string       `json:"ShortName"`
+
+    City          string       `json:"City"`
+    State         string       `json:"State"`
+    Country       string       `json:"Country"`
+
+    LocationID    string       `json:"LocationID"`
+
+    DistanceFromCenter string  `json:"DistanceFromCenter"`
+
+    Categories    []Breadcrumb `json:"Categories"`
+
+    Breadcrumbs   []Breadcrumb `json:"Breadcrumbs"`
+
+    PropertyCount int          `json:"PropertyCount"`
 }
 
 type Partner struct {

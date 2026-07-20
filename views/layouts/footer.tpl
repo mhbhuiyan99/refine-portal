@@ -15,6 +15,7 @@
 
 <script src="/static/js/components/sort.js"></script>
 <script src="/static/js/utils/currency.js"></script>
+<script src="/static/js/utils/partner_logo.js"></script>
 
 <script src="/static/js/utils/amenity_icons.js"></script>
 <script src="/static/js/components/property_card.js"></script>

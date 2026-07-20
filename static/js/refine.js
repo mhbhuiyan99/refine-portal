@@ -42,6 +42,9 @@ async function init() {
           return { min: 0, max: 50000 };
       }
 
+      console.log(propertyDetails.Items[0]);
+console.log(Object.keys(propertyDetails.Items[0]));
+
       return {
           min: Math.floor(Math.min(...prices)),
           max: Math.ceil(Math.max(...prices)),

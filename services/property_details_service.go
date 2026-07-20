@@ -34,6 +34,9 @@ func GetPropertyDetails(
 
 	merged := &models.PropertyDetailsResponse{
 		Success: true,
+		Result: models.PropertyDetailsResult{
+			ItemsByID: make(map[string]models.PartnerInfo),
+		},
 	}
 
 	for index, ids := range chunks {
@@ -49,10 +52,11 @@ func GetPropertyDetails(
 			return nil, err
 		}
 
-		merged.Items = append(
-			merged.Items,
-			batch.Items...,
-		)
+		merged.Items = append(merged.Items, batch.Items...)
+
+		for id, info := range batch.Result.ItemsByID {
+			merged.Result.ItemsByID[id] = info
+		}
 	}
 
 	logs.Info(

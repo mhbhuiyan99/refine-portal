@@ -4,6 +4,7 @@ import (
 	"refine-portal/models"
 	"refine-portal/services"
 	"strings"
+
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
@@ -103,11 +104,23 @@ func (c *PropertyAPIController) GetDetails() {
 	imageBaseURL, _ := web.AppConfig.String("image_base_url")
 
 	for i := range details.Items {
+
 		image := details.Items[i].Property.FeatureImage
 
 		if image != "" {
 			details.Items[i].Property.FeatureImage =
 				imageBaseURL + image
+		}
+
+		// Add partner feed
+		if i < len(request.PropertyIDList) {
+
+			propertyID := request.PropertyIDList[i]
+
+			if partnerInfo, ok := details.Result.ItemsByID[propertyID]; ok {
+
+				details.Items[i].Feed = partnerInfo.Feed
+			}
 		}
 	}
 

@@ -1,5 +1,4 @@
 function renderPropertyCard(item, countryCode) {
-
     const p = item.Property;
 
     const image = p.FeatureImage || "/static/images/placeholder.jpg";
@@ -34,6 +33,14 @@ function renderPropertyCard(item, countryCode) {
             `)
             .join("");
 
+    const partnerLogo = getPartnerLogo(item.Feed);
+    const partnerUrl = item.Partner?.URL || "#";
+    //console.log("Partner URL:", partnerUrl);
+
+    const state = item.GeoInfo?.State || "";
+    const city = item.GeoInfo?.City || "";
+    const distance = item.GeoInfo?.DistanceFromCenter || "";
+
     return `
         <div
             class="property-card"
@@ -57,6 +64,27 @@ function renderPropertyCard(item, countryCode) {
                 <h3 class="property-title">
                     ${p.PropertyName}
                 </h3>
+
+                <div class="property-location">
+
+                    <img
+                        src="/static/images/location.png"
+                        class="location-icon"
+                        alt="Location">
+
+                    ${state}
+
+                    ${state && city ? " • " : ""}
+
+                    ${city}
+
+                    ${
+                        distance
+                            ? `<span>${distance} to center</span>`
+                            : ""
+                    }
+
+                </div>
 
                 <div class="property-rating">
 
@@ -94,17 +122,37 @@ function renderPropertyCard(item, countryCode) {
 
                     <div class="price">
 
-                         ${formatCurrency(p.Price, countryCode)}
+                        ${formatCurrency(p.Price, countryCode)}
 
                         <span>/night</span>
 
                     </div>
 
-                    <button class="deal-btn">
+                    <div class="deal-section">
 
-                        View Deal
+                       <a
+                            class="partner-logo"
+                            href="${partnerUrl}"
+                            target="_blank">
 
-                    </button>
+                            ${
+                                partnerLogo
+                                    ? `<img src="${partnerLogo}" alt="Partner">`
+                                    : ""
+                            }
+
+                        </a>
+
+                        <a
+                            class="deal-btn"
+                            href="${partnerUrl}"
+                            target="_blank">
+
+                            View Deal
+
+                        </a>
+
+                    </div>
 
                 </div>
 

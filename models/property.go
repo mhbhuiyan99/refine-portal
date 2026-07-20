@@ -19,6 +19,16 @@ type PropertyListResponse struct {
 type PropertyGeoInfo struct {
 	CountryCode  string `json:"CountryCode"`
 	LocationSlug string `json:"LocationSlug"`
+
+	// For Property Details API
+	City               string     `json:"City"`
+	State              string     `json:"State"`
+	DistanceFromCenter string     `json:"DistanceFromCenter"`
+	Categories         []PropertyLocationCategory `json:"Categories"`
+}
+
+type PropertyLocationCategory struct {
+	Name string `json:"Name"`
 }
 
 type PropertyResult struct {

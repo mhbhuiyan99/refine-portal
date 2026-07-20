@@ -24,6 +24,28 @@
 
         </h3>
 
+        <div class="property-location">
+
+            <img
+                src="/static/images/location.png"
+                class="location-icon">
+
+            {{.GeoInfo.State}}
+
+            {{if and .GeoInfo.State .GeoInfo.City}}
+                •
+            {{end}}
+
+            {{.GeoInfo.City}}
+
+            {{if .GeoInfo.DistanceFromCenter}}
+                <span>
+                    {{.GeoInfo.DistanceFromCenter}} to center
+                </span>
+            {{end}}
+
+        </div>
+
         <div class="property-rating">
 
             ⭐ {{.Property.ReviewScore}}
@@ -69,19 +91,37 @@
             <div class="price">
 
                 ${{printf "%.0f" .Property.Price}}
-
                 <span>/night</span>
 
             </div>
 
-            <a
-                class="deal-btn"
-                href="{{.Partner.URL}}"
-                target="_blank">
+            <div class="deal-section">
 
-                View Deal
+                <div class="partner-logo">
 
-            </a>
+                    {{if eq .Feed 11}}
+                        <img src="/static/images/amenities/booking.svg" alt="Booking">
+
+                    {{else if eq .Feed 12}}
+                        <img src="/static/images/amenities/vrbo.svg" alt="Vrbo">
+
+                    {{else if eq .Feed 24}}
+                        <img src="/static/images/amenities/expedia.svg" alt="Expedia">
+
+                    {{end}}
+
+                </div>
+
+                <a
+                    class="deal-btn"
+                    href="{{.Partner.URL}}"
+                    target="_blank">
+
+                    View Deal
+
+                </a>
+
+            </div>
 
         </div>
 
