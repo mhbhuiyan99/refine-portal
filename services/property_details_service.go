@@ -8,6 +8,7 @@ import (
 	"refine-portal/models"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -21,6 +22,15 @@ const (
 func GetPropertyDetails(
 	req models.PropertyDetailsRequest,
 ) (*models.PropertyDetailsResponse, error) {
+
+	start := time.Now()
+
+	defer func() {
+		logs.Info(
+			"[PropertyDetailsService] total took %v",
+			time.Since(start),
+		)
+	}()
 
 	chunks := chunkStrings(
 		req.PropertyIDList,
@@ -106,6 +116,16 @@ func GetPropertyDetails(
 func fetchPropertyDetailsBatch(
 	propertyIDs []string,
 ) (*models.PropertyDetailsResponse, error) {
+
+	start := time.Now()
+
+	defer func() {
+		logs.Info(
+			"[PropertyDetailsBatch] size=%d took %v",
+			len(propertyIDs),
+			time.Since(start),
+		)
+	}()
 
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {

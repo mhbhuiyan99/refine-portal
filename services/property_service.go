@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"refine-portal/models"
 	"strings"
+	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -19,6 +20,15 @@ const (
 func GetProperties(
 	req models.PropertyListRequest,
 ) (*models.PropertyListResponse, error) {
+
+	start := time.Now()
+	defer func() {
+		logs.Info(
+			"[PropertyListService] took %v",
+			time.Since(start),
+		)
+	}()
+
 	// Get base url from config
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
