@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"refine-portal/models"
 	"strings"
+	"sync"
 
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -39,19 +40,54 @@ func GetPropertyDetails(
 		},
 	}
 
+	type batchResult struct {
+		Index int
+		Data *models.PropertyDetailsResponse
+		Err error
+	}
+
+	results := make(chan batchResult, len(chunks))
+
+	var wg sync.WaitGroup
+
 	for index, ids := range chunks {
 
-		logs.Debug(
-			"[PropertyDetailsService] Processing batch %d/%d",
-			index+1,
-			len(chunks),
-		)
+		wg.Add(1)
 
-		batch, err := fetchPropertyDetailsBatch(ids)
-		if err != nil {
-			return nil, err
+		go func(idx int, propertyIDs []string) {
+			defer wg.Done()
+
+			logs.Debug(
+				"[PropertyDetailsService] Processing batch %d/%d",
+				idx+1,
+				len(chunks),
+			)
+
+			batch, err := fetchPropertyDetailsBatch(propertyIDs)
+
+			results <- batchResult{
+				Index: idx,
+				Data: batch,
+				Err: err,
+			}
+		} (index, ids)
+	}
+
+	wg.Wait()
+	close(results)
+
+	batches := make([]*models.PropertyDetailsResponse, len(chunks))
+
+	for result := range results {
+		if result.Err != nil {
+			return nil, result.Err
 		}
 
+		batches[result.Index] = result.Data
+	}
+
+	// Merge in original order
+	for _, batch := range batches {
 		merged.Items = append(merged.Items, batch.Items...)
 
 		for id, info := range batch.Result.ItemsByID {
