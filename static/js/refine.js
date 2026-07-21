@@ -7,6 +7,7 @@ console.log("Search: ", search);
 console.log("Order: ", order);
 
 async function init() {
+  renderSkeletonCards(32);
   renderFilters();
   renderSort();
 
@@ -41,9 +42,6 @@ async function init() {
       if (prices.length === 0) {
           return { min: 0, max: 50000 };
       }
-
-      console.log(propertyDetails.Items[0]);
-console.log(Object.keys(propertyDetails.Items[0]));
 
       return {
           min: Math.floor(Math.min(...prices)),

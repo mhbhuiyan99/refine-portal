@@ -106,4 +106,39 @@ observer.observe(
     document.getElementById("load-more-trigger")
 );
 
+function renderSkeletonCards(count = 32) {
+
+    const container =
+        document.getElementById("property-container");
+
+    container.innerHTML = "";
+
+    let html = "";
+
+    for (let i = 0; i < count; i++) {
+
+        html += `
+            <div class="skeleton-card">
+
+                <div class="skeleton-image"></div>
+
+                <div class="skeleton-body">
+
+                    <div class="skeleton-line skeleton-short"></div>
+
+                    <div class="skeleton-line skeleton-title"></div>
+
+                    <div class="skeleton-line skeleton-medium"></div>
+
+                    <div class="skeleton-line"></div>
+
+                </div>
+
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
 

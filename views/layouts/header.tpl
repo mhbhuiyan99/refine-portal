@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/css/filter.css">
     <script src="/static/js/guest_model.js"></script>
     <link rel="stylesheet" href="/static/css/category.css">
+    <link rel="stylesheet" href="/static/css/shimmer.css">
     <link rel="stylesheet" href="/static/css/components/property_card.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
