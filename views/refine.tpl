@@ -23,6 +23,8 @@
             class="property-grid">
         </section>
 
+        <div id="load-more-trigger"></div>
+
     </main>
 
 </div>
