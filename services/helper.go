@@ -1,5 +1,6 @@
 package services
 
+// chunkStrings splits a slice into fixed-size batches.
 func chunkStrings(items []string, size int) [][]string {
 
 	if size <= 0 {

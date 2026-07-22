@@ -1,17 +1,12 @@
 package services
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"net/url"
 	"refine-portal/models"
-	"strings"
+	"refine-portal/requests"
 	"sync"
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 const (
@@ -19,6 +14,14 @@ const (
 	batchSize              = 50
 )
 
+// GetPropertyDetails retrieves property details for a list of property IDs.
+//
+// Responsibilities:
+//   - Split property IDs into batches.
+//   - Fetch all batches concurrently.
+//   - Preserve the original batch order.
+//   - Merge all batch responses into a single result.
+//   - Return the combined property details response.
 func GetPropertyDetails(
 	req models.PropertyDetailsRequest,
 ) (*models.PropertyDetailsResponse, error) {
@@ -27,7 +30,7 @@ func GetPropertyDetails(
 
 	defer func() {
 		logs.Info(
-			"[PropertyDetailsService] total took %v",
+			"[PropertyDetailsService] completed in %v",
 			time.Since(start),
 		)
 	}()
@@ -56,7 +59,10 @@ func GetPropertyDetails(
 		Err error
 	}
 
-	results := make(chan batchResult, len(chunks))
+	batchResults := make(
+		chan batchResult,
+		len(chunks),
+	)
 
 	var wg sync.WaitGroup
 
@@ -73,32 +79,43 @@ func GetPropertyDetails(
 				len(chunks),
 			)
 
-			batch, err := fetchPropertyDetailsBatch(propertyIDs)
+			batch, err := requests.GetPropertyDetailsRequest(propertyIDs)
 
-			results <- batchResult{
+			batchResults <- batchResult{
 				Index: idx,
 				Data: batch,
 				Err: err,
 			}
-		} (index, ids)
+		}(index, ids)
 	}
 
 	wg.Wait()
-	close(results)
+	close(batchResults)
 
-	batches := make([]*models.PropertyDetailsResponse, len(chunks))
+	orderedBatches := make(
+		[]*models.PropertyDetailsResponse,
+		len(chunks),
+	)
 
-	for result := range results {
+	for result := range batchResults {
 		if result.Err != nil {
 			return nil, result.Err
 		}
 
-		batches[result.Index] = result.Data
+		orderedBatches[result.Index] = result.Data
 	}
 
-	// Merge in original order
-	for _, batch := range batches {
-		merged.Items = append(merged.Items, batch.Items...)
+	// Merge batch responses while preserving the original order.
+	for _, batch := range orderedBatches {
+
+		if batch == nil {
+			continue
+		}
+
+		merged.Items = append(
+			merged.Items,
+			batch.Items...,
+		)
 
 		for id, info := range batch.Result.ItemsByID {
 			merged.Result.ItemsByID[id] = info
@@ -113,95 +130,3 @@ func GetPropertyDetails(
 	return merged, nil
 }
 
-func fetchPropertyDetailsBatch(
-	propertyIDs []string,
-) (*models.PropertyDetailsResponse, error) {
-
-	start := time.Now()
-
-	defer func() {
-		logs.Info(
-			"[PropertyDetailsBatch] size=%d took %v",
-			len(propertyIDs),
-			time.Since(start),
-		)
-	}()
-
-	baseURL, err := web.AppConfig.String("base_url")
-	if err != nil {
-		logs.Error(
-			"[PropertyDetailsService] Failed to read configuration | key=base_url | err=%v",
-			err,
-		)
-		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
-	}
-
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("parse base_url failed: %w", err)
-	}
-
-	parsedURL.Path = propertyDetailsAPIPath
-
-	query := parsedURL.Query()
-
-	query.Set(
-		"propertyIdList",
-		strings.Join(propertyIDs, ","),
-	)
-
-	parsedURL.RawQuery = query.Encode()
-
-	logs.Debug(
-		"[PropertyDetailsService] Calling Property Details API | propertyIdCount=%d | url=%s",
-		len(propertyIDs),
-		parsedURL.String(),
-	)
-
-	request, err := NewGETRequest(
-		parsedURL.String(),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := httpClient.Do(request)
-	if err != nil {
-		logs.Error(
-			"[PropertyDetailsService] HTTP request failed | url=%s | err=%v",
-			parsedURL.String(),
-			err,
-		)
-		return nil, fmt.Errorf("request failed: %w", err)
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-
-		logs.Warn(
-			"[PropertyDetailsService] Unexpected response | status=%d | url=%s",
-			response.StatusCode,
-			parsedURL.String(),
-		)
-
-		return nil, fmt.Errorf(
-			"unexpected status code: %d",
-			response.StatusCode,
-		)
-
-	}
-
-	var result models.PropertyDetailsResponse
-
-	if err := json.NewDecoder(
-		response.Body,
-	).Decode(&result); err != nil {
-		logs.Error(
-			"[PropertyDetailsService] Decode response failed | err=%v",
-			err,
-		)
-		return nil, fmt.Errorf("decode response failed: %w", err)
-	}
-
-	return &result, nil
-}
