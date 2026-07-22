@@ -68,7 +68,7 @@ function renderPropertyCard(item, countryCode) {
                 <div class="property-location">
 
                     <img
-                        src="/static/images/location.png"
+                        src="/static/images/amenities/map_pin.svg"
                         class="location-icon"
                         alt="Location">
 
