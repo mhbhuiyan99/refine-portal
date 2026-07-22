@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"refine-portal/models"
+	"refine-portal/requests"
 	"refine-portal/services"
 	"strings"
 
@@ -101,15 +102,26 @@ func (c *PropertyAPIController) GetDetails() {
 		return
 	}
 
-	imageBaseURL, _ := web.AppConfig.String("image_base_url")
-
+	imageBaseURL, err := requests.GetURLFromConfig("image_base_url")
+	if err != nil {
+		logs.Error(
+			"[PropertyAPI] Read image_base_url failed | err=%v",
+			err,
+		)
+		c.CustomAbort(500, "Internal Server Error")
+		return
+	}
+	
 	for i := range details.Items {
 
 		image := details.Items[i].Property.FeatureImage
 
 		if image != "" {
 			details.Items[i].Property.FeatureImage =
-				imageBaseURL + image
+				requests.BuildImageURL(
+					imageBaseURL,
+					image,
+				)
 		}
 
 		// Add partner feed

@@ -26,7 +26,7 @@ func GetPropertyDetailsRequest(
 	propertyIDs []string,
 ) (*models.PropertyDetailsResponse, error) {
 
-	baseURL, err := GetBaseURL()
+	baseURL, err := GetURLFromConfig("base_url")
 	if err != nil {
 		return nil, err
 	}

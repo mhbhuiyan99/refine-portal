@@ -26,7 +26,7 @@ func GetPropertyListRequest(
 	req models.PropertyListRequest,
 ) (*models.PropertyListResponse, error) {
 
-	baseURL, err := GetBaseURL()
+	baseURL, err := GetURLFromConfig("base_url")
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,11 @@ func GetPropertyListRequest(
 	query.Set("device", req.Device)
 	query.Set("page", fmt.Sprintf("%d", req.Page))
 
-	requestURL, err := BuildURL(baseURL, propertyListAPIPath, query)
+	requestURL, err := BuildURL(
+		baseURL, 
+		propertyListAPIPath, 
+		query,
+	)
 	if err != nil {
 		return nil, err
 	}

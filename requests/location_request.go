@@ -24,7 +24,7 @@ func GetLocationRequest(
 	keyword string,
 ) (*models.LocationResponse, error) {
 
-	baseURL, err := GetBaseURL()
+	baseURL, err := GetURLFromConfig("base_url")
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,11 @@ func GetLocationRequest(
 	query.Set("keyword", keyword)
 	query.Set("isLocationEntity", "true")
 
-	requestURL, err := BuildURL(baseURL, locationAPIPath, query)
+	requestURL, err := BuildURL(
+		baseURL, 
+		locationAPIPath, 
+		query,
+	)
 	if err != nil {
 		return nil, err
 	}

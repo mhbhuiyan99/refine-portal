@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"refine-portal/requests"
 	"refine-portal/services"
 	"strings"
 
@@ -82,14 +83,30 @@ func (c *CategoryController) Get() {
 	/* Build image URL 
 	   (base url + file name)*/
 
-	imageBaseURL, _ := web.AppConfig.String("image_base_url")
+	imageBaseURL, err := requests.GetURLFromConfig("image_base_url")
+	if err != nil {
+		logs.Error(
+			"[CategoryController] Read image_base_url failed | err=%v",
+			err,
+		)
+	}
 
 	for i := range categories.Result.Sections {
+
 		for j := range categories.Result.Sections[i].Items {
-			if categories.Result.Sections[i].Items[j].Property.FeatureImage != "" {
-				categories.Result.Sections[i].Items[j].Property.FeatureImage =
-					imageBaseURL + categories.Result.Sections[i].Items[j].Property.FeatureImage
+
+			image :=
+				categories.Result.Sections[i].Items[j].Property.FeatureImage
+
+			if image == "" {
+				continue
 			}
+
+			categories.Result.Sections[i].Items[j].Property.FeatureImage =
+				requests.BuildImageURL(
+					imageBaseURL, 
+					image,
+				)
 		}
 	}
 

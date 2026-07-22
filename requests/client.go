@@ -93,25 +93,22 @@ func BuildURL(baseURL string, path string, queryParams url.Values) (string, erro
 	return parsedURL.String(), nil
 }
 
-// GetBaseURL retrieves the configured API base URL.
+// BuildImageURL constructs a complete image URL.
 //
 // Responsibilities:
-//   - Read the base URL from the application configuration.
-//   - Validate that the base URL is not empty.
-//   - Return the configured base URL.
-func GetBaseURL() (string, error) {
+//   - Combine the image base URL with an image filename.
+//   - Return the complete image URL.
+func BuildImageURL(
+	imageBaseURL string,
+	imageName string,
+) string {
 
-    baseURL, err := web.AppConfig.String("base_url")
-    if err != nil {
-        return "", fmt.Errorf("failed to read base_url: %w", err)
-    }
+	imageBaseURL = strings.TrimRight(imageBaseURL, "/")
+	imageName = strings.TrimLeft(imageName, "/")
 
-    if strings.TrimSpace(baseURL) == "" {
-        return "", fmt.Errorf("base_url is empty")
-    }
-
-    return baseURL, nil
+	return imageBaseURL + "/" + imageName
 }
+
 
 // NewGETRequest creates a configured HTTP GET request.
 //

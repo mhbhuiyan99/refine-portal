@@ -25,7 +25,7 @@ func GetCategoryRequest(
 	countryCode string,
 ) (*models.CategoryResponse, error) {
 
-	baseURL, err := GetBaseURL()
+	baseURL, err := GetURLFromConfig("base_url")
 	if err != nil {
 		return nil, err
 	}
