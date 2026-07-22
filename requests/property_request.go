@@ -20,7 +20,7 @@ const (
 func GetPropertyDetailsRequest(
 	propertyIDs []string,
 ) (*models.PropertyDetailsResponse, error) {
-	
+
 	baseURL, err := web.AppConfig.String("base_url")
 	if err != nil {
 		logs.Error(
@@ -30,29 +30,24 @@ func GetPropertyDetailsRequest(
 		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
 	}
 
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("parse base_url failed: %w", err)
-	}
-
-	parsedURL.Path = propertyDetailsAPIPath
-
-	query := parsedURL.Query()
-
+	query := url.Values{}
 	query.Set(
 		"propertyIdList",
 		strings.Join(propertyIDs, ","),
 	)
 
-	parsedURL.RawQuery = query.Encode()
+	requestURL, err := BuildURL(baseURL, propertyDetailsAPIPath, query)
+	if err != nil {
+		return nil, err
+	}
 
 	logs.Debug(
 		"[PropertyDetailsRequest] Calling Property Details API | propertyIdCount=%d | url=%s",
 		len(propertyIDs),
-		parsedURL.String(),
+		requestURL,
 	)
 
-	request, err := NewGETRequest(parsedURL.String())
+	request, err := NewGETRequest(requestURL)
 	if err != nil {
 		return nil, err
 	}

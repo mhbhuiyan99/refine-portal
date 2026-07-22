@@ -24,7 +24,7 @@ const (
 //   - Decode the JSON response.
 //   - Return the location response.
 func GetLocationRequest(
-    keyword string,
+	keyword string,
 ) (*models.LocationResponse, error) {
 
 	// Get the base url
@@ -42,26 +42,22 @@ func GetLocationRequest(
 	}
 
 	// Build URL
-	parsedURL, err := url.Parse(baseURL) // Validates and converts the raw string into a structured *url.URL object.
-	if err != nil {
-		return nil, fmt.Errorf("parse base_url failed: %w", err)
-	}
-
-	parsedURL.Path = locationAPIPath // append the endpoint path
-
-	query := parsedURL.Query() // Extract existing query parameters into a url.Values map
+	query := url.Values{}
 	query.Set("keyword", keyword)
 	query.Set("isLocationEntity", "true")
-	parsedURL.RawQuery = query.Encode() // Marshals the map back into a raw string
+
+	requestURL, err := BuildURL(baseURL, locationAPIPath, query)
+	if err != nil {
+		return nil, err
+	}
 
 	logs.Debug(
 		"[LocationRequest] Calling Location API | keyword=%s | url=%s",
 		keyword,
-		parsedURL.String(),
+		requestURL,
 	)
-	
-	// Create HTTP request
-	request, err := NewGETRequest(parsedURL.String())
+
+	request, err := NewGETRequest(requestURL)
 	if err != nil {
 		logs.Error(
 			"[LocationRequest] Create request failed | err=%v",

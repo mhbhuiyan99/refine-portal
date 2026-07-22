@@ -39,17 +39,7 @@ func GetCategoryRequest(
 	}
 
 	// Parse URL
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("parse base_url failed: %w", err)
-	}
-
-	// Build path
-	parsedURL.Path = categoryAPIPath + "/" + slug
-
-	// Build query
-	query := parsedURL.Query()
-
+	query := url.Values{}
 	query.Set("aggsAvgPrice", "1")
 	query.Set("aggsAvgRating", "1")
 	query.Set("aggsAvgRoomSize", "1")
@@ -59,17 +49,19 @@ func GetCategoryRequest(
 	query.Set("locations", countryCode)
 	query.Set("sections", "1")
 
-	parsedURL.RawQuery = query.Encode()
+	requestURL, err := BuildURL(baseURL, categoryAPIPath+"/"+slug, query)
+	if err != nil {
+		return nil, err
+	}
 
 	logs.Debug(
 		"[CategoryRequest] Calling Category API | slug=%s | country=%s | url=%s",
 		slug,
 		countryCode,
-		parsedURL.String(),
+		requestURL,
 	)
 
-	// Create request
-	request, err := NewGETRequest(parsedURL.String())
+	request, err := NewGETRequest(requestURL)
 	if err != nil {
 		logs.Error(
 			"[CategoryRequest] Create request failed | err=%v",

@@ -31,15 +31,7 @@ func GetPropertyListRequest(
 	}
 
 	// Build URL
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("parse base_url failed: %w", err)
-	}
-
-	parsedURL.Path = propertyListAPIPath
-
-	query := parsedURL.Query()
-
+	query := url.Values{}
 	query.Set("category", req.Category)
 	query.Set("locations", req.Locations)
 	query.Set("order", fmt.Sprintf("%d", req.Order))
@@ -48,7 +40,10 @@ func GetPropertyListRequest(
 	query.Set("device", req.Device)
 	query.Set("page", fmt.Sprintf("%d", req.Page))
 
-	parsedURL.RawQuery = query.Encode()
+	requestURL, err := BuildURL(baseURL, propertyListAPIPath, query)
+	if err != nil {
+		return nil, err
+	}
 
 	logs.Debug(
 		"[PropertyListRequest] Calling Property List API | category=%s | locations=%s | page=%d | limit=%d | order=%d | url=%s",
@@ -57,11 +52,10 @@ func GetPropertyListRequest(
 		req.Page,
 		req.Limit,
 		req.Order,
-		parsedURL.String(),
+		requestURL,
 	)
 
-	// Create Request
-	request, err := NewGETRequest(parsedURL.String())
+	request, err := NewGETRequest(requestURL)
 	if err != nil {
 		return nil, err
 	}

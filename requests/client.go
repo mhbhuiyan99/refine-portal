@@ -10,6 +10,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
@@ -28,8 +30,8 @@ var httpClient = &http.Client{
 //   - Decode the JSON response into target.
 //   - Return descriptive errors for request, status, or decode failures.
 func DoRequest(
-    req *http.Request,
-    target any,
+	req *http.Request,
+	target any,
 ) error {
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -44,9 +46,19 @@ func DoRequest(
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		logs.Error(
+			"[RequestLayer] Unexpected HTTP status | url=%s | status=%d",
+			req.URL.String(),
+			resp.StatusCode,
+		)
+		return fmt.Errorf("unexpected HTTP status: %d", resp.StatusCode)
+	}
+
 	if err := json.NewDecoder(resp.Body).Decode(target); err != nil {
 		logs.Error(
-			"[RequestLayer] Decode failed | err=%v",
+			"[RequestLayer] Decode failed | url=%s | err=%v",
+			req.URL.String(),
 			err,
 		)
 
@@ -59,6 +71,23 @@ func DoRequest(
 	return nil
 }
 
+// BuildURL creates a full request URL from base URL, path, and query parameters.
+func BuildURL(baseURL string, path string, queryParams url.Values) (string, error) {
+	parsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return "", fmt.Errorf("parse base_url failed: %w", err)
+	}
+
+	if strings.TrimSpace(path) != "" {
+		parsedURL.Path = path
+	}
+
+	if queryParams != nil {
+		parsedURL.RawQuery = queryParams.Encode()
+	}
+
+	return parsedURL.String(), nil
+}
 
 func setDefaultHeaders(request *http.Request) error {
 	username, err := web.AppConfig.String("username")
