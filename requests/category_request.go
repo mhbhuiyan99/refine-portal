@@ -1,13 +1,10 @@
 package requests
 
 import (
-	"fmt"
 	"net/url"
 	"refine-portal/models"
-	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 // Category API endpoint.
@@ -28,14 +25,9 @@ func GetCategoryRequest(
 	countryCode string,
 ) (*models.CategoryResponse, error) {
 
-	// Read base URL
-	baseURL, err := web.AppConfig.String("base_url")
+	baseURL, err := GetBaseURL()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read base_url: %w", err)
-	}
-
-	if strings.TrimSpace(baseURL) == "" {
-		return nil, fmt.Errorf("base_url is empty")
+		return nil, err
 	}
 
 	// Parse URL
@@ -49,7 +41,11 @@ func GetCategoryRequest(
 	query.Set("locations", countryCode)
 	query.Set("sections", "1")
 
-	requestURL, err := BuildURL(baseURL, categoryAPIPath+"/"+slug, query)
+	requestURL, err := BuildURL(
+		baseURL, 
+		categoryAPIPath+"/"+slug, 
+		query,
+	)
 	if err != nil {
 		return nil, err
 	}

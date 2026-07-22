@@ -71,16 +71,20 @@ func DoRequest(
 	return nil
 }
 
-// BuildURL creates a full request URL from base URL, path, and query parameters.
+// BuildURL constructs a complete request URL.
+//
+// Responsibilities:
+//   - Parse the base URL.
+//   - Append the API path.
+//   - Encode query parameters.
+//   - Return the final URL string.
 func BuildURL(baseURL string, path string, queryParams url.Values) (string, error) {
 	parsedURL, err := url.Parse(baseURL)
 	if err != nil {
 		return "", fmt.Errorf("parse base_url failed: %w", err)
 	}
 
-	if strings.TrimSpace(path) != "" {
-		parsedURL.Path = path
-	}
+	parsedURL.Path = path
 
 	if queryParams != nil {
 		parsedURL.RawQuery = queryParams.Encode()
@@ -89,6 +93,54 @@ func BuildURL(baseURL string, path string, queryParams url.Values) (string, erro
 	return parsedURL.String(), nil
 }
 
+// GetBaseURL retrieves the configured API base URL.
+//
+// Responsibilities:
+//   - Read the base URL from the application configuration.
+//   - Validate that the base URL is not empty.
+//   - Return the configured base URL.
+func GetBaseURL() (string, error) {
+
+    baseURL, err := web.AppConfig.String("base_url")
+    if err != nil {
+        return "", fmt.Errorf("failed to read base_url: %w", err)
+    }
+
+    if strings.TrimSpace(baseURL) == "" {
+        return "", fmt.Errorf("base_url is empty")
+    }
+
+    return baseURL, nil
+}
+
+// NewGETRequest creates a configured HTTP GET request.
+//
+// Responsibilities:
+//   - Create a new HTTP GET request.
+//   - Apply the application's default authentication.
+//   - Apply the application's default request headers.
+//   - Return the configured request.
+func NewGETRequest(url string) (*http.Request, error) {
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create request failed: %w", err)
+	}
+
+	if err := setDefaultHeaders(request); err != nil {
+		return nil, fmt.Errorf("set default headers: %w", err)
+	}
+
+	return request, nil
+}
+
+// setDefaultHeaders applies the application's default
+// authentication and HTTP headers to a request.
+//
+// Responsibilities:
+//   - Apply Basic Authentication.
+//   - Set common request headers.
+//   - Set the API key.
+//   - Prepare the request for external API communication.
 func setDefaultHeaders(request *http.Request) error {
 	username, err := web.AppConfig.String("username")
 	if err != nil {
@@ -116,19 +168,4 @@ func setDefaultHeaders(request *http.Request) error {
 	request.Header.Set("x-api-key", apiKey)
 
 	return nil
-}
-
-// NewGETRequest creates an HTTP GET request with the
-// application's default authentication and headers.
-func NewGETRequest(url string) (*http.Request, error) {
-	request, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("create request failed: %w", err)
-	}
-
-	if err := setDefaultHeaders(request); err != nil {
-		return nil, fmt.Errorf("set default headers: %w", err)
-	}
-
-	return request, nil
 }

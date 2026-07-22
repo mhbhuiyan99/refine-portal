@@ -1,13 +1,10 @@
 package requests
 
 import (
-	"fmt"
 	"net/url"
 	"refine-portal/models"
-	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 // Location API endpoint.
@@ -27,18 +24,9 @@ func GetLocationRequest(
 	keyword string,
 ) (*models.LocationResponse, error) {
 
-	// Get the base url
-	baseURL, err := web.AppConfig.String("base_url")
+	baseURL, err := GetBaseURL()
 	if err != nil {
-		logs.Error(
-			"[LocationRequest] Failed to read configuration | key=base_url | err=%v",
-			err,
-		)
-		return nil, fmt.Errorf("failed to read 'base_url' from configuration: %w", err)
-	}
-
-	if strings.TrimSpace(baseURL) == "" {
-		return nil, fmt.Errorf("configuration 'base_url' is empty")
+		return nil, err
 	}
 
 	// Build URL

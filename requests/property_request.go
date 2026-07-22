@@ -1,13 +1,11 @@
 package requests
 
 import (
-	"fmt"
 	"net/url"
 	"refine-portal/models"
 	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 // Property Details API endpoint.
@@ -15,19 +13,22 @@ const (
 	propertyDetailsAPIPath = "/api/property/bookmark/v1"
 )
 
-// GetPropertyDetailsRequest calls the Property Details API for
-// a batch of property IDs and returns detailed property information.
+// GetPropertyDetailsRequest retrieves detailed property information
+// for a batch of property IDs from the Property Details API.
+//
+// Responsibilities:
+//   - Build the Property Details API URL.
+//   - Create the HTTP request.
+//   - Execute the HTTP request.
+//   - Decode the JSON response.
+//   - Return the property details response.
 func GetPropertyDetailsRequest(
 	propertyIDs []string,
 ) (*models.PropertyDetailsResponse, error) {
 
-	baseURL, err := web.AppConfig.String("base_url")
+	baseURL, err := GetBaseURL()
 	if err != nil {
-		logs.Error(
-			"[PropertyDetailsRequest] Failed to read configuration | key=base_url | err=%v",
-			err,
-		)
-		return nil, fmt.Errorf("failed to get 'base_url' from config: %w", err)
+		return nil, err
 	}
 
 	query := url.Values{}

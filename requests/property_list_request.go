@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"refine-portal/models"
-	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 // Property API endpoint.
@@ -15,19 +13,22 @@ const (
 	propertyListAPIPath = "/api/properties/category/v1"
 )
 
-// GetPropertyListRequest calls the Property List API and returns
-// the list of properties for the requested location and filters.
+// GetPropertyListRequest retrieves a list of properties
+// based on the provided search filters.
+//
+// Responsibilities:
+//   - Build the Property List API URL.
+//   - Create the HTTP request.
+//   - Execute the HTTP request.
+//   - Decode the JSON response.
+//   - Return the property list response.
 func GetPropertyListRequest(
 	req models.PropertyListRequest,
 ) (*models.PropertyListResponse, error) {
 
-	// Get base url from config
-	baseURL, err := web.AppConfig.String("base_url")
+	baseURL, err := GetBaseURL()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read base_url: %w", err)
-	}
-	if strings.TrimSpace(baseURL) == "" {
-		return nil, fmt.Errorf("base_url is empty")
+		return nil, err
 	}
 
 	// Build URL
