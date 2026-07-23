@@ -11,6 +11,12 @@ type LocationAPIController struct {
 	web.Controller
 }
 
+// Get handles Location API requests.
+//
+// Responsibilities:
+//   - Validate the required keyword parameter.
+//   - Call the Location service.
+//   - Return the location response as JSON.
 func (c *LocationAPIController) Get() {
 	keyword := c.GetString("keyword")
 
@@ -21,7 +27,7 @@ func (c *LocationAPIController) Get() {
 	}
 
 	location, err := services.GetLocation(keyword)
-	logs.Info("Location Response: %+v", location)
+	// logs.Info("Location Response: %+v", location)
 	if err != nil {
 		logs.Error(
 			"[LocationAPIController] GetLocation failed | keyword=%s | err=%v",

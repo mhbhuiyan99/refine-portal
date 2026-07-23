@@ -6,6 +6,12 @@ type RefineController struct {
 	web.Controller
 }
 
+// Get renders the Refine page.
+//
+// Responsibilities:
+//   - Read the search and sorting parameters.
+//   - Populate the template context.
+//   - Render the Refine page.
 func (c *RefineController) Get() {
 	search := c.GetString("search", "dhaka, Bangladesh")
 	order := c.GetString("order", "1")

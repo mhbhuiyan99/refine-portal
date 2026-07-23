@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"refine-portal/models"
-	"refine-portal/requests"
 	"refine-portal/services"
 	"strings"
 
@@ -14,7 +13,13 @@ type PropertyAPIController struct {
 	web.Controller
 }
 
-// GET /api/properties
+// GetList handles Property List API requests.
+//
+// Responsibilities:
+//   - Validate the required query parameters.
+//   - Read optional filtering and pagination parameters.
+//   - Call the Property service.
+//   - Return the property list as JSON.
 func (c *PropertyAPIController) GetList() {
 	category := strings.TrimSpace(c.GetString("category"))
 	location := strings.TrimSpace(c.GetString("location"))
@@ -77,6 +82,13 @@ func (c *PropertyAPIController) GetList() {
 	c.ServeJSON()
 }
 
+// GetDetails handles Property Details API requests.
+//
+// Responsibilities:
+//   - Validate the required property ID list.
+//   - Convert the request into a service model.
+//   - Call the Property Details service.
+//   - Return the property details as JSON.
 func (c *PropertyAPIController) GetDetails() {
 	ids := strings.TrimSpace(
 		c.GetString("propertyIdList"),
@@ -100,40 +112,6 @@ func (c *PropertyAPIController) GetDetails() {
 		)
 		c.CustomAbort(500, "Internal Server Error")
 		return
-	}
-
-	imageBaseURL, err := requests.GetURLFromConfig("image_base_url")
-	if err != nil {
-		logs.Error(
-			"[PropertyAPI] Read image_base_url failed | err=%v",
-			err,
-		)
-		c.CustomAbort(500, "Internal Server Error")
-		return
-	}
-	
-	for i := range details.Items {
-
-		image := details.Items[i].Property.FeatureImage
-
-		if image != "" {
-			details.Items[i].Property.FeatureImage =
-				requests.BuildImageURL(
-					imageBaseURL,
-					image,
-				)
-		}
-
-		// Add partner feed
-		if i < len(request.PropertyIDList) {
-
-			propertyID := request.PropertyIDList[i]
-
-			if partnerInfo, ok := details.Result.ItemsByID[propertyID]; ok {
-
-				details.Items[i].Feed = partnerInfo.Feed
-			}
-		}
 	}
 
 	c.Data["json"] = details

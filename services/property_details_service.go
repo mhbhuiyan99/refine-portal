@@ -21,6 +21,7 @@ const (
 //   - Fetch all batches concurrently.
 //   - Preserve the original batch order.
 //   - Merge all batch responses into a single result.
+// 	 - Build image URLs.
 //   - Return the combined property details response.
 func GetPropertyDetails(
 	req models.PropertyDetailsRequest,
@@ -119,6 +120,35 @@ func GetPropertyDetails(
 
 		for id, info := range batch.Result.ItemsByID {
 			merged.Result.ItemsByID[id] = info
+		}
+	}
+
+	imageBaseURL, err := requests.GetURLFromConfig("image_base_url")
+	if err != nil {
+		return nil, err
+	}
+
+	// Enrich properties with full image URLs and partner feed information.
+	for i := range merged.Items {
+
+		image := merged.Items[i].Property.FeatureImage
+
+		if image != "" {
+			merged.Items[i].Property.FeatureImage =
+				requests.BuildImageURL(
+					imageBaseURL,
+					image,
+				)
+		}
+
+		// Preserve the original property ID order when attaching partner info.
+		if i < len(req.PropertyIDList) {
+
+			propertyID := req.PropertyIDList[i]
+
+			if partnerInfo, ok := merged.Result.ItemsByID[propertyID]; ok {
+				merged.Items[i].Feed = partnerInfo.Feed
+			}
 		}
 	}
 

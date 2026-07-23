@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"refine-portal/requests"
 	"refine-portal/services"
 	"strings"
 
@@ -13,6 +12,13 @@ type CategoryController struct {
 	web.Controller
 }
 
+// Get handles category page requests.
+//
+// Responsibilities:
+//   - Parse the requested category slug.
+//   - Resolve the country code from the Location service.
+//   - Retrieve category data from the Category service.
+//   - Pass data to the template for rendering.
 func (c *CategoryController) Get() {
 
 	slug := strings.TrimPrefix(
@@ -20,23 +26,27 @@ func (c *CategoryController) Get() {
 			"/all/",
 	)
 		
-	logs.Info("URL Slug: %s", slug)
+	logs.Info(
+		"[CategoryController] URL slug=%s",
+		slug,
+	)
 
 	// Convert URL format to API format
-	apiSlug := strings.ReplaceAll(slug, "/", ":")
+	categorySlug := strings.ReplaceAll(slug, "/", ":")
 	
-	logs.Info("[CategoryController] Fetching category for slug: %s", apiSlug)
+	logs.Info(
+		"[CategoryController] Category API slug=%s",
+		categorySlug,
+	)
 
-	/* Get Country code
-	   for locations=BD or US in api
-	*/
-	locationKeyword := strings.Split(slug, "/")[0] // take the country name only
-	location, err := services.GetLocation(locationKeyword)
+	// Resolve the country code required by the Category API.
+	countrySlug := strings.Split(slug, "/")[0] // take the country name only
+	location, err := services.GetLocation(countrySlug)
 
 	if err != nil {
 		logs.Error(
 			"[CategoryController] GetLocation failed | keyword=%s | err=%v",
-			locationKeyword,
+			countrySlug,
 			err,
 		)
 
@@ -46,7 +56,7 @@ func (c *CategoryController) Get() {
 
 	countryCode := location.GeoInfo.CountryCode
 
-	categories, err := services.GetCategory(apiSlug, countryCode)
+	categories, err := services.GetCategory(categorySlug, countryCode)
 
 	if err != nil {
 		logs.Error(
@@ -56,58 +66,6 @@ func (c *CategoryController) Get() {
 		)
 		c.CustomAbort(500, "Internal Server Error")
 		return
-	}
-
-	/* Updating {{.Location}}
-	In API: 
-	"Title": "Luxury Places to Stay in {{.Location}}",
-    "SubTitle": "Luxury Places to Stay in or Near {{.Location}}",
-	*/
-
-	displayLocation := categories.GeoInfo.ShortName
-
-	for i := range categories.Result.Sections {
-		categories.Result.Sections[i].Title = strings.ReplaceAll(
-			categories.Result.Sections[i].Title,
-			"{{.Location}}",
-			displayLocation,
-		)
-
-		categories.Result.Sections[i].SubTitle = strings.ReplaceAll(
-			categories.Result.Sections[i].SubTitle,
-			"{{.Location}}",
-			displayLocation,
-		)
-	}
-
-	/* Build image URL 
-	   (base url + file name)*/
-
-	imageBaseURL, err := requests.GetURLFromConfig("image_base_url")
-	if err != nil {
-		logs.Error(
-			"[CategoryController] Read image_base_url failed | err=%v",
-			err,
-		)
-	}
-
-	for i := range categories.Result.Sections {
-
-		for j := range categories.Result.Sections[i].Items {
-
-			image :=
-				categories.Result.Sections[i].Items[j].Property.FeatureImage
-
-			if image == "" {
-				continue
-			}
-
-			categories.Result.Sections[i].Items[j].Property.FeatureImage =
-				requests.BuildImageURL(
-					imageBaseURL, 
-					image,
-				)
-		}
 	}
 
 	c.Data["Title"] = categories.GeoInfo.Name

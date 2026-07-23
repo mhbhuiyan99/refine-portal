@@ -31,22 +31,20 @@ type Item struct {
 }
 
 type GeoInfo struct {
-    Name          string       `json:"Name"`
-    ShortName     string       `json:"ShortName"`
+	Name      string `json:"Name"`
+	ShortName string `json:"ShortName"`
 
-    City          string       `json:"City"`
-    State         string       `json:"State"`
-    Country       string       `json:"Country"`
+	City    string `json:"City"`
+	State   string `json:"State"`
+	Country string `json:"Country"`
 
-    LocationID    string       `json:"LocationID"`
+	LocationID         string `json:"LocationID"`
+	DistanceFromCenter string `json:"DistanceFromCenter"`
 
-    DistanceFromCenter string  `json:"DistanceFromCenter"`
+	Categories  []Breadcrumb `json:"Categories"`
+	Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
 
-    Categories    []Breadcrumb `json:"Categories"`
-
-    Breadcrumbs   []Breadcrumb `json:"Breadcrumbs"`
-
-    PropertyCount int          `json:"PropertyCount"`
+	PropertyCount int `json:"PropertyCount"`
 }
 
 type Partner struct {
