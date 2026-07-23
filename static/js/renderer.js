@@ -55,10 +55,27 @@ function renderNextBatch(countryCode) {
         container.insertAdjacentHTML(
             "beforeend",
             renderPropertyCard(item, countryCode)
-            );
+        );
     });
 
     renderedCount += nextItems.length;
+
+    const sliders =
+        container.querySelectorAll(
+            ".property-slider"
+        );
+
+    sliders.forEach(slider => {
+
+        if (slider.dataset.loaded === "true") {
+            return;
+        }
+
+        slider.dataset.loaded = "true";
+
+        initializePropertySlider(slider);
+
+    });
 }
 
 window.addEventListener("scroll", () => {
@@ -141,4 +158,176 @@ function renderSkeletonCards(count = 32) {
     container.innerHTML = html;
 }
 
+async function fetchPropertyImages(propertyId) {
+    try {
+        const response = await fetch(
+            `/api/property/images/v1?propertyId=${propertyId}`
+        );
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.warn(
+            `[PropertySlider] Failed to load images | propertyId=${propertyId}`,
+            error
+        );
+
+        return null;
+    }
+}
+
+function showSlide(
+    slider,
+    index
+) {
+
+    const images =
+        slider.querySelectorAll(".slider-image");
+
+    const dots =
+        slider.querySelectorAll(".slider-dot");
+
+    if (images.length === 0) {
+        return;
+    }
+
+    if (index < 0) {
+        index = images.length - 1;
+    }
+
+    if (index >= images.length) {
+        index = 0;
+    }
+
+    images.forEach(image =>
+        image.classList.remove("active")
+    );
+
+    dots.forEach(dot =>
+        dot.classList.remove("active")
+    );
+
+    images[index].classList.add("active");
+
+    if (dots[index]) {
+        dots[index].classList.add("active");
+    }
+
+    slider.dataset.currentIndex = index;
+}
+
+async function initializePropertySlider(slider) {
+
+    const propertyId =
+        slider.dataset.propertyId;
+
+    const result =
+        await fetchPropertyImages(propertyId);
+
+    if (
+        !result ||
+        !result.Success ||
+        !Array.isArray(result.Images) ||
+        result.Images.length === 0
+    ) {
+        return;
+    }
+
+    const firstImage =
+        slider.querySelector(".property-image");
+
+    if (!firstImage) {
+        return;
+    }
+
+    // Extract image base url from the existing feature image
+    const imageBaseURL =
+        firstImage.src.substring(
+            0,
+            firstImage.src.lastIndexOf("/") + 1
+        );
+
+    const previousButton =
+        slider.querySelector(".prev");
+
+    const nextButton =
+        slider.querySelector(".next");
+
+    const dotsContainer =
+        slider.querySelector(".slider-dots");
+
+    if (
+        !previousButton ||
+        !nextButton ||
+        !dotsContainer
+    ) {
+        return;
+    }
+
+    // Remove placeholder image
+    firstImage.remove();
+    
+    dotsContainer.innerHTML = "";
+
+    // Create slider images
+    result.Images.forEach((imageName, index) => {
+
+        const image =
+            document.createElement("img");
+
+        image.src = imageBaseURL + imageName;
+        image.className = "property-image slider-image";
+
+        if (index === 0) {
+            image.classList.add("active");
+        }
+
+        slider.insertBefore(image, previousButton);
+
+        // Dot
+        const dot = 
+            document.createElement("span");
+        
+        dot.className = "slider-dot";
+
+        if(index === 0) {
+            dot.classList.add("active");
+        }
+
+        dot.dataset.index = index;
+
+        dotsContainer.appendChild(dot);
+    });
+
+    slider.dataset.currentIndex = 0;
+
+
+    previousButton.addEventListener("click", () => {
+
+        const current =
+            Number(slider.dataset.currentIndex);
+
+        showSlide(
+            slider,
+            current - 1
+        );
+
+    });
+
+    nextButton.addEventListener("click", () => {
+
+        const current =
+            Number(slider.dataset.currentIndex);
+
+        showSlide(
+            slider,
+            current + 1
+        );
+
+    });
+}

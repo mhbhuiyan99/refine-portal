@@ -105,6 +105,14 @@
     object-fit: cover;
 }
 
+.slider-image {
+    display: none;
+}
+
+.slider-image.active {
+    display: block;
+}
+
 .image-wrapper {
     position: relative;
     width: 100%;
@@ -119,7 +127,6 @@
 
 .slider-btn {
     position: absolute;
-
     top: 50%;
     transform: translateY(-50%);
 
@@ -129,19 +136,57 @@
     border: none;
     border-radius: 50%;
 
+    background: rgba(255,255,255,.85);
     cursor: pointer;
 
-    background: rgba(255, 255, 255, 0.836);
+    z-index: 20;
+
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.property-slider:hover .slider-btn {
+    opacity: 1;
+}
+
+.slider-btn.prev {
+    left: 8px;
+}
+
+.slider-btn.next {
+    right: 8px;
+}
+
+.slider-dots {
+    position: absolute;
+
+    left: 50%;
+    bottom: 10px;
+
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: 6px;
 
     z-index: 20;
 }
 
-.slider-btn.prev {
-    left: 10px;
+.slider-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.75);
+
+    border: 1px solid rgba(0,0,0,.25);
+
+    cursor: pointer;
 }
 
-.slider-btn.next {
-    right: 10px;
+.slider-dot.active {
+    background: #fff;
+    border-color: rgba(0,0,0,.5);
 }
 
 .property-title{

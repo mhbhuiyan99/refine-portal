@@ -22,6 +22,7 @@ type PartnerInfo struct {
 }
 
 type PropertyDetails struct {
+	ID       string   `json:"ID"`
 	Property Property `json:"Property"`
 	Partner  Partner  `json:"Partner"`
 	Feed     int      `json:"Feed"`

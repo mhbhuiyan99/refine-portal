@@ -50,7 +50,7 @@ function renderPropertyCard(item, countryCode) {
 
                 <div
                     class="property-slider"
-                    data-property-id="${p.PropertyID}"
+                    data-property-id="${item.ID}"
                 >
 
                     <img
@@ -73,7 +73,9 @@ function renderPropertyCard(item, countryCode) {
                         &#10095;
                     </button>
 
-                    <div class="slider-dots"></div>
+                    <div class="slider-dots">
+
+                    </div>
 
                 </div>
 
