@@ -47,7 +47,7 @@ async function init() {
           min: Math.floor(Math.min(...prices)),
           max: Math.ceil(Math.max(...prices)),
       };
-  }
+    }
 
     const countryCode = location.GeoInfo.CountryCode;
 
