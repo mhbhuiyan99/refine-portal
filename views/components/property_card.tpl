@@ -4,10 +4,32 @@
 
     <div class="image-wrapper">
 
-        <img
-            class="property-image"
-            src="{{if .Property.FeatureImage}}{{.Property.FeatureImage}}{{else}}/static/images/placeholder.jpg{{end}}"
-            alt="{{.Property.PropertyName}}">
+        <div
+            class="property-slider"
+            data-property-id="{{.ID}}">
+
+            <img
+                class="property-image"
+                src="{{if .Property.FeatureImage}}{{.Property.FeatureImage}}{{else}}/static/images/placeholder.jpg{{end}}"
+                alt="{{.Property.PropertyName}}">
+
+            <button
+                class="slider-btn prev"
+                aria-label="Previous Image">
+                &#10094;
+            </button>
+
+            <button
+                class="slider-btn next"
+                aria-label="Next Image">
+                &#10095;
+            </button>
+
+            <div class="slider-dots">
+            </div>
+
+        </div>
+
     </div>
 
     <div class="property-body">

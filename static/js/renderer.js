@@ -119,9 +119,12 @@ const observer = new IntersectionObserver(entries => {
     rootMargin: "300px"
 });
 
-observer.observe(
-    document.getElementById("load-more-trigger")
-);
+const trigger =
+    document.getElementById("load-more-trigger");
+
+if (trigger) {
+    observer.observe(trigger);
+}
 
 function renderSkeletonCards(count = 32) {
 

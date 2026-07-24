@@ -54,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     browseButton.addEventListener("click", searchCategory);
     buildPropertyTypeTabs();
+
+    initializeCategorySliders();
 });
 
 
@@ -250,5 +252,17 @@ function buildPropertyTypeTabs() {
         tabContainer.appendChild(btn);
 
     });
+}
+
+function initializeCategorySliders() {
+
+    const sliders =
+        document.querySelectorAll(".property-slider");
+
+        sliders.forEach(slider => {
+
+            initializePropertySlider(slider);
+
+        });
 
 }
