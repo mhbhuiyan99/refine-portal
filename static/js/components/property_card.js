@@ -71,6 +71,12 @@ function renderPropertyCard(item, countryCode) {
                         alt="${p.PropertyName}"
                     >
 
+                    <div class="slider-loading hidden">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
                     <button
                         class="slider-btn prev"
                         aria-label="Previous Image"

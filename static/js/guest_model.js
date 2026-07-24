@@ -3,6 +3,7 @@ let guestCount = 2;
 function toggleGuestPopup() {
 
     let popup = document.getElementById("guest-popup");
+    guestCount = window.selectedGuests ?? 2;
 
     if (!popup) {
 
@@ -90,6 +91,7 @@ function updateGuestUI() {
         guestText.textContent = `${guestCount} Guests`;
     }
 
+    window.filterState.guests = guestCount;
     window.selectedGuests = guestCount;
 }
 

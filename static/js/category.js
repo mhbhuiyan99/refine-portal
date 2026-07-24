@@ -147,7 +147,13 @@ async function searchCategory() {
             );
     }
 
-    url += "&pax=" + (window.filterState.guests || 2);
+    const pax =
+        window.filterState.guests > 0
+            ? window.filterState.guests
+            : 2;
+
+    url += "&pax=" + pax;
+    
     url += "&order=1";
 
     window.location.href = url;

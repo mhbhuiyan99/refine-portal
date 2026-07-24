@@ -12,6 +12,12 @@
                 class="property-image"
                 src="{{if .Property.FeatureImage}}{{.Property.FeatureImage}}{{else}}/static/images/placeholder.jpg{{end}}"
                 alt="{{.Property.PropertyName}}">
+            
+            <div class="slider-loading hidden">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
 
             <button
                 class="slider-btn prev"

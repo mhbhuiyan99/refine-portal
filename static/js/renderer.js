@@ -232,6 +232,7 @@ async function ensureSliderLoaded(slider) {
     }
 
     slider.dataset.loading = "true";
+    showSliderLoading(slider);
 
     const propertyId = slider.dataset.propertyId;
     const result = await fetchPropertyImages(propertyId);
@@ -240,6 +241,8 @@ async function ensureSliderLoaded(slider) {
         result && result.Success && Array.isArray(result.Images) ? result.Images : [];
 
     buildSlider(slider, realImages);
+
+    hideSliderLoading(slider);
 
     slider.dataset.loaded = "true";
     slider.dataset.loading = "false";
@@ -312,4 +315,20 @@ function showSlide(slider, index) {
     const nextBtn = slider.querySelector(".next");
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === images.length - 1;
+}
+
+function showSliderLoading(slider){
+
+    slider
+        .querySelector(".slider-loading")
+        ?.classList.remove("hidden");
+
+}
+
+function hideSliderLoading(slider){
+
+    slider
+        .querySelector(".slider-loading")
+        ?.classList.add("hidden");
+
 }
