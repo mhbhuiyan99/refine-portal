@@ -86,6 +86,15 @@ function applyDates(mode = "refine", input = null) {
         window.filterState.startDate = dates[0];
         window.filterState.endDate = dates[1];
 
+        const nights =
+            Math.ceil(
+                (
+                    dates[1] - dates[0]
+                ) / (1000 * 60 * 60 * 24)
+            );
+
+        window.filterState.nights = nights;
+
         const start = flatpickr.formatDate(dates[0], "M j");
         const end = flatpickr.formatDate(dates[1], "M j");
 

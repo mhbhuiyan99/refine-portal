@@ -41,6 +41,18 @@ function renderPropertyCard(item, countryCode) {
     const city = item.GeoInfo?.City || "";
     const distance = item.GeoInfo?.DistanceFromCenter || "";
 
+    const nightPrice =
+        convertPrice(
+            p.Price,
+            countryCode
+        );
+
+    const nights =
+        window.filterState?.nights || 7;
+
+    const totalPrice =
+        nightPrice * nights;
+
     return `
         <div
             class="property-card"
@@ -158,6 +170,16 @@ function renderPropertyCard(item, countryCode) {
                         ${formatCurrency(p.Price, countryCode)}
 
                         <span>/night</span>
+
+                        <div class="total-price">
+
+                            ${nights} night${nights > 1 ? "s" : ""}
+
+                            -
+
+                            ${formatCurrency(totalPrice, countryCode)}
+
+                        </div>
 
                     </div>
 
