@@ -41,11 +41,25 @@ function openDateModal(mode = "refine", input = null) {
             showMonths: 2,
             monthSelectorType: "static",
             dateFormat: "Y-m-d",
-            static: true
+            static: true,
+            minDate: "today"
         });
     }
 
+    if (window.filterState.startDate && window.filterState.endDate) {
+
+        datePicker.setDate([
+            window.filterState.startDate,
+            window.filterState.endDate
+        ], false);
+
+    }
+
     modal.style.display = "flex";
+
+    datePicker.jumpToDate(
+        window.filterState.startDate || new Date()
+    );
 
 }
 

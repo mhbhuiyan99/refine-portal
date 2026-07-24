@@ -175,6 +175,7 @@
     opacity:1;
 
     pointer-events:auto;
+    cursor: pointer;
 
     gap:8px;
 }
