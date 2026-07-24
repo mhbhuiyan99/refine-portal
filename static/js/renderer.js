@@ -261,6 +261,15 @@ async function initializePropertySlider(slider) {
     const nextButton =
         slider.querySelector(".next");
 
+    // Hide navigation if only one image exists.
+    if (result.Images.length <= 1) {
+
+        previousButton.style.display = "none";
+        nextButton.style.display = "none";
+
+        return;
+    }
+
     const dotsContainer =
         slider.querySelector(".slider-dots");
 
@@ -303,6 +312,10 @@ async function initializePropertySlider(slider) {
         }
 
         dot.dataset.index = index;
+
+        dot.addEventListener("click", () => {
+            showSlide(slider, index);
+        });
 
         dotsContainer.appendChild(dot);
     });
