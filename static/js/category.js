@@ -255,14 +255,6 @@ function buildPropertyTypeTabs() {
 }
 
 function initializeCategorySliders() {
-
-    const sliders =
-        document.querySelectorAll(".property-slider");
-
-        sliders.forEach(slider => {
-
-            initializePropertySlider(slider);
-
-        });
-
+    const sliders = document.querySelectorAll(".property-slider");
+    sliders.forEach(initSlider);
 }
