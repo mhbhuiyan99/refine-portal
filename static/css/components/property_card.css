@@ -206,8 +206,32 @@
 }
 
 .property-rating{
-    font-weight:600;
+    display:flex;
+    align-items:center;
     margin-bottom:10px;
+}
+
+.rating-badge{
+
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    background:#172b4d;
+    color:white;
+
+    padding:3px 8px;
+
+    border-radius:20px;
+
+    font-weight:600;
+    font-size:14px;
+}
+
+.rating-icon{
+
+    width:14px;
+    height:14px;
 }
 
 .property-attribute{

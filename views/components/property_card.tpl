@@ -49,7 +49,7 @@
         <div class="property-location">
 
             <img
-                src="/static/images/location.png"
+                src="/static/images/amenities/map_pin.svg"
                 class="location-icon">
 
             {{.GeoInfo.State}}
@@ -70,9 +70,21 @@
 
         <div class="property-rating">
 
-            ⭐ {{.Property.ReviewScore}}
+            <div class="rating-badge">
+
+                <img
+                    src="/static/images/amenities/like-v2.svg"
+                    class="rating-icon"
+                    alt="Rating">
+
+                <span>
+                    {{.Property.ReviewScore}}
+                </span>
+
+            </div>
 
         </div>
+        
 
         {{if .Property.PropertyAttribute}}
 

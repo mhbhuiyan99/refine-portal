@@ -114,7 +114,14 @@ function renderPropertyCard(item, countryCode) {
 
                 <div class="property-rating">
 
-                    ⭐ ${p.ReviewScore}
+                    <div class="rating-badge">
+                        <img
+                            src="/static/images/amenities/like-v2.svg"
+                            class="rating-icon"
+                            alt="Rating"
+                        >
+                        <span>${p.ReviewScore}</span>
+                    </div>
 
                 </div>
 
