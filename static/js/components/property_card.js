@@ -48,7 +48,7 @@ function renderPropertyCard(item, countryCode) {
         );
 
     const nights =
-        window.filterState?.nights || 7;
+        getSelectedNights();
 
     const totalPrice =
         nightPrice * nights;
@@ -221,4 +221,21 @@ function renderPropertyCard(item, countryCode) {
 
         </div>
     `;
+}
+
+function getSelectedNights() {
+
+    const start = window.filterState?.startDate;
+    const end   = window.filterState?.endDate;
+
+    if (!start || !end) {
+        return 7;
+    }
+
+    const diff =
+        Math.ceil(
+            (end - start) / (1000 * 60 * 60 * 24)
+        );
+
+    return diff > 0 ? diff : 7;
 }
