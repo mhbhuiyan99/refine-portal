@@ -392,3 +392,28 @@ body{
     }
 }
 
+@media (max-width:768px){
+
+.navbar{
+    height:64px;
+}
+
+.navbar-left{
+    display:none;
+}
+
+.navbar-logo{
+    position:static;
+    transform:none;
+}
+
+.navbar-container{
+    justify-content:space-between;
+}
+
+.navbar-logo img{
+    height:36px;
+}
+
+}
+
