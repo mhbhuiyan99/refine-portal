@@ -57,7 +57,7 @@ func (c *CategoryController) Get() {
 	countryCode := location.GeoInfo.CountryCode
 
 	categories, err := services.GetCategory(categorySlug, countryCode)
-
+	logs.Info("Location Response: %+v", location.GeoInfo)
 	if err != nil {
 		logs.Error(
 			"[CategoryController] GetCategory failed | slug=%s | err=%v",

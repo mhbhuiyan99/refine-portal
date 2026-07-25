@@ -60,33 +60,83 @@ GET /all/bangladesh/dhaka-division/dhaka
 
 ### Task 3: Request Layer Refactor
 
-A dedicated `requests` layer was introduced to cleanly separate external API communication from business logic and routing.
+The final architecture uses a layered design that clearly separates responsibilities across the application.
 
-**Architecture changes:**
-- `controllers/` now handle request routing, parameter validation, and response rendering only
-- `services/` now orchestrate business logic and delegate external API reads to the request layer
-- `requests/` now contains all HTTP API logic: URL construction, headers, query parameters, request execution, response decoding, and error handling
+**Architecture:**
+- **Controllers**
+  - Handle routing, request validation, HTTP context, and template/JSON responses.
+  - No longer communicate directly with external APIs.
+- **Services**
+  - Contain business logic and orchestrate application flow.
+  - Coordinate calls to the request layer.
+  - Handle execution timing and service-level logging.
+  - Keep controllers lightweight and focused on HTTP handling.
+- **Requests**
+  - Responsible for all external API communication.
+  - Build request URLs, create HTTP requests, parse responses, and return typed models.
+- **Shared HTTP Client**
+  - `requests/client.go` centralizes request creation, common headers, authentication, query parameters, response parsing, error handling, and logging.
 
-**Why this matters:**
-- Reduces duplicated HTTP client code across the app
-- Keeps service boundary clear and controllers simple
-- Enables reusable request helpers for all external endpoints
-- Makes new API endpoints easier to add and maintain
+**Benefits:**
+- Clear separation of concerns.
+- Business logic moved from controllers into services.
+- Reusable HTTP request utilities across all API layers.
+- Easier maintenance and better readability.
+- Easier to add new APIs.
+- Consistent logging and error handling.
 
 **Backend data flow:**
-1. Controller receives an incoming HTTP request
-2. Controller extracts and validates route/query parameters
-3. Controller calls a service function
-4. Service calls the request layer to fetch external data
-5. Request layer builds the HTTP request, executes it, and decodes the response
-6. Service returns typed models back to the controller
-7. Controller renders JSON or template output
+1. Controller receives an incoming HTTP request.
+2. Controller validates parameters and request context.
+3. Controller calls a service function.
+4. Service executes business logic and calls the request layer.
+5. Request layer builds and executes the HTTP request, parses the response, and returns typed models.
+6. Service returns structured data back to the controller.
+7. Controller renders JSON or templates.
 
 **What changed:**
-- `requests/client.go` now contains shared HTTP helpers: `BuildURL`, `NewGETRequest`, and `DoRequest`
-- `requests/location_request.go`, `requests/property_list_request.go`, `requests/property_request.go`, and `requests/category_request.go` now use shared URL construction and response parsing
-- `services/` files are now compact and focus on orchestration rather than request plumbing
-- `controllers/` now translate incoming parameters and render responses only
+- `requests/client.go` now provides shared HTTP helpers for every external endpoint.
+- `requests/` handles all API-specific request building and response parsing.
+- `services/` orchestrate requests and business logic, keeping controllers small.
+- `controllers/` now only handle HTTP flow and rendering.
+- `requests/property_image_request.go` supports the Property Images API.
+
+---
+
+### Task 4: Property Image Slider
+
+Property cards now include a shared image slider component used by both the Refine Page and Category Page.
+
+**Implementation details:**
+- Property images are fetched **on demand**.
+- Initially only the feature image is displayed.
+- Additional images are requested only when the user clicks the next arrow.
+- A three-dot loading indicator appears while the image request is in progress.
+- Images are cached after the first request to avoid repeated API calls for the same property.
+- The same slider implementation is shared by both Refine and Category pages.
+- Navigation supports previous/next buttons and dot indicators.
+- The slider remains responsive and works across different screen sizes.
+
+**Why this matters:**
+- Reduces initial page weight by delaying image loading.
+- Avoids duplicate API requests for the same property.
+- Maintains a responsive, consistent UI across pages.
+- Gives users smooth image browsing inside each property card.
+
+---
+
+### Additional Features
+
+The final implementation also includes improved interactive filtering and pricing.
+
+- Dynamic currency conversion.
+- Guest filtering.
+- Price filtering.
+- Amenity filtering.
+- Dynamic total price calculation.
+- Property cards display the total price for a **7-night stay** by default.
+- When the user selects check-in and check-out dates, the total price automatically updates to reflect the **actual number of selected nights**.
+- The "/night" price always represents the nightly rate, while the line below dynamically shows the total stay cost.
 
 ---
 
@@ -168,6 +218,23 @@ Refine Portal integrates with three main external property APIs, all configured 
 ```
 <BASE_URL>/api/property/bookmark/v1
   ?propertyIdList=prop123,prop456,prop789
+```
+
+---
+
+### Property Images API
+**Purpose:** Fetch additional images for a single property to power the image slider
+**Endpoint:** `GET /api/property/images/v1`  
+**Parameters:**
+- `propertyId` - Unique property identifier
+
+**Returns:**
+- A list of image file names for the requested property
+
+**Example:**
+```
+<BASE_URL>/api/property/images/v1
+  ?propertyId=12345
 ```
 
 ---
@@ -587,6 +654,16 @@ http://localhost:8080/all/bangladesh/dhaka-division/dhaka
 
 ---
 
+### Property Images API
+**Route:** `GET /api/property/images/v1`
+
+**Example:**
+```
+http://localhost:8080/api/property/images/v1?propertyId=12345
+```
+
+---
+
 ## Development Workflow
 
 ### Code Organization
@@ -685,6 +762,7 @@ curl http://localhost:8080/all/usa
 | [requests/location_request.go](requests/location_request.go) | Location API request logic |
 | [requests/property_list_request.go](requests/property_list_request.go) | Property List API request logic |
 | [requests/property_request.go](requests/property_request.go) | Property Details API request logic |
+| [requests/property_image_request.go](requests/property_image_request.go) | Property Images API request logic |
 | [requests/category_request.go](requests/category_request.go) | Category API request logic |
 | [static/js/refine.js](static/js/refine.js) | Refine page JavaScript logic |
 | [static/js/category.js](static/js/category.js) | Category page JavaScript logic |
