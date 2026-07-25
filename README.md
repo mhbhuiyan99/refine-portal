@@ -2,7 +2,7 @@
 
 > A property discovery portal built with **Beego** demonstrating API integration, dynamic filtering, sorting, and responsive UI components.
 
-**Project Type:** Beego Web Application  
+**Project Type:** Beego Web Application
 
 ---
 
@@ -19,6 +19,7 @@ Refine Portal is a full-stack property discovery application that integrates wit
 A modern property search interface with real-time filtering and sorting capabilities.
 
 **Features:**
+
 - Destination Autocomplete - Search properties by location in real-time
 - Property Grid - Responsive 4-column desktop, 2-column tablet, 1-column mobile layout
 - Dynamic Filtering - Filter by property type, price range, amenities, and more
@@ -29,6 +30,7 @@ A modern property search interface with real-time filtering and sorting capabili
 - Breadcrumb Navigation - Easy location hierarchy navigation
 
 **URL Structure:**
+
 ```
 GET /refine?search=Dhaka,Bangladesh&order=1
 ```
@@ -40,6 +42,7 @@ GET /refine?search=Dhaka,Bangladesh&order=1
 Server-side rendered dynamic location pages for browsing properties by geography.
 
 **Features:**
+
 - Server-Side Rendering (SSR) - Fast initial page load with SEO optimization
 - Dynamic Location Pages - Hierarchical location support (country, state, city)
 - Property Sections - Organized property listings by category
@@ -49,6 +52,7 @@ Server-side rendered dynamic location pages for browsing properties by geography
 - Breadcrumb Navigation - Location hierarchy visualization
 
 **URL Structure:**
+
 ```
 GET /all/:location
 GET /all/usa
@@ -63,6 +67,7 @@ GET /all/bangladesh/dhaka-division/dhaka
 The final architecture uses a layered design that clearly separates responsibilities across the application.
 
 **Architecture:**
+
 - **Controllers**
   - Handle routing, request validation, HTTP context, and template/JSON responses.
   - No longer communicate directly with external APIs.
@@ -78,6 +83,7 @@ The final architecture uses a layered design that clearly separates responsibili
   - `requests/client.go` centralizes request creation, common headers, authentication, query parameters, response parsing, error handling, and logging.
 
 **Benefits:**
+
 - Clear separation of concerns.
 - Business logic moved from controllers into services.
 - Reusable HTTP request utilities across all API layers.
@@ -86,6 +92,7 @@ The final architecture uses a layered design that clearly separates responsibili
 - Consistent logging and error handling.
 
 **Backend data flow:**
+
 1. Controller receives an incoming HTTP request.
 2. Controller validates parameters and request context.
 3. Controller calls a service function.
@@ -95,6 +102,7 @@ The final architecture uses a layered design that clearly separates responsibili
 7. Controller renders JSON or templates.
 
 **What changed:**
+
 - `requests/client.go` now provides shared HTTP helpers for every external endpoint.
 - `requests/` handles all API-specific request building and response parsing.
 - `services/` orchestrate requests and business logic, keeping controllers small.
@@ -108,6 +116,7 @@ The final architecture uses a layered design that clearly separates responsibili
 Property cards now include a shared image slider component used by both the Refine Page and Category Page.
 
 **Implementation details:**
+
 - Property images are fetched **on demand**.
 - Initially only the feature image is displayed.
 - Additional images are requested only when the user clicks the next arrow.
@@ -118,6 +127,7 @@ Property cards now include a shared image slider component used by both the Refi
 - The slider remains responsive and works across different screen sizes.
 
 **Why this matters:**
+
 - Reduces initial page weight by delaying image loading.
 - Avoids duplicate API requests for the same property.
 - Maintains a responsive, consistent UI across pages.
@@ -148,6 +158,7 @@ The API base URL is configurable and should be set in `conf/app.conf`. To keep d
 - `image_base_url` - Base URL used for images
 
 **Example config values:**
+
 ```ini
 base_url = https://api.example.com
 image_base_url = https://images.example.com/640x287/
@@ -160,13 +171,16 @@ image_base_url = https://images.example.com/640x287/
 Refine Portal integrates with three main external property APIs, all configured through the `base_url` setting:
 
 ### Location API
+
 **Purpose:** Destination search & autocomplete  
 **Endpoint:** `GET /api/location/v1`  
 **Parameters:**
+
 - `keyword` - Search term (e.g., "dhaka, Bangladesh")
 - `isLocationEntity` - Boolean to filter location entities
 
 **Example:**
+
 ```
 <BASE_URL>/api/location/v1
   ?keyword=dhaka,Bangladesh
@@ -176,9 +190,11 @@ Refine Portal integrates with three main external property APIs, all configured 
 ---
 
 ### Property List API
+
 **Purpose:** Retrieve property IDs and metadata for a location  
 **Endpoint:** `GET /api/properties/category/v1`  
 **Parameters:**
+
 - `category` - Location category path (e.g., "bangladesh/dhaka-division/dhaka/973")
 - `order` - Sort order (1 = relevance)
 - `limit` - Number of properties to return
@@ -187,6 +203,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 - `device` - Device type (desktop/mobile)
 
 **Example:**
+
 ```
 <BASE_URL>/api/properties/category/v1
   ?order=1
@@ -201,12 +218,15 @@ Refine Portal integrates with three main external property APIs, all configured 
 ---
 
 ### Property Details API
+
 **Purpose:** Fetch complete property information (images, prices, amenities, ratings)  
 **Endpoint:** `GET /api/property/bookmark/v1`  
 **Parameters:**
+
 - `propertyIdList` - Comma-separated property IDs from Property List API
 
 **Returns:**
+
 - Property images
 - Price information
 - Ratings & reviews
@@ -215,6 +235,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 - Property feed ID
 
 **Example:**
+
 ```
 <BASE_URL>/api/property/bookmark/v1
   ?propertyIdList=prop123,prop456,prop789
@@ -223,15 +244,19 @@ Refine Portal integrates with three main external property APIs, all configured 
 ---
 
 ### Property Images API
+
 **Purpose:** Fetch additional images for a single property to power the image slider
 **Endpoint:** `GET /api/property/images/v1`  
 **Parameters:**
+
 - `propertyId` - Unique property identifier
 
 **Returns:**
+
 - A list of image file names for the requested property
 
 **Example:**
+
 ```
 <BASE_URL>/api/property/images/v1
   ?propertyId=12345
@@ -240,9 +265,11 @@ Refine Portal integrates with three main external property APIs, all configured 
 ---
 
 ### Category API (Location-wise Details)
+
 **Purpose:** Retrieve category metadata, hero section, and aggregated property data  
 **Endpoint:** `GET /api/v1/category/details`  
 **Parameters:**
+
 - `category` - Category path (e.g., "usa:texas")
 - `aggsAvgPrice` - Include average price aggregation
 - `aggsAvgRating` - Include average rating aggregation
@@ -252,12 +279,14 @@ Refine Portal integrates with three main external property APIs, all configured 
 - `locations` - Location codes
 
 **Returns:**
+
 - Category metadata & descriptions
 - Hero section information
 - Property sections & aggregations
 - Statistics (avg price, rating, room size)
 
 **Example:**
+
 ```
 <BASE_URL>/api/v1/category/details/usa:texas
   ?aggsAvgPrice=1
@@ -275,6 +304,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 ## Architecture & Data Flow
 
 ### Refine Page (Client-Side Rendering)
+
 ```
 ┌─────────────┐
 │   Browser   │ User enters search term
@@ -314,6 +344,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 ```
 
 ### Category Page (Server-Side Rendering)
+
 ```
 ┌─────────────┐
 │   Browser   │ Navigate to /all/usa/texas
@@ -360,10 +391,12 @@ Refine Portal integrates with three main external property APIs, all configured 
 ## Key Components
 
 ### Property Card Component
+
 **Used in:** Refine page, Category page  
 **Shared across:** Both Task 1 & Task 2
 
 **Displays:**
+
 - Property image with fallback
 - Property type badge
 - Star rating with count
@@ -375,6 +408,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 - Direct booking link to partner
 
 **Variants:**
+
 - Desktop: Full details visible
 - Mobile: Condensed layout
 
@@ -383,6 +417,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 ### Filter & Sort Components
 
 **Filtering:**
+
 - Property type filtering
 - Price range slider
 - Amenities multi-select
@@ -391,6 +426,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 - Date range picker
 
 **Sorting Options:**
+
 - Relevance (default)
 - Price (low to high)
 - Price (high to low)
@@ -403,11 +439,11 @@ Refine Portal integrates with three main external property APIs, all configured 
 
 Dynamic partner linking based on property feed ID:
 
-| Feed ID | Partner | Logo | Link |
-|---------|---------|------|------|
-| 11 | Booking.com | Yes | booking.com/property |
-| 12 | Vrbo | Yes | vrbo.com/property |
-| 24 | Expedia | Yes | expedia.com/property |
+| Feed ID | Partner     | Logo | Link                 |
+| ------- | ----------- | ---- | -------------------- |
+| 11      | Booking.com | Yes  | booking.com/property |
+| 12      | Vrbo        | Yes  | vrbo.com/property    |
+| 24      | Expedia     | Yes  | expedia.com/property |
 
 Both partner logo and **"View Deal"** button use the partner's booking URL.
 
@@ -417,11 +453,11 @@ Both partner logo and **"View Deal"** button use the partner's booking URL.
 
 **Layout Breakpoints:**
 
-| Device | Columns | Width |
-|--------|---------|-------|
-| Desktop | 4 | 1200px+ |
-| Tablet | 2 | 768px - 1199px |
-| Mobile | 1 | < 768px |
+| Device  | Columns | Width          |
+| ------- | ------- | -------------- |
+| Desktop | 4       | 1200px+        |
+| Tablet  | 2       | 768px - 1199px |
+| Mobile  | 1       | < 768px        |
 
 **Technologies:** CSS Grid, Flexbox, Mobile-first media queries
 
@@ -432,11 +468,13 @@ Both partner logo and **"View Deal"** button use the partner's booking URL.
 Enables hierarchical navigation across locations.
 
 **Refine Page Example:**
+
 ```
 Home > Bangladesh > Dhaka Division > Dhaka
 ```
 
 **Category Page Example:**
+
 ```
 Home > USA > Texas > Austin
 ```
@@ -445,15 +483,15 @@ Home > USA > Texas > Austin
 
 ## Technologies & Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Backend** | Go 1.25 | Programming language |
-| **Framework** | Beego v2 | Web framework & MVC |
-| **Frontend** | HTML5 | Markup & structure |
-| **Styling** | CSS3 | Responsive design |
-| **JavaScript** | Vanilla JS | Client-side logic & DOM manipulation |
-| **API** | REST | Integration with external property APIs |
-| **Rendering** | SSR (Beego) + CSR (JS) | Dual rendering strategies |
+| Layer          | Technology             | Purpose                                 |
+| -------------- | ---------------------- | --------------------------------------- |
+| **Backend**    | Go 1.25                | Programming language                    |
+| **Framework**  | Beego v2               | Web framework & MVC                     |
+| **Frontend**   | HTML5                  | Markup & structure                      |
+| **Styling**    | CSS3                   | Responsive design                       |
+| **JavaScript** | Vanilla JS             | Client-side logic & DOM manipulation    |
+| **API**        | REST                   | Integration with external property APIs |
+| **Rendering**  | SSR (Beego) + CSR (JS) | Dual rendering strategies               |
 
 ---
 
@@ -469,7 +507,6 @@ Home > USA > Texas > Austin
 - Amenities icon rendering
 - Date/guest selection modals
 - State management for filters
-
 
 ---
 
@@ -490,7 +527,8 @@ refine-portal/
 │   ├── refine.go                # Refine page controller (Task 1)
 │   ├── category.go              # Category page controller (Task 2)
 │   ├── location_api.go          # Location API handler
-│   └── property_api.go          # Property API handler
+│   ├── property_api.go          # Property API handler
+│   └── property_image_api.go    # Property Images API handler
 │
 ├── models/
 │   ├── category.go              # Category data models
@@ -510,6 +548,7 @@ refine-portal/
 │   ├── location_request.go      # Location API request logic
 │   ├── property_list_request.go # Property List API request logic
 │   ├── property_request.go      # Property Details API request logic
+│   ├── property_image_request.go # Property Images API request logic
 │   └── category_request.go      # Category API request logic
 │
 ├── routers/
@@ -571,12 +610,14 @@ refine-portal/
 ### Installation
 
 #### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/mhbhuiyan99/refine-portal.git
 cd refine-portal
 ```
 
 #### 2. Install Dependencies
+
 ```bash
 go mod tidy
 ```
@@ -605,15 +646,16 @@ basic_auth_username = <USERNAME>
 basic_auth_password = <PASSWORD>
 ```
 
-
 #### 4. Run the Application
 
 **Using Go (direct):**
+
 ```bash
 go run main.go
 ```
 
 **Using Bee (Beego CLI, optional):**
+
 ```bash
 bee run
 ```
@@ -625,13 +667,16 @@ The application will start on `http://localhost:8080`
 ## Available Routes
 
 ### Refine Page (Task 1)
+
 **Route:** `GET /refine`
 
 **Query Parameters:**
+
 - `search` - Search location (e.g., "Dhaka, Bangladesh")
 - `order` - Sort order (1 = relevance, 2 = price low-high, etc.)
 
 **Examples:**
+
 ```
 http://localhost:8080/refine
 http://localhost:8080/refine?search=Dhaka,Bangladesh&order=1
@@ -641,9 +686,11 @@ http://localhost:8080/refine?search=New%20York&order=2
 ---
 
 ### Category Page (Task 2)
+
 **Route:** `GET /all/:location`
 
 **Examples:**
+
 ```
 http://localhost:8080/all/usa
 http://localhost:8080/all/usa/texas
@@ -655,9 +702,11 @@ http://localhost:8080/all/bangladesh/dhaka-division/dhaka
 ---
 
 ### Property Images API
+
 **Route:** `GET /api/property/images/v1`
 
 **Example:**
+
 ```
 http://localhost:8080/api/property/images/v1?propertyId=12345
 ```
@@ -724,11 +773,10 @@ curl http://localhost:8080/refine?search=Dhaka
 curl http://localhost:8080/all/usa
 ```
 
-
-
 ## Performance Optimization
 
 ### Implemented:
+
 - Skeleton loading cards with shimmer effect for property listings
 - Header integration for improved loading UX
 - Infinite scrolling and load more functionality for property results
@@ -740,6 +788,7 @@ curl http://localhost:8080/all/usa
 - Concurrent property details fetching using goroutines and wait groups
 
 ### Future Improvements:
+
 - Response caching layer (Redis)
 - Image CDN optimization
 - Server-side request deduplication
@@ -752,28 +801,29 @@ curl http://localhost:8080/all/usa
 
 ### File Purpose Reference
 
-| File | Purpose |
-|------|---------|
-| [main.go](main.go) | Application bootstrap & initialization |
-| [routers/router.go](routers/router.go) | Route registration & middleware |
-| [controllers/refine.go](controllers/refine.go) | Refine page request handler |
-| [controllers/category.go](controllers/category.go) | Category page request handler |
-| [requests/client.go](requests/client.go) | Centralized HTTP client and request helpers for all API calls |
-| [requests/location_request.go](requests/location_request.go) | Location API request logic |
-| [requests/property_list_request.go](requests/property_list_request.go) | Property List API request logic |
-| [requests/property_request.go](requests/property_request.go) | Property Details API request logic |
-| [requests/property_image_request.go](requests/property_image_request.go) | Property Images API request logic |
-| [requests/category_request.go](requests/category_request.go) | Category API request logic |
-| [static/js/refine.js](static/js/refine.js) | Refine page JavaScript logic |
-| [static/js/category.js](static/js/category.js) | Category page JavaScript logic |
-| [views/refine.tpl](views/refine.tpl) | Refine page template |
-| [views/category.tpl](views/category.tpl) | Category page template |
+| File                                                                     | Purpose                                                       |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| [main.go](main.go)                                                       | Application bootstrap & initialization                        |
+| [routers/router.go](routers/router.go)                                   | Route registration & middleware                               |
+| [controllers/refine.go](controllers/refine.go)                           | Refine page request handler                                   |
+| [controllers/category.go](controllers/category.go)                       | Category page request handler                                 |
+| [requests/client.go](requests/client.go)                                 | Centralized HTTP client and request helpers for all API calls |
+| [requests/location_request.go](requests/location_request.go)             | Location API request logic                                    |
+| [requests/property_list_request.go](requests/property_list_request.go)   | Property List API request logic                               |
+| [requests/property_request.go](requests/property_request.go)             | Property Details API request logic                            |
+| [requests/property_image_request.go](requests/property_image_request.go) | Property Images API request logic                             |
+| [requests/category_request.go](requests/category_request.go)             | Category API request logic                                    |
+| [static/js/refine.js](static/js/refine.js)                               | Refine page JavaScript logic                                  |
+| [static/js/category.js](static/js/category.js)                           | Category page JavaScript logic                                |
+| [views/refine.tpl](views/refine.tpl)                                     | Refine page template                                          |
+| [views/category.tpl](views/category.tpl)                                 | Category page template                                        |
 
 ---
 
 ## Implementation Checklist
 
 ### Task 1: Refine Page
+
 - Create Beego project structure
 - Implement `/refine` route and controller
 - Create `refine.tpl` template
@@ -789,6 +839,7 @@ curl http://localhost:8080/all/usa
 - Add breadcrumb navigation
 
 ### Task 2: Category Page
+
 - Create `/all/:location` routes
 - Create category page controller
 - Create `category.tpl` template
@@ -801,13 +852,13 @@ curl http://localhost:8080/all/usa
 - Reuse property card component
 
 ### Task 3: Request Layer Refactor
+
 - Add `requests/` package for all external API calls
 - Move HTTP request logic out of controllers and services
 - Create shared request helpers for headers, URL building, and response parsing
 - Keep services small and focused on orchestration
 - Keep controllers limited to HTTP handling and response formatting
 - Update docs to describe the new request-layer architecture
-
 
 ---
 
