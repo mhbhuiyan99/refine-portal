@@ -534,12 +534,14 @@ refine-portal/
 │   ├── category.go              # Category data models
 │   ├── location.go              # Location data models
 │   ├── property.go              # Property data models
-│   └── property_details.go      # Property details data models
+│   ├── property_details.go      # Property details data models
+│   └── property_image.go        # Property images data models
 │
 ├── services/                    # Business logic & orchestration
 │   ├── location_service.go      # Location API service
 │   ├── property_service.go      # Property List API service
 │   ├── property_details_service.go  # Property Details API service
+│   ├── property_image_service.go # Property Images API service
 │   ├── category_service.go      # Category API service
 │   └── helper.go                # Utility helper functions
 │
@@ -807,12 +809,15 @@ curl http://localhost:8080/all/usa
 | [routers/router.go](routers/router.go)                                   | Route registration & middleware                               |
 | [controllers/refine.go](controllers/refine.go)                           | Refine page request handler                                   |
 | [controllers/category.go](controllers/category.go)                       | Category page request handler                                 |
+| [controllers/property_image_api.go](controllers/property_image_api.go)   | Property Images API handler                                    |
 | [requests/client.go](requests/client.go)                                 | Centralized HTTP client and request helpers for all API calls |
 | [requests/location_request.go](requests/location_request.go)             | Location API request logic                                    |
 | [requests/property_list_request.go](requests/property_list_request.go)   | Property List API request logic                               |
 | [requests/property_request.go](requests/property_request.go)             | Property Details API request logic                            |
 | [requests/property_image_request.go](requests/property_image_request.go) | Property Images API request logic                             |
+| [services/property_image_service.go](services/property_image_service.go)| Property Images service                                        |
 | [requests/category_request.go](requests/category_request.go)             | Category API request logic                                    |
+| [models/property_image.go](models/property_image.go)                     | Property Images data models                                    |
 | [static/js/refine.js](static/js/refine.js)                               | Refine page JavaScript logic                                  |
 | [static/js/category.js](static/js/category.js)                           | Category page JavaScript logic                                |
 | [views/refine.tpl](views/refine.tpl)                                     | Refine page template                                          |
