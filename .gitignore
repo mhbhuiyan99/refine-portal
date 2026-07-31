@@ -4,4 +4,4 @@ conf/app.conf
 bin/
 refine-portal
 *.test
-
+*.out
