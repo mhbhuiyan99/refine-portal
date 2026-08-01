@@ -1,6 +1,8 @@
 package requests
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 
@@ -105,4 +107,46 @@ func TestBuildURL(t *testing.T) {
 			assert.Equal(t, tc.expectedURL, result)
 		})
 	}
+}
+
+type testResponse struct {
+	Name string `json: "name"`
+}
+
+func TestDoRequest_Success(t *testing.T) {
+	// Create a fake HTTP server
+	server := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http. Request) {
+			// Verify the request reached the server
+			assert.Equal(t, http.MethodGet, r.Method)
+
+			// Return a successful JSON response
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			_, err := w.Write([]byte(`{"name":"Alice"}`))
+			assert.NoError(t, err)
+		}),
+	)
+
+	defer server.Close()
+
+	// Create a request to the fake server
+	req, err := http.NewRequest(
+		http.MethodGet,
+		server.URL,
+		nil,
+	)
+
+	assert.NoError(t, err)
+
+	// Response will be decoded into this struct
+	var result testResponse
+
+	// Call the function we're testing
+	err = DoRequest(req, &result)
+
+	// Verify the result
+	assert.NoError(t, err)
+	assert.Equal(t, "Alice", result.Name)
 }
