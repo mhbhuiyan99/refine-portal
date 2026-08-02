@@ -91,8 +91,9 @@ Typical use cases:
 
 ### Functions Tested
 
-- `chunkStrings()`
-- `GetLocation()`
+- chunkStrings()
+- GetLocation()
+- GetProperties()
 
 ### Testing Focus
 
@@ -130,6 +131,27 @@ Why gomonkey?
 This isolates the service layer and ensures the test verifies only the service logic without making real HTTP requests.
 
 ---
+
+#### GetProperties()
+
+Verified:
+
+- Returns the property list when the request layer succeeds.
+- Returns the request layer error without modification.
+
+Tool Used:
+
+- gomonkey
+- Testify
+
+Why gomonkey?
+
+`GetProperties()` depends on `requests.GetPropertyListRequest()`. During unit testing, the request layer is replaced with a fake implementation using `gomonkey`.
+
+This allows the service logic to be tested independently without making real HTTP requests.
+
+---
+
 
 ## Requests
 
