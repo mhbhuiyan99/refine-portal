@@ -64,8 +64,6 @@ without requiring internet connectivity or real API credentials.
 
 ---
 
----
-
 ## gomonkey
 
 Purpose:
@@ -94,6 +92,7 @@ Typical use cases:
 - chunkStrings()
 - GetLocation()
 - GetProperties()
+- GetPropertyDetails()
 
 ### Testing Focus
 
@@ -149,6 +148,27 @@ Why gomonkey?
 `GetProperties()` depends on `requests.GetPropertyListRequest()`. During unit testing, the request layer is replaced with a fake implementation using `gomonkey`.
 
 This allows the service logic to be tested independently without making real HTTP requests.
+
+---
+
+#### GetPropertyDetails()
+
+Verified:
+
+- Splits property IDs into batches.
+- Retrieves property details from the request layer.
+- Merges batch responses into a single result.
+- Builds complete image URLs.
+- Attaches partner feed information to each property.
+
+Tool Used:
+
+- gomonkey
+- Testify
+
+Why gomonkey?
+
+`GetPropertyDetails()` depends on external request-layer functions to retrieve property details and configuration values. These dependencies are replaced using `gomonkey` so that the service logic can be tested independently without making external API calls or reading application configuration.
 
 ---
 

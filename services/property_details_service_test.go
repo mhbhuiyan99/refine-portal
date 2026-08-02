@@ -1,0 +1,103 @@
+package services
+
+import (
+	"testing"
+
+	"refine-portal/models"
+	"refine-portal/requests"
+
+	"github.com/agiledragon/gomonkey/v2"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestGetPropertyDetails_Success(t *testing.T) {
+
+	req := models.PropertyDetailsRequest{
+		PropertyIDList: []string{"101", "102"},
+	}
+
+	expectedBatch := &models.PropertyDetailsResponse{
+		Success: true,
+
+		Items: []models.PropertyDetails{
+			{
+				ID: "101",
+				Property: models.Property{
+					FeatureImage: "house1.jpg",
+				},
+			},
+			{
+				ID: "102",
+				Property: models.Property{
+					FeatureImage: "house2.jpg",
+				},
+			},
+		},
+
+		Result: models.PropertyDetailsResult{
+			ItemsByID: map[string]models.PartnerInfo{
+				"101": {
+					Feed: 11,
+				},
+				"102": {
+					Feed: 12,
+				},
+			},
+		},
+	}
+
+	patches := gomonkey.NewPatches()
+
+	patches.ApplyFunc(
+		requests.GetPropertyDetailsRequest,
+		func(ids []string) (*models.PropertyDetailsResponse, error) {
+
+			assert.Equal(t, req.PropertyIDList, ids)
+
+			return expectedBatch, nil
+		},
+	)
+
+	patches.ApplyFunc(
+		requests.GetURLFromConfig,
+		func(key string) (string, error) {
+
+			assert.Equal(t, "image_base_url", key)
+
+			return "https://images.test.com", nil
+		},
+	)
+
+	defer patches.Reset()
+
+	result, err := GetPropertyDetails(req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+
+	assert.Len(t, result.Items, 2)
+
+	assert.Equal(
+		t,
+		"https://images.test.com/house1.jpg",
+		result.Items[0].Property.FeatureImage,
+	)
+
+	assert.Equal(
+		t,
+		"https://images.test.com/house2.jpg",
+		result.Items[1].Property.FeatureImage,
+	)
+
+	assert.Equal(
+		t,
+		11,
+		result.Items[0].Feed,
+	)
+
+	assert.Equal(
+		t,
+		12,
+		result.Items[1].Feed,
+	)
+}
