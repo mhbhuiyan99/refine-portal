@@ -161,6 +161,7 @@ Verified:
 - Builds complete image URLs.
 - Attaches partner feed information to each property.
 - Returns immediately when any request batch fails.
+- Returns an error if the image base URL configuration cannot be loaded.
 
 Tool Used:
 

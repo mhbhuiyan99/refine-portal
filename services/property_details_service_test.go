@@ -129,3 +129,54 @@ func TestGetPropertyDetails_RequestError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedErr, err)
 }
+
+func TestGetPropertyDetails_ConfigError(t *testing.T) {
+
+	req := models.PropertyDetailsRequest{
+		PropertyIDList: []string{"101"},
+	}
+
+	expectedBatch := &models.PropertyDetailsResponse{
+		Success: true,
+		Items: []models.PropertyDetails{
+			{
+				ID: "101",
+				Property: models.Property{
+					FeatureImage: "house.jpg",
+				},
+			},
+		},
+		Result: models.PropertyDetailsResult{
+			ItemsByID: map[string]models.PartnerInfo{
+				"101": {
+					Feed: 11,
+				},
+			},
+		},
+	}
+
+	expectedErr := errors.New("config error")
+
+	patches := gomonkey.NewPatches()
+
+	patches.ApplyFunc(
+		requests.GetPropertyDetailsRequest,
+		func(ids []string) (*models.PropertyDetailsResponse, error) {
+			return expectedBatch, nil
+		},
+	)
+
+	patches.ApplyFunc(
+		requests.GetURLFromConfig,
+		func(key string) (string, error) {
+			return "", expectedErr
+		},
+	)
+
+	defer patches.Reset()
+
+	result, err := GetPropertyDetails(req)
+
+	assert.Nil(t, result)
+	assert.Equal(t, expectedErr, err)
+}
