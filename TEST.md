@@ -162,6 +162,7 @@ Verified:
 - Attaches partner feed information to each property.
 - Returns immediately when any request batch fails.
 - Returns an error if the image base URL configuration cannot be loaded.
+- Splits more than 50 property IDs into multiple batches before calling the request layer.
 
 Tool Used:
 

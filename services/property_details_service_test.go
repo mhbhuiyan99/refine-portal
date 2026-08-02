@@ -2,6 +2,8 @@ package services
 
 import (
 	"errors"
+	"fmt"
+	"sync"
 	"testing"
 
 	"refine-portal/models"
@@ -179,4 +181,55 @@ func TestGetPropertyDetails_ConfigError(t *testing.T) {
 
 	assert.Nil(t, result)
 	assert.Equal(t, expectedErr, err)
+}
+
+func TestGetPropertyDetails_Batching(t *testing.T) {
+
+	req := models.PropertyDetailsRequest{}
+
+	for i := 1; i <= 55; i++ {
+		req.PropertyIDList = append(
+			req.PropertyIDList,
+			fmt.Sprintf("%d", i),
+		)
+	}
+
+	var (
+		batchSizes []int
+		mu         sync.Mutex
+	)
+
+	patches := gomonkey.NewPatches()
+
+	patches.ApplyFunc(
+		requests.GetPropertyDetailsRequest,
+		func(ids []string) (*models.PropertyDetailsResponse, error) {
+
+			mu.Lock()
+			batchSizes = append(batchSizes, len(ids))
+			mu.Unlock()
+
+			return &models.PropertyDetailsResponse{
+				Success: true,
+			}, nil
+		},
+	)
+
+	patches.ApplyFunc(
+		requests.GetURLFromConfig,
+		func(key string) (string, error) {
+			return "https://images.test.com", nil
+		},
+	)
+
+	defer patches.Reset()
+
+	result, err := GetPropertyDetails(req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+
+	assert.Len(t, batchSizes, 2)
+	assert.Contains(t, batchSizes, 50)
+	assert.Contains(t, batchSizes, 5)
 }
