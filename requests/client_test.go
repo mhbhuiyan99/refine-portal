@@ -208,3 +208,24 @@ func TestDoRequest_InvalidJSON(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "decode response failed")
 }
+
+func TestDoRequest_RequestFailed(t *testing.T) {
+
+	// Why port 1?
+	// Normally, no application is listening on port 1.
+	// When Go tries: 127.0.0.1:1 it immediately gets 'connection refused'
+	// which causes httpClient.Do(req) to return an error.
+	req, err := http.NewRequest(
+		http.MethodGet,
+		"http://127.0.0.1:1",
+		nil,
+	)
+	assert.NoError(t, err)
+
+	var result testResponse
+
+	err = DoRequest(req, &result)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "request failed")
+}

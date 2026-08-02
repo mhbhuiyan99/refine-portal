@@ -137,22 +137,7 @@ Benefits:
 - Successful HTTP response with valid JSON.
 - HTTP 500 Internal Server Error.
 - Invalid JSON response.
-
-#### Planned Test Scenarios
-
 - Network failure.
-
-- `DoRequest()`
-
-Current scenarios:
-
-- Successful HTTP response with valid JSON
-
-Additional scenarios planned:
-
-- HTTP error responses
-- Invalid JSON
-- Network failures
 
 ---
 
