@@ -64,21 +64,70 @@ without requiring internet connectivity or real API credentials.
 
 ---
 
+---
+
+## gomonkey
+
+Purpose:
+
+Replace (patch) functions or methods during testing.
+
+Instead of executing the real implementation, `gomonkey` temporarily redirects the call to a custom implementation defined by the test.
+
+This is useful when a function depends on another function that should not be executed during unit testing.
+
+Typical use cases:
+
+- Mocking request layer functions.
+- Avoiding external dependencies.
+- Simulating success and error scenarios.
+- Isolating business logic from lower layers.
+
+---
+
 # Test Coverage
 
 ## Services
 
-Current tests include:
+### Functions Tested
 
-- Helper functions
-    - `chunkStrings()`
+- `chunkStrings()`
+- `GetLocation()`
 
-Testing focuses on:
+### Testing Focus
 
-- Normal inputs
-- Empty input
-- Boundary conditions
-- Invalid parameters
+#### `chunkStrings()`
+
+Verified:
+
+- Normal inputs.
+- Empty slice.
+- Invalid batch size.
+- Boundary conditions.
+
+Tool Used:
+
+- Testify
+
+---
+
+#### `GetLocation()`
+
+Verified:
+
+- Request layer returns a successful response.
+- Request layer returns an error.
+
+Tool Used:
+
+- gomonkey
+- Testify
+
+Why gomonkey?
+
+`GetLocation()` depends on `requests.GetLocationRequest()`. During unit testing, the request layer is replaced with a fake implementation using `gomonkey`.
+
+This isolates the service layer and ensures the test verifies only the service logic without making real HTTP requests.
 
 ---
 

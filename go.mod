@@ -3,6 +3,7 @@ module refine-portal
 go 1.25
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.14.1
 	github.com/beego/beego/v2 v2.3.10
 	github.com/stretchr/testify v1.11.1
 )
