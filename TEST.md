@@ -64,23 +64,6 @@ without requiring internet connectivity or real API credentials.
 
 ---
 
-# Why httptest was chosen for DoRequest()
-
-The `DoRequest()` function is responsible for:
-
-- Sending HTTP requests
-- Receiving HTTP responses
-- Validating status codes
-- Decoding JSON responses
-
-Since its responsibility is HTTP communication, `httptest` is the most suitable testing tool.
-
-It provides a real local HTTP server, allowing the complete request/response flow to be tested without depending on external services.
-
-Compared with interface-based mocking frameworks or function patching tools, `httptest` exercises more production code while keeping tests isolated and repeatable.
-
----
-
 # Test Coverage
 
 ## Services
@@ -116,6 +99,48 @@ Testing focuses on:
 - Slash normalization
 
 ### HTTP Client
+
+#### Function Tested
+
+- `DoRequest()`
+
+#### Purpose
+
+The `DoRequest()` function is responsible for:
+
+- Sending an HTTP request.
+- Validating the HTTP status code.
+- Decoding the JSON response into a target structure.
+- Returning descriptive errors when a request or decoding fails.
+
+#### Testing Tool
+
+- `net/http/httptest`
+
+#### Why `httptest`?
+
+`DoRequest()` communicates with an external HTTP service. Instead of calling a real API, the tests create a local HTTP server using `httptest`.
+
+This allows the entire request/response flow to be tested while remaining independent from external systems.
+
+Benefits:
+
+- Uses the real `http.Client`.
+- Uses the real HTTP request/response flow.
+- Uses the real JSON decoder.
+- No internet connection required.
+- No API credentials required.
+- Fast and repeatable.
+
+#### Implemented Test Scenarios
+
+- Successful HTTP response with valid JSON.
+- HTTP 500 Internal Server Error.
+- Invalid JSON response.
+
+#### Planned Test Scenarios
+
+- Network failure.
 
 - `DoRequest()`
 

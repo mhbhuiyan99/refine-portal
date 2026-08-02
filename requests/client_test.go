@@ -110,7 +110,7 @@ func TestBuildURL(t *testing.T) {
 }
 
 type testResponse struct {
-	Name string `json: "name"`
+	Name string `json:"name"`
 }
 
 func TestDoRequest_Success(t *testing.T) {
@@ -149,4 +149,62 @@ func TestDoRequest_Success(t *testing.T) {
 	// Verify the result
 	assert.NoError(t, err)
 	assert.Equal(t, "Alice", result.Name)
+}
+
+func TestDoRequest_HTTPError(t *testing.T) {
+
+	server := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			w.WriteHeader(http.StatusInternalServerError)
+
+		}),
+	)
+
+	defer server.Close()
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		server.URL,
+		nil,
+	)
+
+	assert.NoError(t, err)
+
+	var result testResponse
+
+	err = DoRequest(req, &result)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unexpected HTTP status")
+}
+
+func TestDoRequest_InvalidJSON(t *testing.T) {
+
+	server := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			_, err := w.Write([]byte(`{"name":`))
+			assert.NoError(t, err)
+		}),
+	)
+
+	defer server.Close()
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		server.URL,
+		nil,
+	)
+	assert.NoError(t, err)
+
+	var result testResponse
+
+	err = DoRequest(req, &result)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "decode response failed")
 }
