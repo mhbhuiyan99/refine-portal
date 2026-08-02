@@ -131,7 +131,7 @@ This isolates the service layer and ensures the test verifies only the service l
 
 ---
 
-#### GetProperties()
+#### `GetProperties()`
 
 Verified:
 
@@ -151,7 +151,7 @@ This allows the service logic to be tested independently without making real HTT
 
 ---
 
-#### GetPropertyDetails()
+#### `GetPropertyDetails()`
 
 Verified:
 
@@ -175,6 +175,23 @@ Why gomonkey?
 
 ---
 
+#### `GetPropertyImages()`
+
+Verified:
+
+- Calls the request layer with the correct property ID.
+- Returns the image response from the request layer.
+- Propagates errors returned by the request layer.
+
+Tool Used:
+
+- gomonkey
+- Testify
+
+Why gomonkey?
+
+`GetPropertyImages()` depends on the request layer to retrieve property images. During testing, the request-layer function is replaced with a fake implementation so that the service can be verified independently without making external API calls.
+---
 
 ## Requests
 
