@@ -160,6 +160,7 @@ Verified:
 - Merges batch responses into a single result.
 - Builds complete image URLs.
 - Attaches partner feed information to each property.
+- Returns immediately when any request batch fails.
 
 Tool Used:
 

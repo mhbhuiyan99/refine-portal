@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"testing"
 
 	"refine-portal/models"
@@ -100,4 +101,31 @@ func TestGetPropertyDetails_Success(t *testing.T) {
 		12,
 		result.Items[1].Feed,
 	)
+}
+
+
+func TestGetPropertyDetails_RequestError(t *testing.T) {
+
+	req := models.PropertyDetailsRequest{
+		PropertyIDList: []string{"101", "102"},
+	}
+
+	expectedErr := errors.New("request failed")
+
+	patches := gomonkey.NewPatches()
+
+	patches.ApplyFunc(
+		requests.GetPropertyDetailsRequest,
+		func(ids []string) (*models.PropertyDetailsResponse, error) {
+			return nil, expectedErr
+		},
+	)
+
+	defer patches.Reset()
+
+	result, err := GetPropertyDetails(req)
+
+	assert.Nil(t, result)
+	assert.Error(t, err)
+	assert.Equal(t, expectedErr, err)
 }
