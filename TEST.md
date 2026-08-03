@@ -43,7 +43,6 @@ assert.NoError(t, err)
 assert.Error(t, err)
 ```
 
----
 
 ## httptest
 
@@ -62,7 +61,6 @@ This allows testing of:
 
 without requiring internet connectivity or real API credentials.
 
----
 
 ## gomonkey
 
@@ -93,6 +91,7 @@ Typical use cases:
 - GetLocation()
 - GetProperties()
 - GetPropertyDetails()
+- GetPropertyImages()
 - GetCategory()
 
 ### Testing Focus
@@ -232,6 +231,8 @@ Testing focuses on:
 - Invalid URLs
 - Slash normalization
 
+---
+
 ### HTTP Client
 
 #### Function Tested
@@ -301,7 +302,33 @@ Instead of requiring a real `app.conf` file during testing, `gomonkey` temporari
 - Configuration key returns an error.
 - Configuration value is empty or contains only whitespace.
 
------
+---
+
+### Location Request
+
+#### Function Tested
+
+- `GetLocationRequest()`
+
+#### Purpose
+
+The `GetLocationRequest()` function orchestrates the complete flow for retrieving location suggestions. It loads the API base URL, builds the request URL, creates an HTTP request, executes it, and returns the decoded response.
+
+#### Testing Tool
+
+- `gomonkey`
+- `testify`
+
+#### Why `gomonkey`?
+
+The function depends on several helper functions within the request layer. These dependencies are patched so that the test focuses only on verifying the orchestration logic without making real HTTP requests or requiring application configuration.
+
+#### Implemented Test Scenarios
+
+- Successful request flow.
+- Configuration read failure.
+
+---
 
 
 # How to Run Tests
