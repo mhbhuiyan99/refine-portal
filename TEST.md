@@ -526,19 +526,19 @@ go test ./controllers -gcflags=all=-l -v
 Run all tests
 
 ```bash
-go test ./...
+go test ./... -gcflags=all=-l
 ```
 
 Run a specific package
 
 ```bash
-go test ./requests -v
+go test ./requests -gcflags=all=-l -v
 ```
 
 Generate coverage
 
 ```bash
-go test ./... -coverprofile=coverage.out
+go test ./... -gcflags=all=-l -coverprofile=coverage.out
 ```
 
 View coverage
