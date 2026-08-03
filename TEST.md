@@ -382,6 +382,49 @@ The function depends on helper functions within the request layer for configurat
 
 ---
 
+### Property List Request
+
+#### Function Tested
+
+- `GetPropertyListRequest()`
+
+#### Testing Tool
+
+- `gomonkey`
+- `testify`
+
+#### Why `gomonkey`?
+
+`GetPropertyListRequest()` mainly coordinates several helper functions before returning the decoded response.
+
+It depends on:
+
+- `GetURLFromConfig()`
+- `BuildURL()`
+- `NewGETRequest()`
+- `DoRequest()`
+
+The objective of this unit test is **not** to verify HTTP communication or URL generation again, because those functions already have their own unit tests.
+
+Instead, `gomonkey` is used to temporarily replace these dependencies with controlled return values. This isolates the function under test and allows only the orchestration logic of `GetPropertyListRequest()` to be verified.
+
+#### Implemented Test Scenarios
+
+- Successful property list retrieval.
+- Configuration read failure.
+- URL construction failure.
+- Request creation failure.
+- HTTP request execution failure.
+
+#### Why not `httptest`?
+
+`httptest` is most appropriate when testing actual HTTP communication.
+
+In this case, the HTTP behavior has already been tested inside `DoRequest()`. Using `httptest` here would repeat the same HTTP flow and make the test slower without increasing confidence.
+
+Using `gomonkey` keeps this test focused on the request orchestration logic while remaining fast and independent.
+
+---
 
 # How to Run Tests
 
