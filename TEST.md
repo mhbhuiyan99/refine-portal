@@ -192,6 +192,7 @@ Tool Used:
 Why gomonkey?
 
 `GetPropertyImages()` depends on the request layer to retrieve property images. During testing, the request-layer function is replaced with a fake implementation so that the service can be verified independently without making external API calls.
+
 ---
 
 #### `GetCategory()`
@@ -212,6 +213,7 @@ Tool Used:
 Why gomonkey?
 
 `GetCategory()` depends on external request-layer functions and application configuration. These dependencies are replaced using `gomonkey`, allowing the service's business logic (placeholder replacement and image URL construction) to be tested independently without external API calls or configuration files.
+
 ---
 
 ## Requests
@@ -272,6 +274,35 @@ Benefits:
 - Network failure.
 
 ---
+
+### Configuration Helper
+
+#### Function Tested
+
+- `GetURLFromConfig()`
+
+#### Purpose
+
+The `GetURLFromConfig()` function reads a URL value from the Beego application configuration and validates that the value exists and is not empty.
+
+#### Testing Tool
+
+- `gomonkey`
+
+#### Why `gomonkey`?
+
+`GetURLFromConfig()` depends on `web.AppConfig.String()`, which reads configuration from Beego's global configuration object.
+
+Instead of requiring a real `app.conf` file during testing, `gomonkey` temporarily patches the `String()` method to return predefined values. This isolates the function from external configuration and keeps the unit tests fast and deterministic.
+
+#### Implemented Test Scenarios
+
+- Configuration value exists.
+- Configuration key returns an error.
+- Configuration value is empty or contains only whitespace.
+
+-----
+
 
 # How to Run Tests
 
