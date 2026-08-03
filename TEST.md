@@ -79,11 +79,39 @@ Typical use cases:
 - Simulating success and error scenarios.
 - Isolating business logic from lower layers.
 
+### Why gomonkey?
+
+The service and request layers depend on lower-level functions such as configuration readers, HTTP request builders, and external API calls.
+
+During unit testing, these dependencies are replaced with controlled implementations using `gomonkey`. This allows each function to be tested in isolation without requiring:
+
+- External HTTP services
+- Application configuration files
+- Network connectivity
+
+As a result, the tests remain fast, deterministic, and focused only on the business logic of the function under test.
+
 ---
 
-# Test Coverage
+# Current Test Coverage
 
 ## Services
+
+Overall Coverage: 97.6%
+
+| Function | Coverage |
+|----------|---------:|
+| chunkStrings() | 100% |
+| GetLocation() | 100% |
+| GetProperties() | 100% |
+| GetPropertyDetails() | 97.6% |
+| GetPropertyImages() | 100% |
+| GetCategory() | 95.0% |
+
+### Testing Tools
+
+- Testify
+- gomonkey
 
 ### Functions Tested
 
@@ -105,9 +133,6 @@ Verified:
 - Invalid batch size.
 - Boundary conditions.
 
-Tool Used:
-
-- Testify
 
 ---
 
@@ -118,16 +143,6 @@ Verified:
 - Request layer returns a successful response.
 - Request layer returns an error.
 
-Tool Used:
-
-- gomonkey
-- Testify
-
-Why gomonkey?
-
-`GetLocation()` depends on `requests.GetLocationRequest()`. During unit testing, the request layer is replaced with a fake implementation using `gomonkey`.
-
-This isolates the service layer and ensures the test verifies only the service logic without making real HTTP requests.
 
 ---
 
@@ -137,17 +152,6 @@ Verified:
 
 - Returns the property list when the request layer succeeds.
 - Returns the request layer error without modification.
-
-Tool Used:
-
-- gomonkey
-- Testify
-
-Why gomonkey?
-
-`GetProperties()` depends on `requests.GetPropertyListRequest()`. During unit testing, the request layer is replaced with a fake implementation using `gomonkey`.
-
-This allows the service logic to be tested independently without making real HTTP requests.
 
 ---
 
@@ -164,15 +168,6 @@ Verified:
 - Returns an error if the image base URL configuration cannot be loaded.
 - Splits more than 50 property IDs into multiple batches before calling the request layer.
 
-Tool Used:
-
-- gomonkey
-- Testify
-
-Why gomonkey?
-
-`GetPropertyDetails()` depends on external request-layer functions to retrieve property details and configuration values. These dependencies are replaced using `gomonkey` so that the service logic can be tested independently without making external API calls or reading application configuration.
-
 ---
 
 #### `GetPropertyImages()`
@@ -182,15 +177,6 @@ Verified:
 - Calls the request layer with the correct property ID.
 - Returns the image response from the request layer.
 - Propagates errors returned by the request layer.
-
-Tool Used:
-
-- gomonkey
-- Testify
-
-Why gomonkey?
-
-`GetPropertyImages()` depends on the request layer to retrieve property images. During testing, the request-layer function is replaced with a fake implementation so that the service can be verified independently without making external API calls.
 
 ---
 
@@ -204,18 +190,35 @@ Verified:
 - Propagates request-layer errors.
 - Returns an error when image URL configuration cannot be loaded.
 
-Tool Used:
-
-- gomonkey
-- Testify
-
-Why gomonkey?
-
-`GetCategory()` depends on external request-layer functions and application configuration. These dependencies are replaced using `gomonkey`, allowing the service's business logic (placeholder replacement and image URL construction) to be tested independently without external API calls or configuration files.
-
 ---
 
 ## Requests
+
+| Function | Coverage |
+|----------|---------:|
+| DoRequest() | 100% |
+| BuildURL() | 100% |
+| BuildImageURL() | 100% |
+| GetURLFromConfig() | 100% |
+| GetCategoryRequest() | 100% |
+| GetPropertyListRequest() | 87.0% |
+| GetPropertyDetailsRequest() | 83.3% |
+| GetPropertyImagesRequest() | 81.2% |
+| GetLocationRequest() | 80.0% |
+| NewGETRequest() | 0% |
+| setDefaultHeaders() | 0% |
+
+### Request Functions
+
+Each request function is responsible for:
+
+- Reading configuration.
+- Building the request URL.
+- Creating an HTTP request.
+- Executing the request.
+- Returning the decoded response.
+
+---
 
 Current tests include:
 
@@ -235,18 +238,12 @@ Testing focuses on:
 
 ### HTTP Client
 
-#### Function Tested
+#### Functions Tested
 
 - `DoRequest()`
+- `NewGETRequest()`
+- `setDefaultHeaders()`
 
-#### Purpose
-
-The `DoRequest()` function is responsible for:
-
-- Sending an HTTP request.
-- Validating the HTTP status code.
-- Decoding the JSON response into a target structure.
-- Returning descriptive errors when a request or decoding fails.
 
 #### Testing Tool
 
@@ -274,6 +271,33 @@ Benefits:
 - Invalid JSON response.
 - Network failure.
 
+#### Additional Request Construction Tests
+
+The request helper functions were also tested.
+
+`NewGETRequest()`
+
+Verified:
+
+- Creates an HTTP GET request.
+- Applies the application's default headers.
+- Returns an error when default headers cannot be applied.
+
+`setDefaultHeaders()`
+
+Verified:
+
+- Applies Basic Authentication.
+- Sets all required HTTP headers.
+- Returns an error when configuration values cannot be loaded.
+
+Testing Tool:
+
+- `gomonkey`
+- `testify`
+
+These tests verify request construction and header configuration without requiring a real application configuration file.
+
 ---
 
 ### Configuration Helper
@@ -282,19 +306,11 @@ Benefits:
 
 - `GetURLFromConfig()`
 
-#### Purpose
-
-The `GetURLFromConfig()` function reads a URL value from the Beego application configuration and validates that the value exists and is not empty.
 
 #### Testing Tool
 
 - `gomonkey`
 
-#### Why `gomonkey`?
-
-`GetURLFromConfig()` depends on `web.AppConfig.String()`, which reads configuration from Beego's global configuration object.
-
-Instead of requiring a real `app.conf` file during testing, `gomonkey` temporarily patches the `String()` method to return predefined values. This isolates the function from external configuration and keeps the unit tests fast and deterministic.
 
 #### Implemented Test Scenarios
 
@@ -310,18 +326,10 @@ Instead of requiring a real `app.conf` file during testing, `gomonkey` temporari
 
 - `GetLocationRequest()`
 
-#### Purpose
-
-The `GetLocationRequest()` function orchestrates the complete flow for retrieving location suggestions. It loads the API base URL, builds the request URL, creates an HTTP request, executes it, and returns the decoded response.
-
 #### Testing Tool
 
 - `gomonkey`
 - `testify`
-
-#### Why `gomonkey`?
-
-The function depends on several helper functions within the request layer. These dependencies are patched so that the test focuses only on verifying the orchestration logic without making real HTTP requests or requiring application configuration.
 
 #### Implemented Test Scenarios
 
@@ -336,18 +344,11 @@ The function depends on several helper functions within the request layer. These
 
 - `GetPropertyDetailsRequest()`
 
-#### Purpose
-
-The `GetPropertyDetailsRequest()` function retrieves detailed information for one or more properties. It reads the API base URL from the application configuration, builds the request URL using the provided property IDs, creates an HTTP request, executes it, and returns the decoded response.
-
 #### Testing Tool
 
 - `gomonkey`
 - `testify`
 
-#### Why `gomonkey`?
-
-The function depends on helper functions within the request layer, including configuration loading, request creation, and HTTP execution. These dependencies are patched so the unit test focuses only on verifying the request orchestration logic without making real API calls.
 
 #### Implemented Test Scenarios
 
@@ -362,18 +363,12 @@ The function depends on helper functions within the request layer, including con
 
 - `GetPropertyImagesRequest()`
 
-#### Purpose
-
-The `GetPropertyImagesRequest()` function retrieves all available images for a property. It reads the API base URL from the application configuration, builds the request URL using the property ID, creates an HTTP request, executes it, and returns the decoded response.
 
 #### Testing Tool
 
 - `gomonkey`
 - `testify`
 
-#### Why `gomonkey`?
-
-The function depends on helper functions within the request layer for configuration loading, request creation, and HTTP execution. These dependencies are patched so the unit test focuses on verifying the orchestration logic without making real external API calls.
 
 #### Implemented Test Scenarios
 
@@ -393,20 +388,6 @@ The function depends on helper functions within the request layer for configurat
 - `gomonkey`
 - `testify`
 
-#### Why `gomonkey`?
-
-`GetPropertyListRequest()` mainly coordinates several helper functions before returning the decoded response.
-
-It depends on:
-
-- `GetURLFromConfig()`
-- `BuildURL()`
-- `NewGETRequest()`
-- `DoRequest()`
-
-The objective of this unit test is **not** to verify HTTP communication or URL generation again, because those functions already have their own unit tests.
-
-Instead, `gomonkey` is used to temporarily replace these dependencies with controlled return values. This isolates the function under test and allows only the orchestration logic of `GetPropertyListRequest()` to be verified.
 
 #### Implemented Test Scenarios
 
@@ -437,20 +418,6 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 - `gomonkey`
 - `testify`
 
-#### Why `gomonkey`?
-
-`GetCategoryRequest()` coordinates several helper functions to prepare and execute the Category API request.
-
-Its dependencies include:
-
-- `GetURLFromConfig()`
-- `BuildURL()`
-- `NewGETRequest()`
-- `DoRequest()`
-
-These helper functions have already been tested independently. Therefore, the purpose of this unit test is to verify that `GetCategoryRequest()` correctly orchestrates these calls and properly handles their results.
-
-`gomonkey` is used to replace each dependency with controlled behavior, allowing the function to be tested in isolation.
 
 #### Implemented Test Scenarios
 
@@ -510,4 +477,4 @@ External dependencies are isolated using appropriate testing tools, ensuring tha
 - Fast
 - Repeatable
 - Independent
-- Easy to maintain
+- Easy to maintain and extend
