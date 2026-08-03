@@ -463,8 +463,10 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 ### Functions Tested
 
 - `LocationAPIController.Get()`
-- `RefineController.Get()`
+- `PropertyAPIController.GetList()`
+- `PropertyAPIController.GetDetails()`
 - `PropertyImageController.Get()`
+- `RefineController.Get()`
 
 #### Purpose
 
@@ -502,6 +504,27 @@ The controller depends on the service layer. During unit testing, `services.GetL
 - Returns the property images when a valid property ID is provided.
 - Returns **HTTP 400 Bad Request** when the required `propertyId` parameter is missing.
 - Returns **HTTP 500 Internal Server Error** when the service layer returns an error.
+
+### PropertyAPIController
+
+#### GetList()
+
+Verified:
+
+- Returns the property list successfully.
+- Validates the required `category` parameter.
+- Validates the required `location` parameter.
+- Uses default values for optional query parameters when omitted.
+- Returns HTTP 500 when the service layer returns an error.
+
+#### GetDetails()
+
+Verified:
+
+- Returns property details successfully.
+- Validates the required `propertyIdList` parameter.
+- Splits the property ID list correctly before passing it to the service layer.
+- Returns HTTP 500 when the service layer returns an error.
 
 #### Note
 
