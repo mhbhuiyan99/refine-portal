@@ -120,7 +120,13 @@ Current unit tests cover:
 - Request layer
 - Helper functions
 
-Additional controllers and remaining packages can be tested following the same testing approach.
+Current package coverage:
+
+| Package | Coverage |
+|---------|---------:|
+| Controllers | 100.0% |
+| Services | 97.6% |
+| Requests | 89.7% |
 
 ## Services
 
@@ -220,6 +226,10 @@ Verified:
 ---
 
 ## Requests
+
+## Requests
+
+Overall Coverage: 89.7%
 
 | Function | Coverage |
 |----------|---------:|
@@ -461,14 +471,17 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 
 ## Controllers
 
-### Functions Tested
+Overall Coverage: 100.0%
 
-- CategoryController.Get()
-- LocationAPIController.Get()
-- PropertyAPIController.GetList()
-- PropertyAPIController.GetDetails()
-- PropertyImageController.Get()
-- RefineController.Get()
+| Function | Coverage |
+|----------|---------:|
+| CategoryController.Get() | 100% |
+| LocationAPIController.Get() | 100% |
+| PropertyAPIController.GetList() | 100% |
+| PropertyAPIController.GetDetails() | 100% |
+| PropertyImageController.Get() | 100% |
+| RefineController.Get() | 100% |
+
 
 #### Purpose
 
@@ -595,7 +608,17 @@ go tool cover -func=coverage.out
 
 # Current Coverage
 
-The current implementation focuses on the project's primary controllers, services, request layer, and helper functions. Additional packages can be covered using the same testing approach as the project grows.
+The project currently achieves **92.6% overall statement coverage**.
+
+Package coverage:
+
+| Package | Coverage |
+|---------|---------:|
+| Controllers | 100.0% |
+| Services | 97.6% |
+| Requests | 89.7% |
+
+The remaining uncovered statements are primarily application bootstrap code (`main.go`) and router initialization (`router.go`), which are typically validated through integration testing rather than unit testing. As additional features are implemented, the same testing approach can be applied to maintain high test coverage.
 
 ---
 
