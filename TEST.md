@@ -25,7 +25,7 @@ Different testing tools are selected depending on the type of dependency being t
 
 ---
 
-# Current Testing Tools
+# Testing Tools
 
 ## Testify
 
@@ -94,6 +94,15 @@ As a result, the tests remain fast, deterministic, and focused only on the busin
 ---
 
 # Current Test Coverage
+
+Current unit tests cover:
+
+- Controllers
+- Services
+- Request layer
+- Helper functions
+
+Additional controllers and remaining packages can be tested following the same testing approach.
 
 ## Services
 
@@ -426,6 +435,42 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 - URL construction failure.
 - HTTP request creation failure.
 - HTTP request execution failure.
+
+---
+
+## Controllers
+
+### Function Tested
+
+- `LocationAPIController.Get()`
+
+#### Purpose
+
+The controller validates incoming HTTP requests, invokes the service layer, and returns an appropriate HTTP response.
+
+#### Testing Tool
+
+- `httptest`
+- `gomonkey`
+- `testify`
+
+#### Why `httptest`?
+
+Controllers are HTTP handlers. `httptest` creates an in-memory HTTP request and response recorder, allowing the controller behavior to be tested without starting a real web server.
+
+#### Why `gomonkey`?
+
+The controller depends on the service layer. During unit testing, `services.GetLocation()` is patched using `gomonkey` so that the controller can be tested independently of the service implementation.
+
+#### Implemented Test Scenarios
+
+- Successful request.
+- Missing required query parameter.
+- Service returns an error.
+
+#### Note
+
+Beego's `CustomAbort()` intentionally triggers a panic after writing the HTTP response. The unit tests use `assert.Panics()` to verify this expected framework behavior while still validating the returned HTTP status code and response body.
 
 ---
 
