@@ -21,7 +21,7 @@ The testing strategy includes:
 - Covering both successful and error scenarios.
 - Keeping tests independent and deterministic.
 
-Different testing tools are selected depending on the type of dependency being tested instead of using one tool for every situation.
+Different testing tools are used depending on the type of dependency being tested.
 
 ---
 
@@ -32,7 +32,7 @@ Different testing tools are selected depending on the type of dependency being t
 Purpose:
 
 - Assertions
-- Easy comparison of expected and actual values
+- Simplifies comparison of expected and actual values
 - Readable test failures
 
 Example:
@@ -48,7 +48,7 @@ assert.Error(t, err)
 
 Purpose:
 
-Simulate an HTTP server during testing.
+Simulates an HTTP server during testing.
 
 Instead of calling a real external API, a local HTTP server is created that returns predefined responses.
 
@@ -61,6 +61,21 @@ This allows testing of:
 
 without requiring internet connectivity or real API credentials.
 
+## Function Variable Injection
+
+Purpose:
+
+Replace selected dependencies during testing without relying on runtime method patching.
+
+Package-level function variables allow tests to substitute implementations with lightweight test doubles while keeping the production code unchanged.
+
+Some functions depend on application configuration (for example, reading values from `app.conf`). Instead of patching framework methods, these dependencies are exposed through package-level function variables.
+
+Example:
+
+```go
+var getConfig = GetURLFromConfig
+```
 
 ## gomonkey
 
@@ -81,15 +96,17 @@ Typical use cases:
 
 ### Why gomonkey?
 
-The service and request layers depend on lower-level functions such as configuration readers, HTTP request builders, and external API calls.
+`gomonkey` is used when testing code that directly depends on functions in other packages, such as request-layer or service-layer functions.
 
-During unit testing, these dependencies are replaced with controlled implementations using `gomonkey`. This allows each function to be tested in isolation without requiring:
+It allows these dependencies to be replaced with predefined implementations so that the function under test can be executed in isolation.
 
-- External HTTP services
-- Application configuration files
-- Network connectivity
+Typical examples include:
 
-As a result, the tests remain fast, deterministic, and focused only on the business logic of the function under test.
+- Mocking request-layer functions from the service layer.
+- Mocking service-layer functions from controllers.
+- Simulating success and failure scenarios.
+
+Configuration access is handled through function variable injection instead of `gomonkey`. This avoids runtime method patching for configuration reads, simplifies the tests, and reduces dependence on framework internals.
 
 ---
 
@@ -229,7 +246,7 @@ Each request function is responsible for:
 
 ---
 
-Current tests include:
+The request layer currently includes tests for:
 
 ### URL helpers
 
@@ -252,6 +269,8 @@ Testing focuses on:
 - `DoRequest()`
 - `NewGETRequest()`
 - `setDefaultHeaders()`
+
+`NewGETRequest()` and `setDefaultHeaders()` are tested using function variable injection to replace configuration access during unit testing.
 
 
 #### Testing Tool
@@ -302,10 +321,10 @@ Verified:
 
 Testing Tool:
 
-- `gomonkey`
 - `testify`
+- Function variable injection
 
-These tests verify request construction and header configuration without requiring a real application configuration file.
+These tests replace the configuration reader through function variable injection, allowing request construction and header configuration to be verified without requiring a real application configuration file.
 
 ---
 
@@ -318,7 +337,7 @@ These tests verify request construction and header configuration without requiri
 
 #### Testing Tool
 
-- `gomonkey`
+- `gomonkey` (used for mocking `web.AppConfig.String()`)
 
 
 #### Implemented Test Scenarios
@@ -436,6 +455,7 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 - HTTP request creation failure.
 - HTTP request execution failure.
 
+
 ---
 
 ## Controllers
@@ -491,9 +511,9 @@ Beego's `CustomAbort()` intentionally triggers a panic after writing the HTTP re
 
 Controller tests use `gomonkey` to replace service-layer functions.
 
-Some service functions are very small wrappers and may be inlined by the Go compiler. Function inlining can prevent `gomonkey` from applying patches correctly.
+Because `gomonkey` performs runtime function patching, Go compiler optimizations such as function inlining may prevent patches from being applied correctly.
 
-When running controller tests that depend on function patching, the following command may be required:
+When running tests that depend on `gomonkey`, use:
 
 ```bash
 go test ./controllers -gcflags=all=-l -v
@@ -531,12 +551,7 @@ go tool cover -func=coverage.out
 
 # Current Coverage
 
-Coverage will increase as additional unit tests are implemented for:
-
-- Controllers
-- Services
-- Request layer
-- Helper functions
+The current implementation focuses on the project's primary controllers, services, request layer, and helper functions. Additional packages can be covered using the same testing approach as the project grows.
 
 ---
 

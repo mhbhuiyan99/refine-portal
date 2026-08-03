@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/beego/beego/v2/server/web"
 )
 
 var httpClient = &http.Client{
@@ -130,26 +129,30 @@ func NewGETRequest(url string) (*http.Request, error) {
 	return request, nil
 }
 
+
+var getConfig = GetURLFromConfig
 // setDefaultHeaders applies the application's default
 // authentication and HTTP headers to a request.
 //
 // Responsibilities:
+//   - Read authentication configuration.
 //   - Apply Basic Authentication.
 //   - Set common request headers.
 //   - Set the API key.
 //   - Prepare the request for external API communication.
 func setDefaultHeaders(request *http.Request) error {
-	username, err := web.AppConfig.String("username")
+
+	username, err := getConfig("username")
 	if err != nil {
 		return err
 	}
 
-	password, err := web.AppConfig.String("password")
+	password, err := getConfig("password")
 	if err != nil {
 		return err
 	}
 
-	apiKey, err := web.AppConfig.String("api_key")
+	apiKey, err := getConfig("api_key")
 	if err != nil {
 		return err
 	}

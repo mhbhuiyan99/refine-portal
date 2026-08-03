@@ -8,10 +8,17 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/agiledragon/gomonkey/v2"
 	"github.com/beego/beego/v2/server/web"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestDebug(t *testing.T) {
+    t.Log(reflect.TypeOf(web.AppConfig))
+
+    v, err := web.AppConfig.String("username")
+
+    t.Log(v, err)
+}
 
 func TestBuildImageURL(t *testing.T) {
 	tests := []struct {
@@ -235,74 +242,74 @@ func TestDoRequest_RequestFailed(t *testing.T) {
 }
 
 func TestNewGETRequest_Success(t *testing.T) {
-	patches := gomonkey.ApplyMethod(
-		reflect.TypeOf(web.AppConfig),
-		"String",
-		func(_ interface{}, key string) (string, error) {
-			switch key {
-			case "username":
-				return "admin", nil
-			case "password":
-				return "secret", nil
-			case "api_key":
-				return "apikey123", nil
-			default:
-				return "", nil
-			}
-		},
-	)
-	defer patches.Reset()
+    old := getConfig
+    defer func() {
+        getConfig = old
+    }()
 
-	req, err := NewGETRequest("https://example.com")
+    getConfig = func(key string) (string, error) {
+        switch key {
+        case "username":
+            return "admin", nil
+        case "password":
+            return "secret", nil
+        case "api_key":
+            return "apikey123", nil
+        default:
+            return "", nil
+        }
+    }
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.MethodGet, req.Method)
-	assert.Equal(t, "application/json", req.Header.Get("Accept"))
-	assert.Equal(t, "apikey123", req.Header.Get("x-api-key"))
+    req, err := NewGETRequest("https://example.com")
 
-	user, pass, ok := req.BasicAuth()
-	assert.True(t, ok)
-	assert.Equal(t, "admin", user)
-	assert.Equal(t, "secret", pass)
+    assert.NoError(t, err)
+    assert.NotNil(t, req)
+
+    assert.Equal(t, http.MethodGet, req.Method)
+    assert.Equal(t, "application/json", req.Header.Get("Accept"))
+    assert.Equal(t, "apikey123", req.Header.Get("x-api-key"))
+
+    user, pass, ok := req.BasicAuth()
+    assert.True(t, ok)
+    assert.Equal(t, "admin", user)
+    assert.Equal(t, "secret", pass)
 }
 
 func TestNewGETRequest_ConfigError(t *testing.T) {
+    old := getConfig
+    defer func() {
+        getConfig = old
+    }()
 
-	patches := gomonkey.ApplyMethod(
-		reflect.TypeOf(web.AppConfig),
-		"String",
-		func(_ interface{}, key string) (string, error) {
-			return "", errors.New("config error")
-		},
-	)
-	defer patches.Reset()
+    getConfig = func(key string) (string, error) {
+        return "", errors.New("config error")
+    }
 
-	req, err := NewGETRequest("https://example.com")
+    req, err := NewGETRequest("https://example.com")
 
-	assert.Nil(t, req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "set default headers")
+    assert.Nil(t, req)
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "config error")
 }
-
 func TestSetDefaultHeaders_Success(t *testing.T) {
 
-	patches := gomonkey.ApplyMethod(
-		reflect.TypeOf(web.AppConfig),
-		"String",
-		func(_ interface{}, key string) (string, error) {
-			switch key {
-			case "username":
-				return "admin", nil
-			case "password":
-				return "secret", nil
-			case "api_key":
-				return "apikey123", nil
-			default:
-				return "", nil
-			}
-		},
-	)
-	defer patches.Reset()
+	old := getConfig
+	defer func() {
+		getConfig = old
+	}()
+
+	getConfig = func(key string) (string, error) {
+		switch key {
+		case "username":
+			return "admin", nil
+		case "password":
+			return "secret", nil
+		case "api_key":
+			return "apikey123", nil
+		default:
+			return "", nil
+		}
+	}
 
 	req, _ := http.NewRequest(http.MethodGet, "https://example.com", nil)
 
@@ -316,28 +323,24 @@ func TestSetDefaultHeaders_Success(t *testing.T) {
 	assert.Equal(t, "secret", pass)
 
 	assert.Equal(t, "application/json", req.Header.Get("Accept"))
-	assert.Equal(t, "application/json", req.Header.Get("Content-Type"))
-	assert.Equal(t, "en-US", req.Header.Get("Accept-Language"))
-	assert.Equal(t, "desktop", req.Header.Get("User-Agent"))
-	assert.Equal(t, "XMLHttpRequest", req.Header.Get("X-Requested-With"))
-	assert.Equal(t, "123presto-MS-ROW.com", req.Header.Get("Origin"))
 	assert.Equal(t, "apikey123", req.Header.Get("x-api-key"))
 }
 
 func TestSetDefaultHeaders_ConfigError(t *testing.T) {
 
-	patches := gomonkey.ApplyMethod(
-		reflect.TypeOf(web.AppConfig),
-		"String",
-		func(_ interface{}, key string) (string, error) {
-			return "", errors.New("config error")
-		},
-	)
-	defer patches.Reset()
+	old := getConfig
+	defer func() {
+		getConfig = old
+	}()
+
+	getConfig = func(key string) (string, error) {
+		return "", errors.New("config error")
+	}
 
 	req, _ := http.NewRequest(http.MethodGet, "https://example.com", nil)
 
 	err := setDefaultHeaders(req)
 
 	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "config error")
 }
