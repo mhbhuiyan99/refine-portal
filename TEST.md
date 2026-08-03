@@ -463,11 +463,12 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 
 ### Functions Tested
 
-- `LocationAPIController.Get()`
-- `PropertyAPIController.GetList()`
-- `PropertyAPIController.GetDetails()`
-- `PropertyImageController.Get()`
-- `RefineController.Get()`
+- CategoryController.Get()
+- LocationAPIController.Get()
+- PropertyAPIController.GetList()
+- PropertyAPIController.GetDetails()
+- PropertyImageController.Get()
+- RefineController.Get()
 
 #### Purpose
 
@@ -532,6 +533,19 @@ Verified:
 - Validates the required `propertyIdList` parameter.
 - Splits the property ID list correctly before passing it to the service layer.
 - Returns HTTP 500 when the service layer returns an error.
+
+### CategoryController
+
+Verified:
+
+- Extracts the category slug from the request URL.
+- Converts the URL slug into the format required by the Category API.
+- Resolves the country code using the Location service.
+- Retrieves category data successfully.
+- Populates the template data.
+- Sets the expected template name.
+- Returns HTTP 500 when the Location service returns an error.
+- Returns HTTP 500 when the Category service returns an error.
 
 #### Note
 
