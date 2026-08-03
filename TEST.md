@@ -205,8 +205,8 @@ Verified:
 | GetPropertyDetailsRequest() | 83.3% |
 | GetPropertyImagesRequest() | 81.2% |
 | GetLocationRequest() | 80.0% |
-| NewGETRequest() | 0% |
-| setDefaultHeaders() | 0% |
+| NewGETRequest() | 83.3% |
+| setDefaultHeaders() | 88.9% |
 
 ### Request Functions
 
