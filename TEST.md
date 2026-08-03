@@ -356,6 +356,32 @@ The function depends on helper functions within the request layer, including con
 
 ---
 
+### Property Images Request
+
+#### Function Tested
+
+- `GetPropertyImagesRequest()`
+
+#### Purpose
+
+The `GetPropertyImagesRequest()` function retrieves all available images for a property. It reads the API base URL from the application configuration, builds the request URL using the property ID, creates an HTTP request, executes it, and returns the decoded response.
+
+#### Testing Tool
+
+- `gomonkey`
+- `testify`
+
+#### Why `gomonkey`?
+
+The function depends on helper functions within the request layer for configuration loading, request creation, and HTTP execution. These dependencies are patched so the unit test focuses on verifying the orchestration logic without making real external API calls.
+
+#### Implemented Test Scenarios
+
+- Successful request flow.
+- Configuration read failure.
+
+---
+
 
 # How to Run Tests
 
