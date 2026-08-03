@@ -21,7 +21,7 @@ The testing strategy includes:
 - Covering both successful and error scenarios.
 - Keeping tests independent and deterministic.
 
-Different testing tools are used depending on the type of dependency being tested.
+Different testing tools are selected based on the type of dependency being tested.
 
 ---
 
@@ -76,6 +76,7 @@ Example:
 ```go
 var getConfig = GetURLFromConfig
 ```
+This approach follows the dependency injection principle and makes configuration-dependent code easier to unit test without modifying production behavior.
 
 ## gomonkey
 
@@ -484,13 +485,19 @@ Controllers are HTTP handlers. `httptest` creates an in-memory HTTP request and 
 
 #### Why `gomonkey`?
 
-The controller depends on the service layer. During unit testing, `services.GetLocation()` is patched using `gomonkey` so that the controller can be tested independently of the service implementation.
+The controller depends on the service layer. During unit testing, service-layer functions such as `services.GetLocation()`, `services.GetProperties()`, `services.GetPropertyDetails()`, and `services.GetPropertyImages()` are patched using `gomonkey`. This allows each controller to be tested independently of the service implementation.
 
 #### Implemented Test Scenarios
 
-- Successful request.
-- Missing required query parameter.
-- Service returns an error.
+The controller tests verify:
+
+- Successful request handling.
+- Validation of required query parameters.
+- Default values for optional query parameters.
+- Proper invocation of the service layer.
+- Correct JSON responses.
+- Appropriate HTTP status codes.
+- Proper handling of service-layer errors.
 
 ### RefineController
 
