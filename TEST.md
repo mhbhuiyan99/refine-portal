@@ -440,9 +440,11 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 
 ## Controllers
 
-### Function Tested
+### Functions Tested
 
 - `LocationAPIController.Get()`
+- `RefineController.Get()`
+- `PropertyImageController.Get()`
 
 #### Purpose
 
@@ -468,9 +470,34 @@ The controller depends on the service layer. During unit testing, `services.GetL
 - Missing required query parameter.
 - Service returns an error.
 
+### RefineController
+
+- Returns the provided search and sorting parameters.
+- Uses default values when query parameters are not provided.
+- Populates the template data correctly.
+- Sets the expected template name.
+
+### PropertyImageController
+
+- Returns the property images when a valid property ID is provided.
+- Returns **HTTP 400 Bad Request** when the required `propertyId` parameter is missing.
+- Returns **HTTP 500 Internal Server Error** when the service layer returns an error.
+
 #### Note
 
 Beego's `CustomAbort()` intentionally triggers a panic after writing the HTTP response. The unit tests use `assert.Panics()` to verify this expected framework behavior while still validating the returned HTTP status code and response body.
+
+## Notes for Controller Tests
+
+Controller tests use `gomonkey` to replace service-layer functions.
+
+Some service functions are very small wrappers and may be inlined by the Go compiler. Function inlining can prevent `gomonkey` from applying patches correctly.
+
+When running controller tests that depend on function patching, the following command may be required:
+
+```bash
+go test ./controllers -gcflags=all=-l -v
+```
 
 ---
 
