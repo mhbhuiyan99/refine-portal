@@ -330,6 +330,32 @@ The function depends on several helper functions within the request layer. These
 
 ---
 
+### Property Details Request
+
+#### Function Tested
+
+- `GetPropertyDetailsRequest()`
+
+#### Purpose
+
+The `GetPropertyDetailsRequest()` function retrieves detailed information for one or more properties. It reads the API base URL from the application configuration, builds the request URL using the provided property IDs, creates an HTTP request, executes it, and returns the decoded response.
+
+#### Testing Tool
+
+- `gomonkey`
+- `testify`
+
+#### Why `gomonkey`?
+
+The function depends on helper functions within the request layer, including configuration loading, request creation, and HTTP execution. These dependencies are patched so the unit test focuses only on verifying the request orchestration logic without making real API calls.
+
+#### Implemented Test Scenarios
+
+- Successful request flow.
+- Configuration read failure.
+
+---
+
 
 # How to Run Tests
 
