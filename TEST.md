@@ -93,6 +93,7 @@ Typical use cases:
 - GetLocation()
 - GetProperties()
 - GetPropertyDetails()
+- GetCategory()
 
 ### Testing Focus
 
@@ -191,6 +192,26 @@ Tool Used:
 Why gomonkey?
 
 `GetPropertyImages()` depends on the request layer to retrieve property images. During testing, the request-layer function is replaced with a fake implementation so that the service can be verified independently without making external API calls.
+---
+
+#### `GetCategory()`
+
+Verified:
+
+- Calls the request layer with the correct parameters.
+- Replaces location placeholders in section titles and subtitles.
+- Builds complete image URLs using the configured image base URL.
+- Propagates request-layer errors.
+- Returns an error when image URL configuration cannot be loaded.
+
+Tool Used:
+
+- gomonkey
+- Testify
+
+Why gomonkey?
+
+`GetCategory()` depends on external request-layer functions and application configuration. These dependencies are replaced using `gomonkey`, allowing the service's business logic (placeholder replacement and image URL construction) to be tested independently without external API calls or configuration files.
 ---
 
 ## Requests
