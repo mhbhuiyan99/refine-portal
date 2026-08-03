@@ -426,6 +426,42 @@ Using `gomonkey` keeps this test focused on the request orchestration logic whil
 
 ---
 
+### Category Request
+
+#### Function Tested
+
+- `GetCategoryRequest()`
+
+#### Testing Tool
+
+- `gomonkey`
+- `testify`
+
+#### Why `gomonkey`?
+
+`GetCategoryRequest()` coordinates several helper functions to prepare and execute the Category API request.
+
+Its dependencies include:
+
+- `GetURLFromConfig()`
+- `BuildURL()`
+- `NewGETRequest()`
+- `DoRequest()`
+
+These helper functions have already been tested independently. Therefore, the purpose of this unit test is to verify that `GetCategoryRequest()` correctly orchestrates these calls and properly handles their results.
+
+`gomonkey` is used to replace each dependency with controlled behavior, allowing the function to be tested in isolation.
+
+#### Implemented Test Scenarios
+
+- Successful category retrieval.
+- Configuration read failure.
+- URL construction failure.
+- HTTP request creation failure.
+- HTTP request execution failure.
+
+---
+
 # How to Run Tests
 
 Run all tests
