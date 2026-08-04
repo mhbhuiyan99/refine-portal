@@ -6,11 +6,8 @@ function renderPropertyCard(item, countryCode) {
     // console.log("Image_src: ", image);
     const price =
         formatCurrency(
-            convertPrice(
                 p.Price,
                 window.locationData.GeoInfo.CountryCode
-            ),
-            window.locationData.GeoInfo.CountryCode
         );
 
     const guests =
