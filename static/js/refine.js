@@ -78,7 +78,7 @@ async function init() {
         ecoFriendly: false
     };
 
-    renderTiles(window.allProperties, countryCode);
+    renderTiles(window.allProperties, window.currencyCode);
     console.log(window.filterState);
     updateFilterButtons();
     initializeCurrencyDropdown();
