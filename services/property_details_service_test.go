@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"refine-portal/models"
@@ -183,7 +184,9 @@ func TestGetPropertyDetails_ConfigError(t *testing.T) {
 	assert.Equal(t, expectedErr, err)
 }
 
-func TestGetPropertyDetails_Batching(t *testing.T) {
+// Verifies that property IDs are split into batches and
+// each batch is processed concurrently before results are merged.
+func TestGetPropertyDetails_ConcurrentBatchProcessing(t *testing.T) {
 
 	req := models.PropertyDetailsRequest{}
 
@@ -198,12 +201,15 @@ func TestGetPropertyDetails_Batching(t *testing.T) {
 		batchSizes []int
 		mu         sync.Mutex
 	)
+	var callCount atomic.Int32
 
 	patches := gomonkey.NewPatches()
 
 	patches.ApplyFunc(
 		requests.GetPropertyDetailsRequest,
 		func(ids []string) (*models.PropertyDetailsResponse, error) {
+
+			callCount.Add(1)
 
 			mu.Lock()
 			batchSizes = append(batchSizes, len(ids))
@@ -229,6 +235,7 @@ func TestGetPropertyDetails_Batching(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
 
+	assert.Equal(t, int32(2), callCount.Load())
 	assert.Len(t, batchSizes, 2)
 	assert.Contains(t, batchSizes, 50)
 	assert.Contains(t, batchSizes, 5)

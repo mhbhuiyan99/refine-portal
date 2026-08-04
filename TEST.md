@@ -16,7 +16,7 @@ The testing strategy includes:
 
 - Writing tests in `_test.go` files.
 - Using table-driven tests where applicable.
-- Testing core business logic rather than framework internals.
+- Verifying concurrent business logic using goroutines, channels, and synchronization primitives where applicable.
 - Isolating external dependencies.
 - Covering both successful and error scenarios.
 - Keeping tests independent and deterministic.
@@ -119,6 +119,7 @@ Current unit tests cover:
 - Services
 - Request layer
 - Helper functions
+- Concurrent batch processing implemented with goroutines, channels, and `sync.WaitGroup`
 
 Current package coverage:
 
@@ -145,13 +146,14 @@ Overall Coverage: 97.6%
 
 - Testify
 - gomonkey
+- Go standard library (`sync`, `sync/atomic`) for validating concurrent execution
 
 ### Functions Tested
 
 - chunkStrings()
 - GetLocation()
 - GetProperties()
-- GetPropertyDetails()
+- GetPropertyDetails() (including concurrent batch processing)
 - GetPropertyImages()
 - GetCategory()
 
@@ -193,13 +195,34 @@ Verified:
 Verified:
 
 - Splits property IDs into batches.
-- Retrieves property details from the request layer.
+- Processes batches concurrently using goroutines.
+- Synchronizes concurrent execution using `sync.WaitGroup`.
+- Collects batch results through a channel.
+- Verifies that one request is executed for each generated batch.
 - Merges batch responses into a single result.
 - Builds complete image URLs.
 - Attaches partner feed information to each property.
 - Returns immediately when any request batch fails.
 - Returns an error if the image base URL configuration cannot be loaded.
-- Splits more than 50 property IDs into multiple batches before calling the request layer.
+- Correctly handles more than 50 property IDs by creating two concurrent batches (50 and 5).
+
+---
+
+#### Concurrent Batch Processing
+
+The property details service processes request batches concurrently.
+
+Concurrency is implemented using:
+
+- Goroutines to process multiple batches in parallel.
+- `sync.WaitGroup` to wait for all batch requests to complete.
+- A channel to collect results from concurrent workers.
+
+The unit test verifies:
+
+- Multiple batches are created correctly.
+- One request is executed for each batch.
+- All concurrent batches complete before the service returns.
 
 ---
 
