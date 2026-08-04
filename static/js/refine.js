@@ -58,7 +58,9 @@ async function init() {
     const pax       = params.get("pax");
 
     window.priceRange = computePriceRange(propertyDetails, countryCode);
-    window.currencyCode = countryCode;
+    window.currencyCode =
+      localStorage.getItem("currency") ||
+      countryCode;
     window.allProperties = propertyDetails.Items;
 
     window.filterState = {
@@ -79,6 +81,7 @@ async function init() {
     renderTiles(window.allProperties, countryCode);
     console.log(window.filterState);
     updateFilterButtons();
+    initializeCurrencyDropdown();
   } catch (error) {
     console.log(error);
   }

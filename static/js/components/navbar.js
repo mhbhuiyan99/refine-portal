@@ -1,46 +1,53 @@
-function renderNavbar() {
 
-    const navbar = document.getElementById("navbar");
+function populateCurrencyDropdown(selected = "US") {
 
-    navbar.innerHTML = `
-        <header class="od-navbar">
+    const select =
+        document.getElementById("currency-select");
 
-            <div class="nav-left">
+    if (!select) {
+        return;
+    }
 
-                <a href="#">FIND A RENTAL</a>
+    select.innerHTML = "";
 
-                <a href="#">DESTINATIONS</a>
+    Object.entries(CURRENCIES).forEach(([key, currency]) => {
 
-                <a href="#">ABOUT</a>
+        const option =
+            document.createElement("option");
 
-            </div>
+        option.value = key;
 
-            <div class="nav-center">
+        option.textContent =
+            `${currency.Code} (${currency.Symbol})`;
 
-                <a href="/" class="logo">
+        option.selected =
+            key === selected;
 
-                    <img
-                        src="/static/images/logo.png"
-                        alt="OwnerDirect">
+        select.appendChild(option);
 
-                </a>
+    });
 
-            </div>
+}
 
-            <div class="nav-right">
+function initializeCurrencyDropdown() {
 
-                <button
-                    class="menu-btn"
-                    type="button">
+    const saved =
+        localStorage.getItem("currency") || "US";
 
-                    <span></span>
-                    <span></span>
-                    <span></span>
+    populateCurrencyDropdown(saved);
 
-                </button>
+    const select =
+        document.getElementById("currency-select");
 
-            </div>
+    select.addEventListener("change", function () {
 
-        </header>
-    `;
+        localStorage.setItem(
+            "currency",
+            this.value
+        );
+
+        location.reload();
+
+    });
+
 }

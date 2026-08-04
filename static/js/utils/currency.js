@@ -110,11 +110,11 @@ function convertPrice(priceUSD, countryCode) {
     return Math.round(priceUSD * getExchangeRate(countryCode));
 }
 
-function formatCurrency(price, countryCode) {
-    if (!price) return "";
+function formatCurrency(priceUSD, countryCode) {
+    if (!priceUSD) return "";
 
     const symbol = getCurrencySymbol(countryCode);
-    const converted = convertPrice(price, countryCode);
+    const converted = convertPrice(priceUSD, countryCode);
 
     return `${symbol}${converted.toLocaleString()}`;
 }

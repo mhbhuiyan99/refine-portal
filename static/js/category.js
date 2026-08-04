@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     buildPropertyTypeTabs();
 
     initializeCategorySliders();
+    initializeCurrencyDropdown();
 });
 
 

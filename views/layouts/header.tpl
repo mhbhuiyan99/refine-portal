@@ -36,11 +36,17 @@
             <img src="/static/images/logo.png" alt="OwnerDirect">
         </a>
 
-        <button class="navbar-menu" type="button">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <div class="navbar-right">
+
+            <select id="currency-select"></select>
+
+            <button class="navbar-menu" type="button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+        </div>
 
     </div>
 </header>
