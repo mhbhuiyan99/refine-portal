@@ -109,6 +109,14 @@ Typical examples include:
 
 Configuration access is handled through function variable injection instead of `gomonkey`. This avoids runtime method patching for configuration reads, simplifies the tests, and reduces dependence on framework internals.
 
+### Limitations of gomonkey
+
+During evaluation it was observed that `gomonkey` relies on runtime function patching.
+
+Although it works correctly for normal unit tests (using `-gcflags=all=-l`), it is not fully compatible with Go's race detector (`go test -race`) because the race detector instruments compiled code before execution.
+
+For projects that require frequent race-detector execution, interface-based dependency injection together with mock generators (such as GoMock or Mockery) is generally a more robust approach.
+
 ---
 
 # Current Test Coverage
@@ -641,7 +649,103 @@ Package coverage:
 | Services | 97.6% |
 | Requests | 89.7% |
 
-The remaining uncovered statements are primarily application bootstrap code (`main.go`) and router initialization (`router.go`), which are typically validated through integration testing rather than unit testing. As additional features are implemented, the same testing approach can be applied to maintain high test coverage.
+The remaining uncovered statements are primarily:
+
+- `main.go` (application bootstrap)
+- `router.go` (route registration)
+- A small number of request helper branches
+
+These components are generally better validated through integration testing rather than unit testing.
+
+---
+
+# Concurrency Testing
+
+The project includes concurrent processing in the Property Details service.
+
+## Concurrent Logic Tested
+
+The `GetPropertyDetails()` service splits large property ID lists into batches and processes each batch concurrently using:
+
+- Goroutines
+- `sync.WaitGroup`
+- Channels
+- Atomic counters
+- Mutexes (inside tests for safe shared-state verification)
+
+### Concurrency Test
+
+#### Function Tested
+
+- `GetPropertyDetails()`
+
+#### Testing Focus
+
+Verified:
+
+- Property IDs are split into multiple batches.
+- One goroutine is created for each batch.
+- Every batch invokes the request layer exactly once.
+- All concurrent requests complete before results are merged.
+- Concurrent execution returns the expected aggregated response.
+- Synchronization is handled correctly using `sync.WaitGroup`.
+
+The concurrency test uses an atomic counter to verify the number of concurrent request executions while safely collecting batch information using a mutex.
+
+This validates the service's concurrent batching logic without making real API calls.
+
+---
+
+# Testing Tools Evaluation
+
+The project initially used **Testify** and **gomonkey**. Additional testing tools were researched and evaluated to determine whether they would provide advantages for this project.
+
+| Tool | Purpose | Advantages | Limitations | Recommendation |
+|------|---------|------------|-------------|----------------|
+| Testify | Assertions and test helpers | Simple assertions, readable failures, widely adopted | Mock package requires interfaces | Continue using |
+| gomonkey | Runtime function patching | Works well with existing function-based code, minimal production changes | Requires disabling compiler inlining (`-gcflags=all=-l`), not ideal for long-term maintainability | Suitable for current project |
+| GoMock | Interface-based mocking | Type-safe, compile-time mock generation, widely used in production | Requires interface-based architecture | Recommended for larger projects |
+| Mockery | Automatic mock generation | Generates mocks from interfaces automatically | Requires interface design | Recommended with GoMock or Testify |
+| Ginkgo + Gomega | Behavior-driven testing | Expressive syntax, useful for complex workflows | More learning overhead than standard testing | Optional |
+| GoConvey | Browser-based test visualization | Easy visualization and continuous testing | Less common in enterprise Go projects | Not recommended for this project |
+| httptest | HTTP server testing | Standard library, lightweight, no external dependency | Only suitable for HTTP-related tests | Continue using |
+
+---
+
+# Recommended Testing Approach
+
+Based on the evaluation, the following testing stack is recommended.
+
+| Purpose | Selected Tool |
+|---------|---------------|
+| Assertions | Testify |
+| HTTP Testing | httptest |
+| Function Patching | gomonkey |
+| Configuration Isolation | Function Variable Injection |
+| Coverage Analysis | Go built-in cover tool |
+
+For larger projects with interface-based architecture, **GoMock** or **Mockery** would be preferable over runtime patching because they provide compile-time safety and better long-term maintainability.
+
+For this project, however, the codebase is primarily function-oriented rather than interface-oriented. Using `gomonkey` avoids unnecessary refactoring while still allowing dependencies to be isolated effectively during unit testing.
+
+---
+
+# Future Improvements
+
+Possible improvements include:
+
+- Introduce interfaces for the request and service layers.
+- Replace runtime function patching with generated interface mocks using GoMock or Mockery.
+- Add benchmark tests (`go test -bench`) for performance-critical functions.
+- Add race detection using:
+
+```bash
+go test -race ./...
+```
+
+- Add integration tests for router configuration and application startup.
+- Integrate automated testing and coverage reporting into a CI/CD pipeline.
+
 
 ---
 
