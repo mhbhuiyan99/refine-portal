@@ -3,6 +3,10 @@ function renderPropertyCard(item, countryCode) {
 
     const image = p.FeatureImage || "/static/images/placeholder.jpg";
 
+    const propertyUrl =
+       `https://ownerdirect.beta.123presto.com/property/${item.Property.PropertySlug}/${item.ID}`;
+
+
     // console.log("Image_src: ", image);
     const price =
         formatCurrency(
@@ -103,7 +107,9 @@ function renderPropertyCard(item, countryCode) {
                 </div>
 
                 <h3 class="property-title">
-                    ${p.PropertyName}
+                    <a href="${propertyUrl}" target="_blank" rel="noopener noreferrer">
+                        ${item.Property.PropertyName}
+                    </a>
                 </h3>
 
                 <div class="property-location">

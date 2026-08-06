@@ -47,9 +47,12 @@
         </div>
 
         <h3 class="property-title">
-
-            {{.Property.PropertyName}}
-
+            <a
+                href="https://ownerdirect.beta.123presto.com/property/{{.Property.PropertySlug}}/{{.ID}}"
+                target="_blank"
+                rel="noopener noreferrer">
+                {{.Property.PropertyName}}
+            </a>
         </h3>
 
         <div class="property-location">

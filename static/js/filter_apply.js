@@ -3,13 +3,17 @@ function applyFilters() {
     let properties = [...window.allProperties];
 
     properties = filterByPrice(properties);
-    properties = filterByGuests(properties);
-    properties = filterByPet(properties);
-    properties = filterByEco(properties);
-    properties = filterByAmenities(properties);
 
+    properties = filterByGuests(properties);
+
+    properties = filterByPet(properties);
+
+    properties = filterByEco(properties);
+
+    properties = filterByAmenities(properties);
+    
     renderTiles(
-        properties,
+        properties, 
         window.currencyCode
     );
 
@@ -93,7 +97,6 @@ function filterByAmenities(properties) {
     }
 
     return properties.filter(item => {
-
         if (!item.Property.Amenities) {
             return false;
         }

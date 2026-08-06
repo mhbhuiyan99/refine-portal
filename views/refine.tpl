@@ -36,4 +36,5 @@
     };
 </script>
 
+
 {{template "layouts/footer.tpl" .}}

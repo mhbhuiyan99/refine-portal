@@ -205,6 +205,16 @@
     line-height:1.2;
 }
 
+.property-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.property-title a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .property-rating{
     display:flex;
     align-items:center;

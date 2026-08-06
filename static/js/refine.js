@@ -3,8 +3,8 @@ const params = new URLSearchParams(window.location.search);
 const search = window.refineConfig.search || "";
 const order = window.refineConfig.order || 1;
 
-console.log("Search: ", search);
-console.log("Order: ", order);
+//console.log("Search: ", search);
+//console.log("Order: ", order);
 
 async function init() {
   renderSkeletonCards(32);
@@ -13,7 +13,7 @@ async function init() {
 
   try {
     const location = await getLocation(search);
-    console.log("Location:", location);
+    //console.log("Location:", location);
     window.locationData = location;
 
     renderHeader(location);
@@ -24,14 +24,14 @@ async function init() {
       location.GeoInfo.CountryCode,
       order,
     );
-    console.log("Properties:", properties);
+    //console.log("Properties:", properties);
 
     const propertyIDs = properties.Result.ItemIDs;
-    console.log("IDs:", propertyIDs);
-    console.log("Count:", propertyIDs.length);
+    //console.log("IDs:", propertyIDs);
+    //console.log("Count:", propertyIDs.length);
 
     const propertyDetails = await getPropertyDetails(propertyIDs);
-    console.log("Details:", propertyDetails);
+    //.log("Details:", propertyDetails);
 
     function computePriceRange(propertyDetails, countryCode) {
       const prices = propertyDetails.Items
@@ -79,7 +79,7 @@ async function init() {
     };
 
     renderTiles(window.allProperties, window.currencyCode);
-    console.log(window.filterState);
+    //console.log(window.filterState);
     updateFilterButtons();
     initializeCurrencyDropdown();
     updateCategoryPrices();

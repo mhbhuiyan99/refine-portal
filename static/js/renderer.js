@@ -5,6 +5,7 @@ let isLoading = false;
 const PAGE_SIZE = 32;
 
 function renderTiles(data, countryCode) {
+
     currentCountryCode = countryCode;
     const container = document.getElementById("property-container");
 
@@ -19,11 +20,17 @@ function renderTiles(data, countryCode) {
     }
 
     if (items.length === 0) {
+
+        allItems = [];
+        renderedCount = 0;
+
         container.innerHTML = "<p>No properties found.</p>";
+
         return;
     }
 
     allItems = items;
+
     renderedCount = 0;
     container.innerHTML = "";
     renderNextBatch(countryCode);
