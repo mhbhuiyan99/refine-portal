@@ -152,10 +152,15 @@ function bindModalEvents() {
         updatePriceUI();
     };
 
-    minInput.oninput = () => {
-        let value = Math.min(Number(minInput.value), Number(maxSlider.value) - MIN_GAP);
+    minInput.onchange = () => {
+        let value = Number(minInput.value);
+
         value = Math.max(value, MIN_PRICE);
+        value = Math.min(value, Number(maxSlider.value) - MIN_GAP);
+
+        minInput.value = value;
         minSlider.value = value;
+
         updatePriceUI();
     };
 
@@ -317,12 +322,12 @@ function getFilterModalHTML() {
     <div class="price-inputs">
         <span class="price-label side-label">Min price</span>
         <div class="price-input-group">
-        <span class="price-currency">${countryCode} ${symbol}</span>
+        <span class="price-currency">${symbol}</span>
         <input id="min-price-value" type="number" value="${range.min}">
     </div>
     <span>—</span>
     <div class="price-input-group">
-    <span class="price-currency">${countryCode} ${symbol}</span>
+    <span class="price-currency">${symbol}</span>
     <input id="max-price-value" type="number" value="${range.max}">
     </div>
     <span class="price-label side-label">Max price</span>
