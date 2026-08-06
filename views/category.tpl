@@ -1,8 +1,6 @@
 {{template "layouts/header.tpl" .}}
 
-<div class="container">
-
-    <section id="hero">
+<section id="hero">
 
         <div class="hero-overlay">
 
@@ -60,6 +58,8 @@
         </div>
 
     </section>
+
+<div class="container">
 
     <section class="breadcrumb">
 

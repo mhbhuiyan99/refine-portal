@@ -168,6 +168,15 @@ body{
     border-color: #00c48c;
 }
 
+@media (max-width:768px){
+
+    #currency-select{
+        width:90px;
+        font-size:13px;
+    }
+
+}
+
 /* ------------------------------
    Toolbar
 ------------------------------ */
