@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 
-const search = window.refineConfig.search;
-const order = window.refineConfig.order;
+const search = window.refineConfig.search || "";
+const order = window.refineConfig.order || 1;
 
 console.log("Search: ", search);
 console.log("Order: ", order);
@@ -82,6 +82,7 @@ async function init() {
     console.log(window.filterState);
     updateFilterButtons();
     initializeCurrencyDropdown();
+    updateCategoryPrices();
   } catch (error) {
     console.log(error);
   }

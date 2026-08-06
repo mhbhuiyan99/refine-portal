@@ -168,7 +168,8 @@ function renderPropertyCard(item, countryCode) {
 
                 <div class="property-footer">
 
-                    <div class="price">
+                    <div class="price"
+                    data-price="${p.Price}">
 
                         ${formatCurrency(p.Price, countryCode)}
 

@@ -128,7 +128,9 @@
 
         <div class="property-footer">
 
-            <div class="price">
+            <div 
+                class="price"
+                data-price="{{.Property.Price}}">
 
                 ${{printf "%.0f" .Property.Price}}
                 <span>/night</span>
