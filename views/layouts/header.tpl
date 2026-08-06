@@ -8,7 +8,10 @@
 
     <link rel="stylesheet" href="/static/css/refine.css">
     <link rel="stylesheet" href="/static/css/filter.css">
+
     <script src="/static/js/guest_model.js"></script>
+    <script src="/static/js/components/navbar.js"></script>
+
     <link rel="stylesheet" href="/static/css/category.css">
     <link rel="stylesheet" href="/static/css/shimmer.css">
     <link rel="stylesheet" href="/static/css/components/property_card.css">
