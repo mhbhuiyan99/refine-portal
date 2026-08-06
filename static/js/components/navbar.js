@@ -10,7 +10,15 @@ function populateCurrencyDropdown(selected = "US") {
 
     select.innerHTML = "";
 
+    const addedCodes = new Set();
+
     Object.entries(CURRENCIES).forEach(([key, currency]) => {
+
+        // Skip duplicate currencies (EUR, GBP, etc.)
+        if (addedCodes.has(currency.Code)) {
+            return;
+        }
+        addedCodes.add(currency.Code);
 
         const option =
             document.createElement("option");
