@@ -41,13 +41,17 @@ function initializeCurrencyDropdown() {
 
     select.addEventListener("change", function () {
 
-        localStorage.setItem(
-            "currency",
-            this.value
-        );
+        localStorage.setItem("currency", this.value);
 
-        location.reload();
+        // Refine page
+        if (typeof renderTiles === "function" && window.allProperties) {
+            renderTiles(window.allProperties, this.value);
+        }
 
+        // Category page
+        if (typeof updateCategoryPrices === "function") {
+            updateCategoryPrices();
+        }
     });
 
 }
