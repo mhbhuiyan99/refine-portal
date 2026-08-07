@@ -79,12 +79,13 @@ function applyDates(mode = "refine", input = null) {
         return;
     }
 
+    window.filterState.startDate = dates[0];
+    window.filterState.endDate = dates[1];
+
+
     if (mode === "category") {
         window.selectedStartDate = dates[0];
         window.selectedEndDate = dates[1];
-
-        window.filterState.startDate = dates[0];
-        window.filterState.endDate = dates[1];
 
         const nights =
             Math.ceil(
@@ -99,9 +100,28 @@ function applyDates(mode = "refine", input = null) {
         const end = flatpickr.formatDate(dates[1], "M j");
 
         input.value = `${start} - ${end}`;
-    } else {
-        window.filterState.startDate = dates[0];
-        window.filterState.endDate = dates[1];
+    }  else {
+        // Calculate nights
+        const nights = Math.ceil(
+            (dates[1] - dates[0]) / (1000 * 60 * 60 * 24)
+        );
+
+        window.filterState.nights = nights;
+
+        // Update the URL without reloading
+        const url = new URL(window.location);
+
+        url.searchParams.set(
+            "dateStart",
+            flatpickr.formatDate(dates[0], "Y-m-d")
+        );
+
+        url.searchParams.set(
+            "dateEnd",
+            flatpickr.formatDate(dates[1], "Y-m-d")
+        );
+
+        history.replaceState({}, "", url);
 
         updateFilterButtons();
         applyFilters();

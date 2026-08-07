@@ -29,7 +29,7 @@
 
 </div>
 
-...
+
 
 <script>
 window.refineConfig = {
@@ -38,7 +38,7 @@ window.refineConfig = {
 };
 </script>
 
-...
+
 
 {{template "layouts/footer.tpl" .}}
 

@@ -133,9 +133,10 @@
     </section>
 </div>
 
-...
+
 
 {{template "layouts/footer.tpl" .}}
 
 <script src="/static/js/filter_state.js"></script>
+<script src="/static/js/date_modal.js"></script>
 <script src="/static/js/category.js"></script>

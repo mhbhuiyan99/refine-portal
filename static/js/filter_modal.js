@@ -321,19 +321,19 @@ function getFilterModalHTML() {
     <div class="price-slider">
         <div class="price-slider-track"></div>
         <div class="price-slider-fill" id="price-slider-fill"></div>
-            <input id="min-price" type="range" min="${range.min}" max="${range.max}" value="${range.min}">
-            <input id="max-price" type="range" min="${range.min}" max="${range.max}" value="${range.max}">
+            <input id="min-price" type="range" min="${value="${window.filterState.minPrice}"}" max="${value="${window.filterState.maxPrice}"}" value="${value="${window.filterState.minPrice}"}">
+            <input id="max-price" type="range" min="${value="${window.filterState.minPrice}"}" max="${value="${window.filterState.maxPrice}"}" value="${value="${window.filterState.maxPrice}"}">
         </div>
         <div class="price-inputs">
             <span class="price-label side-label">Min price</span>
             <div class="price-input-group">
             <span class="price-currency">${symbol}</span>
-            <input id="min-price-value" type="number" value="${range.min}">
+            <input id="min-price-value" type="number" value="${window.filterState.minPrice}">
         </div>
         <span>—</span>
         <div class="price-input-group">
         <span class="price-currency">${symbol}</span>
-        <input id="max-price-value" type="number" value="${range.max}">
+        <input id="max-price-value" type="number" value="${window.filterState.maxPrice}">
         </div>
         <span class="price-label side-label">Max price</span>
     </div>

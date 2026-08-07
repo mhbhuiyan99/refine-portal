@@ -10,17 +10,30 @@ function initializeCurrencyDropdown() {
 
     select.addEventListener("change", function () {
 
+        window.currencyCode = this.value;
         localStorage.setItem("currency", this.value);
 
         // Refine page
-        if (typeof renderTiles === "function" && window.allProperties) {
-            renderTiles(window.allProperties, this.value);
+        if (typeof applyFilters === "function" && window.allProperties) {
+            // recompute range for new currency
+            window.priceRange =
+                computePriceRange(
+                    window.allProperties,
+                    window.currencyCode
+                );
+
+            // reset price filter
+            window.filterState.minPrice = window.priceRange.min;
+            window.filterState.maxPrice = window.priceRange.max;
+
+            applyFilters();
         }
 
         // Category page
-        if (typeof updateCategoryPrices === "function") {
+        else if (typeof updateCategoryPrices === "function") {
             updateCategoryPrices();
         }
+
     });
 
 }

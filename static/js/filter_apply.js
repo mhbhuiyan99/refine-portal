@@ -11,12 +11,8 @@ function applyFilters() {
     properties = filterByEco(properties);
 
     properties = filterByAmenities(properties);
-    
-    renderTiles(
-        properties, 
-        window.currencyCode
-    );
 
+    renderTiles(properties, window.currencyCode);
     updateFilterButtons();
 }
 
