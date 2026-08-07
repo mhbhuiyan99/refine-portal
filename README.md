@@ -135,6 +135,28 @@ Property cards now include a shared image slider component used by both the Refi
 
 ---
 
+### Task 5: Currency Switcher
+
+A currency dropdown in the shared header lets users switch prices across the entire app, with the selection persisted across the Refine and Category pages.
+
+**Implementation details:**
+
+- A currency dropdown lives in the shared header, so it's available on both the Refine Page and Category Page.
+- Duplicate currencies are collapsed in the dropdown — countries that share a currency (e.g. several EU countries using EUR) appear as a single option.
+- Selecting a currency instantly re-renders all visible property prices, including the price range filter.
+- Prices are converted from a fixed USD base price using each currency's exchange rate, then formatted with the correct symbol.
+- The selected currency is saved so it persists across a page reload and when navigating between the Refine and Category pages.
+- On page load, the previously saved currency (or a sensible default) is applied automatically before prices are shown.
+- The conversion and formatting logic is centralized in one place and reused by both pages, avoiding duplicated pricing code.
+
+**Why this matters:**
+
+- One shared currency system instead of separate logic per page.
+- Prices, symbols, and the price filter always stay in sync with the selected currency.
+- Persisting the selection avoids forcing users to reselect their currency on every page or reload.
+
+---
+
 ### Additional Features
 
 The final implementation also includes improved interactive filtering and pricing.
@@ -503,7 +525,7 @@ Home > USA > Texas > Austin
 - Real-time search filtering
 - Multi-criteria sorting
 - Filter modal interactions
-- Currency conversion & formatting
+- Currency conversion, formatting & cross-page persistence (Task 5)
 - Amenities icon rendering
 - Date/guest selection modals
 - State management for filters
@@ -592,7 +614,8 @@ refine-portal/
     │   │   └── sort.js          # Sort selector
     │   └── utils/
     │       ├── amenity_icons.js # Amenity icon mapping
-    │       ├── currency.js      # Currency formatting
+    │       ├── currency.js      # Currency list, rates & formatting helpers (Task 5)
+    │       ├── pricing.js       # Applies saved currency to rendered price tiles (Task 5)
     │       └── partner_logo.js  # Partner logo utilities
     └── images/
         └── amenities/           # Amenity icons
@@ -820,50 +843,12 @@ curl http://localhost:8080/all/usa
 | [models/property_image.go](models/property_image.go)                     | Property Images data models                                    |
 | [static/js/refine.js](static/js/refine.js)                               | Refine page JavaScript logic                                  |
 | [static/js/category.js](static/js/category.js)                           | Category page JavaScript logic                                |
+| [static/js/utils/currency.js](static/js/utils/currency.js)               | Currency list, rates & formatting helpers              |
+| [static/js/utils/pricing.js](static/js/utils/pricing.js)                 | Applies the saved currency to rendered price tiles   |
+| [static/js/components/navbar.js](static/js/components/navbar.js)         | Currency dropdown population & change handling       |
 | [views/refine.tpl](views/refine.tpl)                                     | Refine page template                                          |
 | [views/category.tpl](views/category.tpl)                                 | Category page template                                        |
-
----
-
-## Implementation Checklist
-
-### Task 1: Refine Page
-
-- Create Beego project structure
-- Implement `/refine` route and controller
-- Create `refine.tpl` template
-- Integrate Location API for autocomplete
-- Integrate Property List API
-- Integrate Property Details API
-- Implement property grid rendering
-- Implement filter functionality
-- Implement sort functionality
-- Create property card component
-- Add responsive design
-- Add partner logo integration
-- Add breadcrumb navigation
-
-### Task 2: Category Page
-
-- Create `/all/:location` routes
-- Create category page controller
-- Create `category.tpl` template
-- Integrate Category API
-- Implement server-side rendering
-- Add hero section
-- Add property sections
-- Implement filter functionality
-- Create responsive layout
-- Reuse property card component
-
-### Task 3: Request Layer Refactor
-
-- Add `requests/` package for all external API calls
-- Move HTTP request logic out of controllers and services
-- Create shared request helpers for headers, URL building, and response parsing
-- Keep services small and focused on orchestration
-- Keep controllers limited to HTTP handling and response formatting
-- Update docs to describe the new request-layer architecture
+| [views/layouts/header.tpl](views/layouts/header.tpl)                     | Shared navbar/header, including the currency dropdown         |
 
 ---
 
