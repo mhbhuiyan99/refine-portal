@@ -26,34 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    let timer = null;
-
-    destinationInput.addEventListener("input", function () {
-
-        clearTimeout(timer);
-
-        timer = setTimeout(async () => {
-
-            if (this.value.length < 2) {
-                hideSuggestions();
-                return;
-            }
-
-            const result = await getLocation(this.value);
-
-            renderSuggestions(result.Items);
-
-        }, 300);
-
-    });
-
-    document.addEventListener("click", function (e) {
-
-        if (!e.target.closest("#destination-field")) {
-            hideSuggestions();
-        }
-
-    });
 
     browseButton.addEventListener("click", searchCategory);
     buildPropertyTypeTabs();
@@ -61,54 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeCategorySliders();
 });
 
-
-function renderSuggestions(items){
-
-    const box = document.getElementById("destination-suggestions");
-    const destinationInput = document.getElementById("destination-input");
-
-    box.innerHTML="";
-
-    items.forEach(item=>{
-
-        const div=document.createElement("div");
-
-        div.className="destination-item";
-
-        div.innerText=item.Display;
-
-        div.onclick=()=>{
-
-            window.selectedLocation=item;
-
-            destinationInput.value = item.Display;
-
-            destinationInput.addEventListener("keydown", function(e) {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    searchCategory();
-                }
-            });
-
-            box.style.display="none";
-        };
-
-        box.appendChild(div);
-
-    });
-
-    box.style.display="block";
-}
-
-function hideSuggestions() {
-
-    const box =
-        document.getElementById("destination-suggestions");
-
-    if (!box) return;
-
-    box.style.display = "none";
-}
 
 async function searchCategory() {
 
