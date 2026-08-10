@@ -3,7 +3,7 @@ function updateCategoryPrices() {
     const currency =
         window.currencyCode ||
         localStorage.getItem("currency") ||
-        window.locationData.GeoInfo.CountryCode;
+        "USD";
 
     document.querySelectorAll(".price").forEach(priceEl => {
 
