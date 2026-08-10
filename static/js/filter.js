@@ -23,7 +23,8 @@ function renderFilters() {
     document
         .getElementById("date-filter-btn")
         .addEventListener("click", () => {
-            openDateModal();
+            // console.log("OPENING DATE DIRECTLY");
+            openDateModal("refine");
         });
 
     document

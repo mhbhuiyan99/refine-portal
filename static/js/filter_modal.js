@@ -72,7 +72,8 @@ function bindModalEvents() {
     document
         .getElementById("modal-date-btn")
         .onclick = () => {
-            openDateModal();
+            //console.log("OPENING DATE FROM FILTER MODAL");
+            openDateModal("refine-pending"); // inside the Filter modal
         };
 
     const minSlider = document.getElementById("min-price");

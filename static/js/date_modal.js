@@ -21,12 +21,6 @@ function openDateModal(mode = "refine", input = null) {
             .getElementById("date-cancel")
             .onclick = closeDateModal;
 
-        document
-            .getElementById("date-continue")
-            .onclick = function () {
-                applyDates(mode, input);
-            };
-
         modal.onclick = function (e) {
 
             if (e.target === modal) {
@@ -46,14 +40,24 @@ function openDateModal(mode = "refine", input = null) {
         });
     }
 
-    if (window.filterState.startDate && window.filterState.endDate) {
+    // This must run every time the modal opens.
+    document
+        .getElementById("date-continue")
+        .onclick = function () {
 
-        const startDate = 
+            // console.log("CONTINUE MODE =", mode);
+
+            applyDates(mode, input);
+        };
+
+    let startDate = 
             window.pendingStartDate ||
             window.filterState.startDate;
-        const endDate = 
+    let endDate = 
             window.pendingEndDate ||
             window.filterState.endDate;
+
+    if (window.filterState.startDate && window.filterState.endDate) {
 
         if(startDate && endDate) {
             datePicker.setDate([
@@ -81,17 +85,20 @@ function closeDateModal() {
 
 function applyDates(mode = "refine", input = null) {
 
+    console.log("applyDates MODE =", mode);
+
     const dates = datePicker.selectedDates;
 
     if (dates.length !== 2) {
         return;
     }
 
-    window.filterState.startDate = dates[0];
-    window.filterState.endDate = dates[1];
-
 
     if (mode === "category") {
+
+        window.filterState.startDate = dates[0];
+        window.filterState.endDate = dates[1];
+
         window.selectedStartDate = dates[0];
         window.selectedEndDate = dates[1];
 
@@ -108,21 +115,53 @@ function applyDates(mode = "refine", input = null) {
         const end = flatpickr.formatDate(dates[1], "M j");
 
         input.value = `${start} - ${end}`;
-    }  else {
-        
-        // Refine page
-        // Stage only. Do not apply yet.
+
+    } else if (mode === "refine-pending") {
+
+        // Opened from inside Filter modal.
+        // Stage only. Do NOT search.
 
         window.pendingStartDate = dates[0];
         window.pendingEndDate = dates[1];
 
         window.pendingNights = Math.ceil(
-            (dates[1] - dates[0]) / (1000 * 60 * 60 * 24)
+            (dates[1] - dates[0]) /
+            (1000 * 60 * 60 * 24)
         );
 
         updateFilterDateButton();
-    }
 
+    } else {
+        
+        // Direct Dates filter button.
+        // Apply immediately.
+
+        window.filterState.startDate = dates[0];
+        window.filterState.endDate = dates[1];
+
+        window.filterState.nights = Math.ceil(
+            (dates[1] - dates[0]) /
+            (1000 * 60 * 60 * 24)
+        );
+
+        const url = new URL(window.location);
+
+        url.searchParams.set(
+            "dateStart",
+            flatpickr.formatDate(dates[0], "Y-m-d")
+        );
+
+        url.searchParams.set(
+            "dateEnd",
+            flatpickr.formatDate(dates[1], "Y-m-d")
+        );
+
+        history.replaceState({}, "", url);
+
+        updateFilterButtons();
+
+        applyFilters();
+    }
     closeDateModal();
 }
 
