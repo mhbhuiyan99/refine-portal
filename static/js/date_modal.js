@@ -85,7 +85,7 @@ function closeDateModal() {
 
 function applyDates(mode = "refine", input = null) {
 
-    console.log("applyDates MODE =", mode);
+    // console.log("applyDates MODE =", mode);
 
     const dates = datePicker.selectedDates;
 

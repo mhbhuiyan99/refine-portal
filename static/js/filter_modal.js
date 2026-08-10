@@ -144,6 +144,19 @@ function bindModalEvents() {
             window.pendingNights = null;
         }
 
+        const url = new URL(window.location);
+
+        if (window.filterState.guests > 0) {
+            url.searchParams.set(
+                "pax",
+                window.filterState.guests
+            );
+        } else {
+            url.searchParams.delete("pax")
+        }
+
+        history.replaceState({}, "", url);
+
         updateFilterButtons();
 
         applyFilters();
