@@ -119,6 +119,8 @@ function applyDates(mode = "refine", input = null) {
         window.pendingNights = Math.ceil(
             (dates[1] - dates[0]) / (1000 * 60 * 60 * 24)
         );
+
+        updateFilterDateButton();
     }
 
     closeDateModal();
@@ -175,4 +177,28 @@ function getDateModalHTML() {
 
 </div>
 `;
+}
+
+function updateFilterDateButton() {
+
+    const button = document.getElementById("modal-date-btn");
+
+    if (!button) {
+        return;
+    }
+
+    const startDate = 
+        window.pendingStartDate ||
+        window.filterState.startDate;
+    const endDate = 
+        window.pendingEndDate ||
+        window.filterState.endDate;
+        
+    if (startDate && endDate) {
+        button.querySelector("span:first-child").textContent =
+            `${flatpickr.formatDate(startDate, "M j")} - ${flatpickr.formatDate(endDate, "M j")}`;
+    } else {
+        button.querySelector("span:first-child").textContent = 
+            "Select Date";
+    }
 }

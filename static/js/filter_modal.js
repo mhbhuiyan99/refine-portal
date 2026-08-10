@@ -279,6 +279,7 @@ function bindModalEvents() {
     });
 
     updatePriceUI(); // draw initial fill on modal open
+    updateFilterDateButton();
 }
 
 function getAmenitiesHTML() {
@@ -342,7 +343,7 @@ function getFilterModalHTML() {
 
     <div class="filter-row-2col">
     <div class="filter-section" id="date-section">
-    <h3>Select a date</h3>
+    <h3>Select date</h3>
     <button id="modal-date-btn">
         <span>Select Date</span>
         <span class="date-icon">📅</span>
