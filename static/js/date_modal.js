@@ -48,17 +48,25 @@ function openDateModal(mode = "refine", input = null) {
 
     if (window.filterState.startDate && window.filterState.endDate) {
 
-        datePicker.setDate([
-            window.filterState.startDate,
-            window.filterState.endDate
-        ], false);
+        const startDate = 
+            window.pendingStartDate ||
+            window.filterState.startDate;
+        const endDate = 
+            window.pendingEndDate ||
+            window.filterState.endDate;
 
+        if(startDate && endDate) {
+            datePicker.setDate([
+                startDate, 
+                endDate
+            ], false);
+        }
     }
 
     modal.style.display = "flex";
 
     datePicker.jumpToDate(
-        window.filterState.startDate || new Date()
+        startDate || new Date()
     );
 
 }
@@ -101,30 +109,16 @@ function applyDates(mode = "refine", input = null) {
 
         input.value = `${start} - ${end}`;
     }  else {
-        // Calculate nights
-        const nights = Math.ceil(
+        
+        // Refine page
+        // Stage only. Do not apply yet.
+
+        window.pendingStartDate = dates[0];
+        window.pendingEndDate = dates[1];
+
+        window.pendingNights = Math.ceil(
             (dates[1] - dates[0]) / (1000 * 60 * 60 * 24)
         );
-
-        window.filterState.nights = nights;
-
-        // Update the URL without reloading
-        const url = new URL(window.location);
-
-        url.searchParams.set(
-            "dateStart",
-            flatpickr.formatDate(dates[0], "Y-m-d")
-        );
-
-        url.searchParams.set(
-            "dateEnd",
-            flatpickr.formatDate(dates[1], "Y-m-d")
-        );
-
-        history.replaceState({}, "", url);
-
-        updateFilterButtons();
-        applyFilters();
     }
 
     closeDateModal();

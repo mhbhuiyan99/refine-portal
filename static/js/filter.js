@@ -159,6 +159,10 @@ function bindClearButtons() {
                         window.filterState.startDate = null;
                         window.filterState.endDate = null;
 
+                        window.pendingStartDate = null;
+                        window.pendingEndDate = null;
+                        window.pendingNights = null;
+
                         if (datePicker) {
                             datePicker.clear();
                         }

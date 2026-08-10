@@ -99,13 +99,56 @@ function bindModalEvents() {
     maxInput.value = window.filterState.maxPrice;
 
     document
-        .getElementById("filter-search")
-        .addEventListener("click", () => {
+    .getElementById("filter-search")
+    .addEventListener("click", () => {
 
-            applyFilters();
+        // Commit pending dates
+        if (
+            window.pendingStartDate &&
+            window.pendingEndDate
+        ) {
+            window.filterState.startDate =
+                window.pendingStartDate;
 
-            closeFilterModal();
-        });
+            window.filterState.endDate =
+                window.pendingEndDate;
+
+            window.filterState.nights =
+                window.pendingNights;
+
+            // Update URL only when Search is pressed
+            const url = new URL(window.location);
+
+            url.searchParams.set(
+                "dateStart",
+                flatpickr.formatDate(
+                    window.pendingStartDate,
+                    "Y-m-d"
+                )
+            );
+
+            url.searchParams.set(
+                "dateEnd",
+                flatpickr.formatDate(
+                    window.pendingEndDate,
+                    "Y-m-d"
+                )
+            );
+
+            history.replaceState({}, "", url);
+
+            // Clear staged values
+            window.pendingStartDate = null;
+            window.pendingEndDate = null;
+            window.pendingNights = null;
+        }
+
+        updateFilterButtons();
+
+        applyFilters();
+
+        closeFilterModal();
+    });
     
     document
         .getElementById("filter-clear")
