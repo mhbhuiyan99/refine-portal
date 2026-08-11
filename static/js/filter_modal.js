@@ -144,6 +144,7 @@ function bindModalEvents() {
             window.pendingNights = null;
         }
 
+        // Update URL with guests
         const url = new URL(window.location);
 
         if (window.filterState.guests > 0) {
@@ -153,6 +154,20 @@ function bindModalEvents() {
             );
         } else {
             url.searchParams.delete("pax")
+        }
+
+        // Update URL with Pet-friendly
+        if (window.filterState.petFriendly) {
+            url.searchParams.set("petFriendly", "true");
+        } else {
+            url.searchParams.delete("petFriendly");
+        }
+
+        // Update URL with Eco-friendly
+        if (window.filterState.ecoFriendly) {
+            url.searchParams.set("ecoFriendly", "true");
+        } else {
+            url.searchParams.delete("ecoFriendly");
         }
 
         history.replaceState({}, "", url);
