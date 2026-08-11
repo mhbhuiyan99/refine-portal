@@ -117,9 +117,6 @@ function bindModalEvents() {
             window.filterState.nights =
                 window.pendingNights;
 
-            // Update URL only when Search is pressed
-            const url = new URL(window.location);
-
             url.searchParams.set(
                 "dateStart",
                 flatpickr.formatDate(
@@ -136,17 +133,15 @@ function bindModalEvents() {
                 )
             );
 
-            history.replaceState({}, "", url);
-
             // Clear staged values
             window.pendingStartDate = null;
             window.pendingEndDate = null;
             window.pendingNights = null;
         }
 
-        // Update URL with guests
         const url = new URL(window.location);
 
+        // Update URL with guests
         if (window.filterState.guests > 0) {
             url.searchParams.set(
                 "pax",
@@ -178,6 +173,28 @@ function bindModalEvents() {
             );
         } else {
             url.searchParams.delete("amenities");
+        }
+
+        // Update price URL only when price is not the default range
+        const defaultMinPrice = Number(window.priceRange.min);
+        const defaultMaxPrice = Number(window.priceRange.max);
+
+        if (
+            Number(window.filterState.minPrice) !== defaultMinPrice ||
+            Number(window.filterState.maxPrice) !== defaultMaxPrice
+        ) {
+            url.searchParams.set(
+                "amount",
+                `${window.filterState.minPrice}-${window.filterState.maxPrice}`
+            );
+
+            url.searchParams.set(
+                "selectedCurrency",
+                window.currencyCode
+            );
+        } else {
+            url.searchParams.delete("amount");
+            url.searchParams.delete("selectedCurrency");
         }
 
         history.replaceState({}, "", url);
