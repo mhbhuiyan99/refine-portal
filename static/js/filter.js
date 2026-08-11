@@ -168,6 +168,7 @@ function bindClearButtons() {
                             datePicker.clear();
                         }
 
+                        reloadWithUpdatedFilters();
                         break;
 
                     case "price":
@@ -178,12 +179,14 @@ function bindClearButtons() {
                         window.filterState.maxPrice =
                             window.priceRange.max;
 
+                        reloadWithUpdatedFilters();
                         break;
 
                     case "guest":
 
                         window.filterState.guests = 0;
 
+                        reloadWithUpdatedFilters();
                         break;
 
                 }
@@ -196,4 +199,93 @@ function bindClearButtons() {
 
         });
 
+}
+
+function reloadWithUpdatedFilters() {
+
+    const url = new URL(window.location);
+
+    // Date
+    if (
+        window.filterState.startDate &&
+        window.filterState.endDate
+    ) {
+        url.searchParams.set(
+            "dateStart",
+            flatpickr.formatDate(
+                window.filterState.startDate,
+                "Y-m-d"
+            )
+        );
+
+        url.searchParams.set(
+            "dateEnd",
+            flatpickr.formatDate(
+                window.filterState.endDate,
+                "Y-m-d"
+            )
+        );
+    } else {
+        url.searchParams.delete("dateStart");
+        url.searchParams.delete("dateEnd");
+    }
+
+    // Guests
+    if (window.filterState.guests > 0) {
+        url.searchParams.set(
+            "pax",
+            window.filterState.guests
+        );
+    } else {
+        url.searchParams.delete("pax");
+    }
+
+    // Price
+    const defaultMinPrice = Number(window.priceRange.min);
+    const defaultMaxPrice = Number(window.priceRange.max);
+
+    if (
+        Number(window.filterState.minPrice) !== defaultMinPrice ||
+        Number(window.filterState.maxPrice) !== defaultMaxPrice
+    ) {
+        url.searchParams.set(
+            "amount",
+            `${window.filterState.minPrice}-${window.filterState.maxPrice}`
+        );
+
+        url.searchParams.set(
+            "selectedCurrency",
+            window.currencyCode
+        );
+    } else {
+        url.searchParams.delete("amount");
+        url.searchParams.delete("selectedCurrency");
+    }
+
+    // Pet friendly
+    if (window.filterState.petFriendly) {
+        url.searchParams.set("petFriendly", "true");
+    } else {
+        url.searchParams.delete("petFriendly");
+    }
+
+    // Eco friendly
+    if (window.filterState.ecoFriendly) {
+        url.searchParams.set("ecoFriendly", "true");
+    } else {
+        url.searchParams.delete("ecoFriendly");
+    }
+
+    // Amenities
+    if (window.filterState.amenities.length > 0) {
+        url.searchParams.set(
+            "amenities",
+            window.filterState.amenities.join("-")
+        );
+    } else {
+        url.searchParams.delete("amenities");
+    }
+
+    // Actually reload the page so refine.js reads the new URL
+    window.location.href = url.toString();
 }
