@@ -170,6 +170,16 @@ function bindModalEvents() {
             url.searchParams.delete("ecoFriendly");
         }
 
+        // Update URL with selected amenities
+        if (window.filterState.amenities.length > 0) {
+            url.searchParams.set(
+                "amenities",
+                window.filterState.amenities.join("-")
+            );
+        } else {
+            url.searchParams.delete("amenities");
+        }
+
         history.replaceState({}, "", url);
 
         updateFilterButtons();
@@ -313,7 +323,7 @@ function bindModalEvents() {
 
 function getAmenitiesHTML() {
 
-    const allAmenities = new Set();
+    const allAmenities = new Map();
 
     window.allProperties.forEach(property => {
 
@@ -321,28 +331,36 @@ function getAmenitiesHTML() {
             return;
         }
 
-        Object.values(property.Property.Amenities)
-            .forEach(name => allAmenities.add(name));
+        Object.entries(property.Property.Amenities)
+            .forEach(([id, name]) => {
+                allAmenities.set(String(id), name);
+            });
 
     });
 
-    const amenities = [...allAmenities].sort();
+    return [...allAmenities.entries()]
+        .sort((a, b) => a[1].localeCompare(b[1]))
+        .map(([id, name]) => `
 
-    return amenities.map(name => `
+            <label>
+                ${name}
 
-        <label>
-            ${name}
-            <input
-                type="checkbox"
-                class="amenity-checkbox"
-                value="${name}"
-                ${window.filterState.amenities.includes(name) ? "checked" : ""}
-            >
-            <span class="checkmark"></span>
-        </label>
+                <input
+                    type="checkbox"
+                    class="amenity-checkbox"
+                    value="${id}"
+                    ${
+                        window.filterState.amenities.includes(String(id))
+                            ? "checked"
+                            : ""
+                    }
+                >
 
-    `).join("");
+                <span class="checkmark"></span>
+            </label>
 
+        `)
+        .join("");
 }
 
 function getFilterModalHTML() {

@@ -41,6 +41,14 @@ async function init() {
     const endDate   = params.get("dateEnd");
     const pax       = params.get("pax");
 
+    const amenitiesParam = params.get("amenities");
+    const amenities = amenitiesParam
+        ? amenitiesParam.split("-")
+        : [];
+
+    const petFriendly = params.get("petFriendly");
+    const ecoFriendly = params.get("ecoFriendly");
+
     window.currencyCode =
       localStorage.getItem("currency") ||
       countryCode;
@@ -61,10 +69,10 @@ async function init() {
         minPrice: window.priceRange.min,
         maxPrice: window.priceRange.max,
 
-        amenities: [],
+        amenities: amenities,
 
-        petFriendly: false,
-        ecoFriendly: false
+        petFriendly: petFriendly === "true",
+        ecoFriendly: ecoFriendly === "true",
     };
 
     renderTiles(window.allProperties, window.currencyCode);
