@@ -118,3 +118,13 @@ function formatCurrency(priceUSD, countryCode) {
 
     return `${symbol}${converted.toLocaleString()}`;
 }
+
+function convertPriceToUSD(price, countryCode) {
+    const rate = getExchangeRate(countryCode);
+
+    if (!rate) {
+        return Math.round(price);
+    }
+
+    return Math.round(price / rate);
+}

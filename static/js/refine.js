@@ -13,72 +13,90 @@ async function init() {
 
   try {
     const location = await getLocation(search);
-    //console.log("Location:", location);
     window.locationData = location;
 
     renderHeader(location);
     renderBreadcrumb(location);
 
-    const properties = await getProperties(
-      location.GeoInfo.LocationSlug,
-      location.GeoInfo.CountryCode,
-      order,
-    );
-    //console.log("Properties:", properties);
-
-    const propertyIDs = properties.Result.ItemIDs;
-    //console.log("IDs:", propertyIDs);
-    //console.log("Count:", propertyIDs.length);
-
-    const propertyDetails = await getPropertyDetails(propertyIDs);
-    //.log("Details:", propertyDetails);
-
-    const countryCode = location.GeoInfo.CountryCode;
-
+    // Get the query parameters from the URL
+    // -------------------------------------
     const params = new URLSearchParams(window.location.search);
 
     const startDate = params.get("dateStart");
-    const endDate   = params.get("dateEnd");
-    const pax       = params.get("pax");
+    const endDate = params.get("dateEnd");
+    const pax = params.get("pax");
+
+    const amount = params.get("amount");
 
     const amenitiesParam = params.get("amenities");
     const amenities = amenitiesParam
-        ? amenitiesParam.split("-")
-        : [];
+      ? amenitiesParam.split("-")
+      : [];
 
     const petFriendly = params.get("petFriendly");
     const ecoFriendly = params.get("ecoFriendly");
 
+    // Get filtered property list
+    // --------------------------
+    const properties = await getProperties(
+      location.GeoInfo.LocationSlug,
+      location.GeoInfo.CountryCode,
+      order,
+      {
+        startDate,
+        endDate,
+        pax,
+        amount,
+        amenities,
+        petFriendly,
+        ecoFriendly
+      }
+    );
+
+    const propertyIDs = properties.Result.ItemIDs;
+
+    // Get details only for returned IDs
+    // ---------------------------------
+    const propertyDetails = await getPropertyDetails(propertyIDs);
+
+    const countryCode = location.GeoInfo.CountryCode;
+
+    const selectedCurrency =
+        params.get("selectedCurrency");
+
     window.currencyCode =
-      localStorage.getItem("currency") ||
-      countryCode;
-    
+        selectedCurrency ||
+        localStorage.getItem("currency") ||
+        countryCode;
+
     window.priceRange =
       computePriceRange(
-          propertyDetails.Items,
-          window.currencyCode
+        propertyDetails.Items,
+        window.currencyCode
       );
+
     window.allProperties = propertyDetails.Items;
 
     window.filterState = {
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
 
-        guests: pax ? Number(pax) : 0,
+      guests: pax ? Number(pax) : 0,
 
-        minPrice: window.priceRange.min,
-        maxPrice: window.priceRange.max,
+      minPrice: window.priceRange.min,
+      maxPrice: window.priceRange.max,
 
-        amenities: amenities,
+      amenities: amenities,
 
-        petFriendly: petFriendly === "true",
-        ecoFriendly: ecoFriendly === "true",
+      petFriendly: petFriendly === "true",
+      ecoFriendly: ecoFriendly === "true",
     };
 
     renderTiles(window.allProperties, window.currencyCode);
-    //console.log(window.filterState);
+
     updateFilterButtons();
     initializeCurrencyDropdown();
+
   } catch (error) {
     console.log(error);
   }

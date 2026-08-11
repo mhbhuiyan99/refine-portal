@@ -41,7 +41,7 @@ function highlightSection(section) {
     }
 }
 
-function bindModalEvents() {
+async function bindModalEvents() {
 
     const minus = document.getElementById("guest-minus");
     const plus = document.getElementById("guest-plus");
@@ -101,13 +101,19 @@ function bindModalEvents() {
 
     document
     .getElementById("filter-search")
-    .addEventListener("click", () => {
+    .addEventListener("click", async () => {
 
-        // Commit pending dates
+        // 1. Create URL object first
+        // --------------------------
+        const url = new URL(window.location);
+
+        // 2. Commit pending dates
+        // -----------------------
         if (
             window.pendingStartDate &&
             window.pendingEndDate
         ) {
+
             window.filterState.startDate =
                 window.pendingStartDate;
 
@@ -117,10 +123,19 @@ function bindModalEvents() {
             window.filterState.nights =
                 window.pendingNights;
 
+        }
+
+        // 3. Date URL
+        // -----------
+        if (
+            window.filterState.startDate &&
+            window.filterState.endDate
+        ) {
+
             url.searchParams.set(
                 "dateStart",
                 flatpickr.formatDate(
-                    window.pendingStartDate,
+                    window.filterState.startDate,
                     "Y-m-d"
                 )
             );
@@ -128,20 +143,22 @@ function bindModalEvents() {
             url.searchParams.set(
                 "dateEnd",
                 flatpickr.formatDate(
-                    window.pendingEndDate,
+                    window.filterState.endDate,
                     "Y-m-d"
                 )
             );
 
-            // Clear staged values
-            window.pendingStartDate = null;
-            window.pendingEndDate = null;
-            window.pendingNights = null;
+        } else {
+
+            url.searchParams.delete("dateStart");
+            url.searchParams.delete("dateEnd");
+
         }
 
-        const url = new URL(window.location);
 
-        // Update URL with guests
+
+        // 4. Guests
+        // ----------
         if (window.filterState.guests > 0) {
             url.searchParams.set(
                 "pax",
@@ -151,21 +168,24 @@ function bindModalEvents() {
             url.searchParams.delete("pax")
         }
 
-        // Update URL with Pet-friendly
+        // 5. Pet-friendly
+        // -----------------
         if (window.filterState.petFriendly) {
             url.searchParams.set("petFriendly", "true");
         } else {
             url.searchParams.delete("petFriendly");
         }
 
-        // Update URL with Eco-friendly
+        // 6. Eco-friendly
+        // ----------------
         if (window.filterState.ecoFriendly) {
             url.searchParams.set("ecoFriendly", "true");
         } else {
             url.searchParams.delete("ecoFriendly");
         }
 
-        // Update URL with selected amenities
+        // 7. Amenities
+        // --------------
         if (window.filterState.amenities.length > 0) {
             url.searchParams.set(
                 "amenities",
@@ -175,7 +195,8 @@ function bindModalEvents() {
             url.searchParams.delete("amenities");
         }
 
-        // Update price URL only when price is not the default range
+        // 8. Price
+        // ---------
         const defaultMinPrice = Number(window.priceRange.min);
         const defaultMaxPrice = Number(window.priceRange.max);
 
@@ -197,13 +218,28 @@ function bindModalEvents() {
             url.searchParams.delete("selectedCurrency");
         }
 
+
+        // 9. Update URL
+        // --------------
         history.replaceState({}, "", url);
 
-        updateFilterButtons();
-
-        applyFilters();
-
+        // 10. Close modal
+        // ---------------
         closeFilterModal();
+
+        // 11. Reload properties from API
+        // ------------------------------
+        await reloadPropertiesFromAPI();
+
+        // 12. Clear pending dates
+        // ------------------------
+        window.pendingStartDate = null;
+        window.pendingEndDate = null;
+        window.pendingNights = null;
+
+        // 13. Update UI
+        // --------------
+        updateFilterButtons();
     });
     
     document

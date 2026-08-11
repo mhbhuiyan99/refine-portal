@@ -18,6 +18,7 @@ type PropertyAPIController struct {
 // Responsibilities:
 //   - Validate the required query parameters.
 //   - Read optional filtering and pagination parameters.
+// 	 - Build the PropertyListRequest.
 //   - Call the Property service.
 //   - Return the property list as JSON.
 func (c *PropertyAPIController) GetList() {
@@ -36,6 +37,8 @@ func (c *PropertyAPIController) GetList() {
 		return
 	}
 
+	// Pagination / sorting
+	// ---------------------
 	order, err := c.GetInt("order")
 	if err != nil {
 		order = 1
@@ -56,15 +59,62 @@ func (c *PropertyAPIController) GetList() {
 		items = 1
 	}
 
+	// Filters
+	// --------
+	startDate := strings.TrimSpace(
+		c.GetString("startDate"),
+	)
+
+	endDate := strings.TrimSpace(
+		c.GetString("endDate"),
+	)
+
+	pax := strings.TrimSpace(
+		c.GetString("pax"),
+	)
+
+	amount := strings.TrimSpace(
+		c.GetString("amount"),
+	)
+
+	amenities := strings.TrimSpace(
+		c.GetString("amenities"),
+	)
+
+	petFriendly := strings.TrimSpace(
+		c.GetString("petFriendly"),
+	)
+
+	ecoFriendly := strings.TrimSpace(
+		c.GetString("ecoFriendly"),
+	)
+
+	// Build request
+	// --------------
 	request := models.PropertyListRequest{
 		Category:  category,
 		Locations: location,
+
 		Order:     order,
 		Page:      page,
 		Limit:     limit,
 		Items:     items,
 		Device:    c.GetString("device", "desktop"),
+
+		StartDate: startDate,
+		EndDate:   endDate,
+
+		Pax: pax,
+
+		Amount: amount,
+
+		Amenities: amenities,
+
+		PetFriendly: petFriendly,
+
+		EcoFriendly: ecoFriendly,
 	}
+
 
 	properties, err := services.GetProperties(request)
 	if err != nil {

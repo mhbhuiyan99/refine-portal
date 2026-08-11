@@ -41,6 +41,34 @@ func GetPropertyListRequest(
 	query.Set("device", req.Device)
 	query.Set("page", fmt.Sprintf("%d", req.Page))
 
+	if req.StartDate != "" {
+		query.Set("dateStart", req.StartDate)
+	}
+
+	if req.EndDate != "" {
+		query.Set("dateEnd", req.EndDate)
+	}
+
+	if req.Pax != "" {
+		query.Set("pax", req.Pax)
+	}
+
+	if req.Amount != "" {
+		query.Set("amount", req.Amount)
+	}
+
+	if req.Amenities != "" {
+		query.Set("amenities", req.Amenities)
+	}
+
+	if req.PetFriendly == "true" {
+		query.Set("petFriendly", "true")
+	}
+
+	if req.EcoFriendly == "true" {
+		query.Set("ecoFriendly", "true")
+	}
+
 	requestURL, err := BuildURL(
 		baseURL, 
 		propertyListAPIPath, 

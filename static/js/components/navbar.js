@@ -3,41 +3,81 @@ function initializeCurrencyDropdown() {
     const saved =
         localStorage.getItem("currency") || "US";
 
+    window.currencyCode = saved;
+
     populateCurrencyDropdown(saved);
 
     const select =
         document.getElementById("currency-select");
 
-    select.addEventListener("change", function () {
+    if (!select) {
+        return;
+    }
 
-        window.currencyCode = this.value;
-        localStorage.setItem("currency", this.value);
+    // Prevent duplicate event listeners
+    select.onchange = function () {
 
+        const newCurrency = this.value;
+
+        // Update current currency
+        window.currencyCode = newCurrency;
+
+        // Save currency preference
+        localStorage.setItem(
+            "currency",
+            newCurrency
+        );
+
+        // -----------------------------
         // Refine page
-        if (typeof applyFilters === "function" && window.allProperties) {
-            // recompute range for new currency
+        // -----------------------------
+        if (
+            typeof applyFilters === "function" &&
+            Array.isArray(window.allProperties)
+        ) {
+
+            // Recalculate price range
+            // using the NEW currency
             window.priceRange =
                 computePriceRange(
                     window.allProperties,
                     window.currencyCode
                 );
 
-            // reset price filter
-            window.filterState.minPrice = window.priceRange.min;
-            window.filterState.maxPrice = window.priceRange.max;
+            // If price filter is currently selected,
+            // convert the existing USD-based price
+            // filter to the new currency.
+            //
+            // For now, reset to the full range.
+            window.filterState.minPrice =
+                window.priceRange.min;
 
-            applyFilters();
+            window.filterState.maxPrice =
+                window.priceRange.max;
+
+            // Update cards WITHOUT API reload
+            renderTiles(
+                window.allProperties,
+                window.currencyCode
+            );
+
+            // Update filter buttons
+            updateFilterButtons();
+
+            // Update the modal if it is opened later
+            return;
         }
 
+        // -----------------------------
         // Category page
-        else if (typeof updateCategoryPrices === "function") {
+        // -----------------------------
+        if (
+            typeof updateCategoryPrices === "function"
+        ) {
             updateCategoryPrices();
         }
-
-    });
-
+    };
 }
-
 
 function populateCurrencyDropdown(selected = "US") {
 

@@ -17,24 +17,79 @@ const DEFAULT_PROPERTY_OPTIONS = {
   device: "desktop",
 };
 
-async function getProperties(category, locations, order) {
-  const query = new URLSearchParams({
-    category: category,
-    location: locations,
+async function getProperties(
+    category,
+    locations,
     order,
-    page: DEFAULT_PROPERTY_OPTIONS.page,
-    limit: DEFAULT_PROPERTY_OPTIONS.limit,
-    items: DEFAULT_PROPERTY_OPTIONS.items,
-    device: DEFAULT_PROPERTY_OPTIONS.device,
-  });
+    filters = {}
+) {
+    const query = new URLSearchParams({
+        category: category,
+        location: locations,
+        order: order,
 
-  const response = await fetch(`/api/properties?${query.toString()}`);
+        page: DEFAULT_PROPERTY_OPTIONS.page,
+        limit: DEFAULT_PROPERTY_OPTIONS.limit,
+        items: DEFAULT_PROPERTY_OPTIONS.items,
+        device: DEFAULT_PROPERTY_OPTIONS.device,
+    });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch properties");
-  }
+    // Dates
+    if (filters.startDate) {
+        query.set("dateStart", filters.startDate);
+    }
 
-  return await response.json();
+    if (filters.endDate) {
+        query.set("dateEnd", filters.endDate);
+    }
+
+    // Guests
+    if (filters.pax) {
+        query.set("pax", filters.pax);
+    }
+
+    // Price
+    if (filters.amount) {
+        query.set("amount", filters.amount);
+    }
+
+    // Amenities
+    if (
+        filters.amenities &&
+        filters.amenities.length > 0
+    ) {
+        query.set(
+            "amenities",
+            filters.amenities.join("-")
+        );
+    }
+
+    // Pet friendly
+    if (filters.petFriendly === "true") {
+        query.set("petFriendly", "true");
+    }
+
+    // Eco friendly
+    if (filters.ecoFriendly === "true") {
+        query.set("ecoFriendly", "true");
+    }
+
+    console.log(
+        "[getProperties] URL:",
+        `/api/properties?${query.toString()}`
+    );
+
+    const response = await fetch(
+        `/api/properties?${query.toString()}`
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Failed to fetch properties"
+        );
+    }
+
+    return await response.json();
 }
 
 async function getPropertyDetails(propertyIDs) {

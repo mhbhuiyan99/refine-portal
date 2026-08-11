@@ -48,6 +48,7 @@ window.refineConfig = {
 
 <script src="/static/js/filter.js"></script>
 <script src="/static/js/filter_state.js"></script>
+<script src="/static/js/refine_reload.js"></script>
 <script src="/static/js/filter_modal.js"></script>
 <script src="/static/js/date_modal.js"></script>
 <script src="/static/js/filter_apply.js"></script>

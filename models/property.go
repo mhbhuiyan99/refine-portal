@@ -3,11 +3,25 @@ package models
 type PropertyListRequest struct {
 	Category  string
 	Locations string
-	Order     int
-	Limit     int
-	Items     int
-	Device    string
-	Page      int
+
+	Order  int
+	Page   int
+	Limit  int
+	Items  int
+	Device string
+
+	StartDate string
+	EndDate   string
+
+	Pax string
+
+	Amount string
+
+	Amenities string
+
+	PetFriendly string
+
+	EcoFriendly string
 }
 
 type PropertyListResponse struct {
