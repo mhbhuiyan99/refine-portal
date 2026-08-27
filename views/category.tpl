@@ -100,37 +100,37 @@
     <div id="property-type-tabs" class="property-type-tabs"></div>
     <section id="category-sections">
 
-    {{range .Category.Result.Sections}}
-
-    <section class="category-section">
-
-        <div class="section-header">
-
-            <h2>
-                {{.Title}}
-            </h2>
-
-            <p>
-                {{.SubTitle}}
-            </p>
-
-        </div>
-
-        <div class="property-grid">
-
-            {{range .Items}}
-
-                {{template "components/property_card.tpl" .}}
-
-            {{end}}
-
-        </div>
-
-    </section>
-
+    {{if .SubCategoryKey}}
+        <p>
+            Sub-category: {{.SubCategoryKey}}
+        </p>
     {{end}}
 
+    {{if not .Category.Result.Sections}}
+        <p class="no-results">No properties found for this category.</p>
+    {{end}}
+
+    {{range .Category.Result.Sections}}
+    <section class="category-section">
+        <div class="section-header">
+            <h2>{{.Title}}</h2>
+            <p>{{.SubTitle}}</p>
+        </div>
+        <div class="property-grid">
+            {{range .Items}}
+                {{template "components/property_card.tpl" .}}
+            {{end}}
+        </div>
     </section>
+{{end}}
+
+<div class="view-more-wrap">
+    <a href="{{.RefineURL}}" class="view-more-link">
+        View More Properties
+    </a>
+</div>
+
+</section>
 </div>
 
 

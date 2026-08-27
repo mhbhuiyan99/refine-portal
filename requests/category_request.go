@@ -23,6 +23,7 @@ const (
 func GetCategoryRequest(
 	slug string,
 	countryCode string,
+	extraParams url.Values,
 ) (*models.CategoryResponse, error) {
 
 	baseURL, err := GetURLFromConfig("base_url")
@@ -40,6 +41,12 @@ func GetCategoryRequest(
 	query.Set("items", "1")
 	query.Set("locations", countryCode)
 	query.Set("sections", "1")
+
+	for key, values := range extraParams {
+		for _, value := range values {
+			query.Add(key, value)
+		}
+	}
 
 	requestURL, err := BuildURL(
 		baseURL, 

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"net/url"
 	"refine-portal/models"
 	"refine-portal/requests"
 	"strings"
@@ -20,6 +21,7 @@ import (
 func GetCategory(
 	slug string,
 	countryCode string,
+	extraParams url.Values,
 ) (*models.CategoryResponse, error) {
 
 	start := time.Now()
@@ -34,6 +36,7 @@ func GetCategory(
 	category, err := requests.GetCategoryRequest(
 		slug,
 		countryCode,
+		extraParams,
 	)
 	if err != nil {
 		return nil, err
