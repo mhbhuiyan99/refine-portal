@@ -88,8 +88,8 @@ func (c *SubCategoryController) Get() {
 	// an API mapping yet.
 	if !mapped {
 		c.CustomAbort(
-			http.StatusNotImplemented,
-			"Sub-category mapping is not available yet",
+			http.StatusNotFound,
+			"Not Found",
 		)
 		return
 	}
