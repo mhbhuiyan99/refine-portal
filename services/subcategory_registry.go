@@ -179,3 +179,15 @@ func LookupSubCategory(slug string) (
 
 	return SubCategory{}, false, false
 }
+
+// SubCategorySlugs returns all URL slugs registered
+// as supported sub-categories.
+func SubCategorySlugs() []string {
+	slugs := make([]string, 0, len(subCategorySlugAliases))
+
+	for slug := range subCategorySlugAliases {
+		slugs = append(slugs, slug)
+	}
+
+	return slugs
+}
