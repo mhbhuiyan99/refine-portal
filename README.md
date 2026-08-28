@@ -20,7 +20,6 @@ A modern property search interface with real-time filtering and sorting capabili
 
 **Features:**
 
-- Destination Autocomplete - Search properties by location in real-time
 - Property Grid - Responsive 4-column desktop, 2-column tablet, 1-column mobile layout
 - Dynamic Filtering - Filter by property type, price range, amenities, and more
 - Smart Sorting - Sort by relevance, price, rating, and popularity
@@ -157,6 +156,109 @@ A currency dropdown in the shared header lets users switch prices across the ent
 
 ---
 
+### Task 6: Category Sub-Category Routing & Filtering
+
+The Category Page now supports sub-category URLs in addition to location-based URLs.
+
+**Features:**
+
+* Supports category URLs such as `/all/bangladesh/pet-friendly` and `/all/bangladesh/pools`.
+* Extracts the final URL segment as the sub-category slug.
+* Normalizes the slug by trimming whitespace and converting it to lowercase.
+* Resolves URL aliases to a canonical sub-category definition.
+* Applies the corresponding query parameters when calling the Category API.
+* Keeps the location portion of the URL separate from the sub-category.
+* Rejects recognized but currently unmapped sub-categories instead of treating them as location segments.
+* Uses `url.Values` to pass multiple query parameters consistently between the service and request layers.
+* Keeps sub-category mapping centralized in `services/subcategory_registry.go`.
+
+**Example URLs:**
+
+```text
+GET /all/bangladesh
+GET /all/bangladesh/pet-friendly
+GET /all/bangladesh/pools
+GET /all/bangladesh/luxury
+GET /all/bangladesh/beach
+```
+
+**Example mapping:**
+
+```text
+URL slug              Category API parameter
+------------------------------------------------
+pet-friendly          amenities=11
+pools                 amenities=12
+luxury                order=3
+beach                 amenities=18-19
+family                amenities=5
+```
+
+**Request flow:**
+
+```text
+Browser
+   │
+   │ GET /all/bangladesh/pet-friendly
+   ▼
+CategoryController
+   │
+   ├── Extract URL path
+   ├── Get last segment: "pet-friendly"
+   ├── Resolve sub-category
+   │
+   ▼
+Sub-category Registry
+   │
+   └── pet-friendly → petFriendly → amenities=11
+   │
+   ▼
+CategoryService
+   │
+   ▼
+CategoryRequest
+   │
+   ├── Build category slug: "bangladesh"
+   ├── Add locations=BD
+   ├── Add amenities=11
+   │
+   ▼
+Category API
+   │
+   ▼
+CategoryResponse
+   │
+   ▼
+CategoryController
+   │
+   ▼
+category.tpl
+```
+
+The sub-category mapping is kept separate from the controller so that URL aliases and API filter values have a single source of truth.
+
+**Architecture:**
+
+```text
+controllers/category.go
+        │
+        │ resolves URL/sub-category
+        ▼
+services/subcategory_registry.go
+        │
+        │ returns canonical key + url.Values
+        ▼
+services/category_service.go
+        │
+        ▼
+requests/category_request.go
+        │
+        │ builds API URL
+        ▼
+Category API
+```
+---
+
 ### Additional Features
 
 The final implementation also includes improved interactive filtering and pricing.
@@ -194,7 +296,7 @@ Refine Portal integrates with three main external property APIs, all configured 
 
 ### Location API
 
-**Purpose:** Destination search & autocomplete  
+**Purpose:** Destination search 
 **Endpoint:** `GET /api/location/v1`  
 **Parameters:**
 
@@ -299,6 +401,39 @@ Refine Portal integrates with three main external property APIs, all configured 
 - `aggsCategory` - Include category aggregation
 - `device` - Device type
 - `locations` - Location codes
+- `sections` - Include category property sections
+- `amenities` - Filter properties by amenity ID
+- `order` - Apply category sorting/filtering
+- `pt` - Filter by property type
+- `pax` - Filter by guest capacity
+- `isWinter` / `isSummer` - Seasonal category filters
+- `isShortTermStays` - Short-term stay filter
+- `isBusinessTravel` - Business travel filter
+- `ecoFriendly` - Sustainable/eco-friendly filter
+- `sqs` - Additional category scope/filter
+
+For sub-category URLs, these parameters are resolved from the sub-category registry instead of being hard-coded in the controller.
+
+**Example:**
+
+```text
+URL:
+GET /all/bangladesh/pet-friendly
+
+Resolved location:
+bangladesh
+
+Resolved sub-category:
+petFriendly
+
+Category API request:
+GET /api/v1/category/details/bangladesh
+    ?amenities=11
+    &locations=BD
+    &sections=1
+    ...
+```
+
 
 **Returns:**
 
@@ -334,7 +469,7 @@ Refine Portal integrates with three main external property APIs, all configured 
        │
        ▼
 ┌──────────────────┐
-│ Location API     │ Autocomplete suggestions
+│ Location API     │ Get location info
 └──────┬───────────┘
        │
        ▼
@@ -519,7 +654,6 @@ Home > USA > Texas > Austin
 
 ## Client-Side JavaScript Features
 
-- Destination autocomplete with API calls
 - Dynamic property grid rendering
 - Property type tab switching
 - Real-time search filtering
@@ -546,8 +680,8 @@ refine-portal/
 │   └── app.conf.example         # Configuration template
 │
 ├── controllers/
-│   ├── refine.go                # Refine page controller (Task 1)
-│   ├── category.go              # Category page controller (Task 2)
+│   ├── refine.go                # Refine page controller
+│   ├── category.go              # Category page controller
 │   ├── location_api.go          # Location API handler
 │   ├── property_api.go          # Property API handler
 │   └── property_image_api.go    # Property Images API handler
@@ -565,6 +699,7 @@ refine-portal/
 │   ├── property_details_service.go  # Property Details API service
 │   ├── property_image_service.go # Property Images API service
 │   ├── category_service.go      # Category API service
+|   ├── subcategory_registry.go       # Sub-category slug and API filter mapping
 │   └── helper.go                # Utility helper functions
 │
 ├── requests/                    # External API request layer
@@ -579,8 +714,8 @@ refine-portal/
 │   └── router.go                # Route definitions & configuration
 │
 ├── views/                       # Beego template files
-│   ├── refine.tpl               # Refine page template (Task 1)
-│   ├── category.tpl             # Category page template (Task 2)
+│   ├── refine.tpl               # Refine page template
+│   ├── category.tpl             # Category page template
 │   ├── components/
 │   │   └── property_card.tpl    # Shared property card component
 │   └── layouts/
@@ -614,8 +749,8 @@ refine-portal/
     │   │   └── sort.js          # Sort selector
     │   └── utils/
     │       ├── amenity_icons.js # Amenity icon mapping
-    │       ├── currency.js      # Currency list, rates & formatting helpers (Task 5)
-    │       ├── pricing.js       # Applies saved currency to rendered price tiles (Task 5)
+    │       ├── currency.js      # Currency list, rates & formatting helpers 
+    │       ├── pricing.js       # Applies saved currency to rendered price tiles 
     │       └── partner_logo.js  # Partner logo utilities
     └── images/
         └── amenities/           # Amenity icons
@@ -840,6 +975,7 @@ curl http://localhost:8080/all/usa
 | [requests/property_image_request.go](requests/property_image_request.go) | Property Images API request logic                             |
 | [services/property_image_service.go](services/property_image_service.go)| Property Images service                                        |
 | [requests/category_request.go](requests/category_request.go)             | Category API request logic                                    |
+| [services/subcategory_registry.go](services/subcategory_registry.go)     | Centralized sub-category slug, alias, and API parameter mapping |
 | [models/property_image.go](models/property_image.go)                     | Property Images data models                                    |
 | [static/js/refine.js](static/js/refine.js)                               | Refine page JavaScript logic                                  |
 | [static/js/category.js](static/js/category.js)                           | Category page JavaScript logic                                |
