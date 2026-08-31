@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" href="/static/css/refine.css">
     <link rel="stylesheet" href="/static/css/filter.css">
-
+    <link rel="stylesheet" href="/static/css/error.css">
+    
     <script src="/static/js/guest_model.js"></script>
     <script src="/static/js/components/navbar.js"></script>
 

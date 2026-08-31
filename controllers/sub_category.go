@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 	"refine-portal/services"
 	"strings"
 
@@ -35,7 +34,7 @@ func (c *SubCategoryController) Get() {
 	)
 
 	if slug == "" {
-		c.CustomAbort(http.StatusNotFound, "Not Found")
+		renderNotFound(&c.Controller)
 		return
 	}
 
@@ -48,10 +47,7 @@ func (c *SubCategoryController) Get() {
 	segments := strings.Split(slug, "/")
 
 	if len(segments) < 2 {
-		c.CustomAbort(
-			http.StatusBadRequest,
-			"Location is required for sub-category pages",
-		)
+		renderBadRequest(&c.Controller)
 		return
 	}
 
@@ -77,20 +73,14 @@ func (c *SubCategoryController) Get() {
 
 	// The URL is not registered as a supported sub-category.
 	if !known {
-		c.CustomAbort(
-			http.StatusNotFound,
-			"Sub-category not found",
-		)
+		renderNotFound(&c.Controller)
 		return
 	}
 
 	// The sub-category is known but does not have
 	// an API mapping yet.
 	if !mapped {
-		c.CustomAbort(
-			http.StatusNotImplemented,
-			"Sub-category mapping is not available yet",
-		)
+		renderNotFound(&c.Controller)
 		return
 	}
 
@@ -101,10 +91,7 @@ func (c *SubCategoryController) Get() {
 	)
 
 	if locationSlug == "" {
-		c.CustomAbort(
-			http.StatusBadRequest,
-			"Location is required for sub-category pages",
-		)
+		renderBadRequest(&c.Controller)
 		return
 	}
 
@@ -131,11 +118,7 @@ func (c *SubCategoryController) Get() {
 			countrySlug,
 			err,
 		)
-
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		renderServerError(&c.Controller)
 		return
 	}
 
@@ -155,11 +138,7 @@ func (c *SubCategoryController) Get() {
 			subCategorySlug,
 			err,
 		)
-
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		renderServerError(&c.Controller)
 		return
 	}
 

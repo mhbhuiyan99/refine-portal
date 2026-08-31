@@ -21,6 +21,15 @@ var httpClient = &http.Client{
 	Timeout: 10 * time.Second,
 }
 
+// HTTPError represents an unexpected HTTP response status.
+type HTTPError struct {
+	StatusCode int
+}
+
+func (e *HTTPError) Error() string {
+	return fmt.Sprintf("unexpected HTTP status: %d", e.StatusCode)
+}
+
 // DoRequest sends an HTTP request and decodes the JSON response.
 //
 // Responsibilities:
@@ -51,7 +60,10 @@ func DoRequest(
 			req.URL.String(),
 			resp.StatusCode,
 		)
-		return fmt.Errorf("unexpected HTTP status: %d", resp.StatusCode)
+
+		return &HTTPError{
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(target); err != nil {

@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
+	"refine-portal/requests"
 	"refine-portal/services"
 	"strings"
 
@@ -33,7 +35,7 @@ func (c *CategoryController) Get() {
 	)
 
 	if slug == "" {
-		c.CustomAbort(http.StatusNotFound, "Not Found")
+		renderNotFound(&c.Controller)
 		return
 	}
 
@@ -65,11 +67,7 @@ func (c *CategoryController) Get() {
 			countrySlug,
 			err,
 		)
-
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		renderServerError(&c.Controller)
 		return
 	}
 
@@ -92,10 +90,13 @@ func (c *CategoryController) Get() {
 			err,
 		)
 
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		var httpErr *requests.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			renderNotFound(&c.Controller)
+			return
+		}
+
+		renderServerError(&c.Controller)
 		return
 	}
 

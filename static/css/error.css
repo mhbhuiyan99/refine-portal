@@ -1,0 +1,36 @@
+.error-page {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.error-content {
+    max-width: 600px;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+.error-content h1 {
+    font-size: 36px;
+    margin-bottom: 16px;
+}
+
+.error-content p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.error-home-link {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+}
