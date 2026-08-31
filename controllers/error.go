@@ -3,21 +3,45 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
 
-// renderNotFound renders the application's Page Not Found UI.
-//
-// Responsibilities:
-//   - Set the HTTP response status to 404.
-//   - Render the shared 404 template.
-//   - Stop the current controller flow.
-func renderNotFound(c *web.Controller) {
-	c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
 
-	c.TplName = "404.tpl"
+func renderError(c *web.Controller, status int, tplName string) {
+	c.Ctx.ResponseWriter.WriteHeader(status)
 
-	if err := c.Render(); err != nil {
-		return
+	rendered := func() (ok bool) {
+		defer func() {
+			if r := recover(); r != nil {
+				logs.Error(
+					"[renderError] template render failed | tpl=%s | recover=%v",
+					tplName,
+					r,
+				)
+				ok = false
+			}
+		}()
+
+		c.TplName = tplName
+		return c.Render() == nil
+	}()
+
+	if !rendered {
+		c.Ctx.WriteString(http.StatusText(status))
 	}
+
+	c.StopRun()
+}
+
+func renderNotFound(c *web.Controller) {
+	renderError(c, http.StatusNotFound, "errors/404.tpl")
+}
+
+func renderBadRequest(c *web.Controller) {
+	renderError(c, http.StatusBadRequest, "errors/400.tpl")
+}
+
+func renderServerError(c *web.Controller) {
+	renderError(c, http.StatusInternalServerError, "errors/500.tpl")
 }

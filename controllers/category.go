@@ -35,10 +35,7 @@ func (c *CategoryController) Get() {
 	)
 
 	if slug == "" {
-		c.CustomAbort(
-			http.StatusNotFound,
-			"Not Found",
-		)
+		renderNotFound(&c.Controller)
 		return
 	}
 
@@ -70,11 +67,7 @@ func (c *CategoryController) Get() {
 			countrySlug,
 			err,
 		)
-
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		renderServerError(&c.Controller)
 		return
 	}
 
@@ -98,19 +91,12 @@ func (c *CategoryController) Get() {
 		)
 
 		var httpErr *requests.HTTPError
-
-		if errors.As(err, &httpErr) {
-			c.CustomAbort(
-				httpErr.StatusCode,
-				http.StatusText(httpErr.StatusCode),
-			)
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			renderNotFound(&c.Controller)
 			return
 		}
 
-		c.CustomAbort(
-			http.StatusInternalServerError,
-			"Internal Server Error",
-		)
+		renderServerError(&c.Controller)
 		return
 	}
 
