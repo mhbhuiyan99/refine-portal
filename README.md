@@ -156,61 +156,112 @@ A currency dropdown in the shared header lets users switch prices across the ent
 
 ---
 
-### Task 6: Category Sub-Category Routing & Filtering
+### Task 6: Category & Sub-Category Routing
 
-The Category Page now supports sub-category URLs in addition to location-based URLs.
+The Category Page supports two separate route types:
 
-**Features:**
+* **Category routes** for normal location-based pages.
+* **Sub-category routes** for predefined sub-category pages.
 
-* Supports category URLs such as `/all/bangladesh/pet-friendly` and `/all/bangladesh/pools`.
-* Extracts the final URL segment as the sub-category slug.
-* Normalizes the slug by trimming whitespace and converting it to lowercase.
-* Resolves URL aliases to a canonical sub-category definition.
-* Applies the corresponding query parameters when calling the Category API.
-* Keeps the location portion of the URL separate from the sub-category.
-* Rejects recognized but currently unmapped sub-categories instead of treating them as location segments.
-* Uses `url.Values` to pass multiple query parameters consistently between the service and request layers.
-* Keeps sub-category mapping centralized in `services/subcategory_registry.go`.
+The two request types are handled by separate controllers.
 
-**Example URLs:**
+**Route structure:**
 
 ```text
+Category:
+GET /all/*
+
+Examples:
 GET /all/bangladesh
+GET /all/bangladesh/dhaka-division
+GET /all/bangladesh/dhaka-division/dhaka
+
+
+Sub-category:
+GET /all/*/<sub-category>
+
+Examples:
 GET /all/bangladesh/pet-friendly
 GET /all/bangladesh/pools
 GET /all/bangladesh/luxury
 GET /all/bangladesh/beach
 ```
 
-**Example mapping:**
+**Routing behavior:**
 
-```text
-URL slug              Category API parameter
-------------------------------------------------
-pet-friendly          amenities=11
-pools                 amenities=12
-luxury                order=3
-beach                 amenities=18-19
-family                amenities=5
-```
-
-**Request flow:**
+Predefined sub-category routes are registered before the general category route.
 
 ```text
 Browser
    │
    │ GET /all/bangladesh/pet-friendly
    ▼
+Beego Router
+   │
+   ├── Matches predefined sub-category route
+   │
+   ▼
+SubCategoryController
+```
+
+For a normal location URL:
+
+```text
+Browser
+   │
+   │ GET /all/bangladesh/dhaka
+   ▼
+Beego Router
+   │
+   ├── No predefined sub-category route matches
+   │
+   ▼
 CategoryController
+```
+
+This keeps category and sub-category responsibilities separate.
+
+**Sub-category route registration:**
+
+```go
+for _, slug := range services.SubCategorySlugs() {
+    web.Router(
+        "/all/*/"+slug,
+        &controllers.SubCategoryController{},
+    )
+}
+
+web.Router("/all/*", &controllers.CategoryController{})
+```
+
+The predefined sub-category slugs are obtained from the sub-category registry. This prevents the controller from having to determine whether the final URL segment represents a location or a sub-category.
+
+**Sub-category request flow:**
+
+```text
+Browser
+   │
+   │ GET /all/bangladesh/pet-friendly
+   ▼
+Beego Router
+   │
+   ▼
+SubCategoryController
    │
    ├── Extract URL path
-   ├── Get last segment: "pet-friendly"
-   ├── Resolve sub-category
+   ├── Extract last segment: "pet-friendly"
+   ├── Resolve sub-category from registry
+   ├── Extract location: "bangladesh"
+   ├── Resolve country code
    │
    ▼
 Sub-category Registry
    │
-   └── pet-friendly → petFriendly → amenities=11
+   └── pet-friendly
+          ↓
+       petFriendly
+          ↓
+       amenities=11
    │
    ▼
 CategoryService
@@ -229,35 +280,89 @@ Category API
 CategoryResponse
    │
    ▼
+SubCategoryController
+   │
+   ▼
+category.tpl
+```
+
+**Normal category request flow:**
+
+```text
+Browser
+   │
+   │ GET /all/bangladesh/dhaka
+   ▼
+Beego Router
+   │
+   ▼
+CategoryController
+   │
+   ├── Extract location URL
+   ├── Convert "/" to ":"
+   ├── Resolve country code
+   │
+   ▼
+CategoryService
+   │
+   ▼
+CategoryRequest
+   │
+   ▼
+Category API
+   │
+   ▼
+CategoryResponse
+   │
+   ▼
 CategoryController
    │
    ▼
 category.tpl
 ```
 
-The sub-category mapping is kept separate from the controller so that URL aliases and API filter values have a single source of truth.
+**Sub-category mapping:**
+
+The sub-category registry remains the single source of truth for supported sub-categories, URL aliases, canonical keys, and API parameters.
+
+```text
+URL slug              Canonical key       API parameter
+--------------------------------------------------------
+pet-friendly          petFriendly         amenities=11
+pools                 pools               amenities=12
+luxury                luxuryRental        order=3
+beach                 beachRental         amenities=18-19
+family                familyRental        amenities=5
+```
+
+The controller does not hard-code these API filter values.
 
 **Architecture:**
 
 ```text
-controllers/category.go
-        │
-        │ resolves URL/sub-category
-        ▼
-services/subcategory_registry.go
-        │
-        │ returns canonical key + url.Values
-        ▼
-services/category_service.go
-        │
-        ▼
-requests/category_request.go
-        │
-        │ builds API URL
-        ▼
-Category API
+                    Beego Router
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+       /all/*/<slug>              /all/*
+              │                     │
+              ▼                     ▼
+   SubCategoryController     CategoryController
+              │                     │
+              └──────────┬──────────┘
+                         │
+                         ▼
+               CategoryService
+                         │
+                         ▼
+               CategoryRequest
+                         │
+                         ▼
+                  Category API
 ```
----
+
+This separation makes the routing behavior explicit and keeps the responsibilities of category and sub-category controllers independent.
+
 
 ### Additional Features
 
@@ -670,90 +775,102 @@ Home > USA > Texas > Austin
 
 ```
 refine-portal/
-├── main.go                      # Application entry point
+├── main.go                      # Beego app bootstrap
 ├── go.mod                       # Go module definition
-├── go.sum                       # Go dependencies lock file
-├── README.md                    # This file
+├── go.sum                       # Go dependency lock file
+├── README.md                    # Project overview and usage docs
+├── TEST.md                      # Testing notes and task checklist
 │
 ├── conf/
-│   ├── app.conf                 # Main application configuration
-│   └── app.conf.example         # Configuration template
+│   ├── app.conf                 # Local runtime configuration
+│   └── app.conf.example        # Sample configuration template
 │
 ├── controllers/
-│   ├── refine.go                # Refine page controller
 │   ├── category.go              # Category page controller
-│   ├── location_api.go          # Location API handler
-│   ├── property_api.go          # Property API handler
-│   └── property_image_api.go    # Property Images API handler
+│   ├── error.go                 # Shared Beego error rendering helpers
+│   ├── location_api.go          # Location API controller
+│   ├── property_api.go          # Property list/details API controller
+│   ├── property_image_api.go    # Property images API controller
+│   ├── refine.go                # Refine page controller
+│   └── sub_category.go          # Sub-category route controller
 │
 ├── models/
-│   ├── category.go              # Category data models
-│   ├── location.go              # Location data models
-│   ├── property.go              # Property data models
-│   ├── property_details.go      # Property details data models
-│   └── property_image.go        # Property images data models
+│   ├── category.go              # Category response models
+│   ├── location.go              # Location response models
+│   ├── property.go              # Property list/detail models
+│   ├── property_details.go      # Property details models
+│   └── property_image.go        # Property image models
 │
-├── services/                    # Business logic & orchestration
-│   ├── location_service.go      # Location API service
-│   ├── property_service.go      # Property List API service
-│   ├── property_details_service.go  # Property Details API service
-│   ├── property_image_service.go # Property Images API service
-│   ├── category_service.go      # Category API service
-|   ├── subcategory_registry.go       # Sub-category slug and API filter mapping
-│   └── helper.go                # Utility helper functions
-│
-├── requests/                    # External API request layer
-│   ├── client.go                # Shared HTTP client and request helpers
+├── requests/
+│   ├── category_request.go      # Category API HTTP request logic
+│   ├── client.go                # Shared HTTP client helpers
+│   ├── config.go                # API config helpers
 │   ├── location_request.go      # Location API request logic
-│   ├── property_list_request.go # Property List API request logic
-│   ├── property_request.go      # Property Details API request logic
-│   ├── property_image_request.go # Property Images API request logic
-│   └── category_request.go      # Category API request logic
+│   ├── property_image_request.go # Property image request logic
+│   ├── property_list_request.go # Property list request logic
+│   ├── property_request.go      # Property details request logic
+│   └── ...
+│
+├── services/
+│   ├── category_service.go      # Category orchestration service
+│   ├── helper.go                # Shared service helpers
+│   ├── location_service.go      # Location service
+│   ├── property_details_service.go # Property details service
+│   ├── property_image_service.go # Property image service
+│   ├── property_service.go      # Property list service
+│   └── subcategory_registry.go  # Sub-category alias and parameter mapping
 │
 ├── routers/
-│   └── router.go                # Route definitions & configuration
+│   └── router.go                # Route registration for web pages and APIs
 │
-├── views/                       # Beego template files
-│   ├── refine.tpl               # Refine page template
+├── views/
 │   ├── category.tpl             # Category page template
+│   ├── refine.tpl              # Refine page template
 │   ├── components/
 │   │   └── property_card.tpl    # Shared property card component
+│   ├── errors/
+│   │   ├── 400.tpl             # Bad request error page
+│   │   ├── 404.tpl             # Not found page
+│   │   └── 500.tpl             # Internal server error page
 │   └── layouts/
-│       ├── header.tpl           # Header layout
-│       └── footer.tpl           # Footer layout
+│       ├── footer.tpl          # Footer layout
+│       └── header.tpl          # Header layout
 │
-└── static/                      # Frontend assets
-    ├── css/
-    │   ├── refine.css           # Refine page styles
-    │   ├── filter.css           # Filter modal styles
-    │   ├── category.css         # Category page styles
-    │   └── components/
-    │       └── property_card.css # Property card component styles
-    ├── js/
-    │   ├── refine.js            # Refine page logic
-    │   ├── category.js          # Category page logic
-    │   ├── filter.js            # Filter functionality
-    │   ├── filter_modal.js      # Filter modal interactions
-    │   ├── filter_apply.js      # Filter application logic
-    │   ├── filter_state.js      # Filter state management
-    │   ├── sort.js              # Sorting functionality
-    │   ├── api.js               # API client utilities
-    │   ├── renderer.js          # DOM rendering utilities
-    │   ├── date_modal.js        # Date picker modal
-    │   ├── guest_model.js       # Guest selection modal
-    │   ├── components/
-    │   │   ├── property_card.js # Property card rendering
-    │   │   ├── header.js        # Header component
-    │   │   ├── navbar.js        # Navigation bar
-    │   │   ├── breadcrumb.js    # Breadcrumb navigation
-    │   │   └── sort.js          # Sort selector
-    │   └── utils/
-    │       ├── amenity_icons.js # Amenity icon mapping
-    │       ├── currency.js      # Currency list, rates & formatting helpers 
-    │       ├── pricing.js       # Applies saved currency to rendered price tiles 
-    │       └── partner_logo.js  # Partner logo utilities
-    └── images/
-        └── amenities/           # Amenity icons
+├── static/
+│   ├── css/
+│   │   ├── category.css        # Category page styles
+│   │   ├── components/
+│   │   │   └── property_card.css # Shared card styling
+│   │   ├── error.css           # Error page styles
+│   │   ├── filter.css          # Filter modal styles
+│   │   ├── refine.css          # Refine page styles
+│   │   └── shimmer.css         # Loading shimmer effect
+│   ├── images/
+│   │   ├── amenities/          # Amenity icons and related assets
+│   │   └── demo/               # Demo images and placeholders
+│   └── js/
+│       ├── api.js              # API helpers
+│       ├── category.js         # Category page client logic
+│       ├── components/
+│       │   ├── breadcrumb.js   # Breadcrumb renderer
+│       │   ├── header.js       # Shared header logic
+│       │   ├── navbar.js       # Navbar/currency UI
+│       │   ├── property_card.js # Property card rendering
+│       │   └── sort.js         # Sort control logic
+│       ├── date_modal.js       # Date picker modal logic
+│       ├── filter.js           # Filter orchestration
+│       ├── filter_apply.js     # Filter application logic
+│       ├── filter_modal.js     # Filter modal behavior
+│       ├── filter_state.js     # Saved filter state
+│       ├── guest_model.js      # Guest count modal
+│       ├── refine.js           # Refine page behavior
+│       ├── refine_reload.js    # Refine refresh helper
+│       ├── renderer.js         # DOM renderer utilities
+│       └── utils/
+│           ├── amenity_icons.js # Amenity icon mapping
+│           ├── currency.js     # Currency formatting and conversion
+│           ├── partner_logo.js # Logo selection helper
+│           └── pricing.js      # Price display formatting
 ```
 
 ---
@@ -932,6 +1049,55 @@ go run main.go
 curl http://localhost:8080/refine?search=Dhaka
 curl http://localhost:8080/all/usa
 ```
+
+### Coverage
+
+```bash
+go tool cover -func=coverage.out
+```
+
+Current coverage output:
+
+```text
+refine-portal/controllers/category.go:27:               Get                             86.2%
+refine-portal/controllers/category.go:130:              buildRefineURL                  100.0%
+refine-portal/controllers/error.go:11:                  renderError                     100.0%
+refine-portal/controllers/error.go:37:                  renderNotFound                  100.0%
+refine-portal/controllers/error.go:41:                  renderBadRequest                100.0%
+refine-portal/controllers/error.go:45:                  renderServerError               100.0%
+refine-portal/controllers/location_api.go:20:           Get                             100.0%
+refine-portal/controllers/property_api.go:24:           GetList                         100.0%
+refine-portal/controllers/property_api.go:142:          GetDetails                      100.0%
+refine-portal/controllers/property_image_api.go:20:     Get                             100.0%
+refine-portal/controllers/refine.go:15:                 Get                             100.0%
+refine-portal/controllers/sub_category.go:26:           Get                             95.2%
+refine-portal/main.go:9:                                main                            0.0%
+refine-portal/requests/category_request.go:23:          GetCategoryRequest              100.0%
+refine-portal/requests/client.go:29:                    Error                           100.0%
+refine-portal/requests/client.go:40:                    DoRequest                       100.0%
+refine-portal/requests/client.go:92:                    BuildURL                        100.0%
+refine-portal/requests/client.go:112:                   BuildImageURL                   100.0%
+refine-portal/requests/client.go:131:                   NewGETRequest                   83.3%
+refine-portal/requests/client.go:155:                   setDefaultHeaders               88.9%
+refine-portal/requests/config.go:16:                    GetURLFromConfig                100.0%
+refine-portal/requests/location_request.go:23:          GetLocationRequest              80.0%
+refine-portal/requests/property_image_request.go:20:    GetPropertyImagesRequest        81.2%
+refine-portal/requests/property_list_request.go:25:     GetPropertyListRequest          73.0%
+refine-portal/requests/property_request.go:25:          GetPropertyDetailsRequest       83.3%
+refine-portal/routers/router.go:10:                     init                            0.0%
+refine-portal/services/category_service.go:21:          GetCategory                     95.0%
+refine-portal/services/helper.go:4:                     chunkStrings                    100.0%
+refine-portal/services/location_service.go:17:          GetLocation                     100.0%
+refine-portal/services/property_details_service.go:26:  GetPropertyDetails              97.6%
+refine-portal/services/property_image_service.go:13:    GetPropertyImages               0.0%
+refine-portal/services/property_service.go:17:          GetProperties                   100.0%
+refine-portal/services/subcategory_registry.go:166:     LookupSubCategory               0.0%
+refine-portal/services/subcategory_registry.go:185:     SubCategorySlugs                0.0%
+
+total:                                                  (statements)                    88.7%
+```
+
+This project is currently at 88.7% total statement coverage based on the generated `coverage.out` report.
 
 ## Performance Optimization
 
