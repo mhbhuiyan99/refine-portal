@@ -1043,7 +1043,7 @@ Run your changes locally:
 
 ```bash
 # Terminal 1: Start server
-go run main.go
+bee run
 
 # Terminal 2: Test endpoints
 curl http://localhost:8080/refine?search=Dhaka
